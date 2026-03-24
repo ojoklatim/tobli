@@ -28,7 +28,7 @@ function MapController({ center, zoom, bounds, selectedBusiness }) {
       // Focus on business: shift camera 150px north of the pin so the pin lands in the lower-center
       const targetZoom = 17;
       const targetPoint = map.project([selectedBusiness.lat, selectedBusiness.lng], targetZoom);
-      const offsetPoint = L.point(targetPoint.x, targetPoint.y - 150);
+      const offsetPoint = L.point(targetPoint.x, targetPoint.y - 260);
       const offsetLatLng = map.unproject(offsetPoint, targetZoom);
       
       map.flyTo(offsetLatLng, targetZoom, { animate: true, duration: 1.2 });
