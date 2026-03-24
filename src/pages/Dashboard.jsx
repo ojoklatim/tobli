@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { 
-  BarChart3, List, Settings, CreditCard, 
-  MapPin, Power, Plus, Upload, Trash2, 
-  Save, AlertTriangle, Loader2, X, Phone, 
+import {
+  BarChart3, List, Settings, CreditCard,
+  MapPin, Power, Plus, Upload, Trash2,
+  Save, AlertTriangle, Loader2, X, Phone,
   Globe, Instagram, Send, Twitter, Download, Edit2
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
@@ -47,24 +47,24 @@ export default function Dashboard() {
           <div className="text-xl font-syne font-extrabold tracking-tighter text-white">
             {biz.name}
           </div>
-          
+
           <div className="flex items-center gap-6">
             {/* Centre: Open/Closed Toggle */}
             <div className="flex items-center gap-2 bg-neutral-900/50 p-1 rounded-full border border-white/5">
               <span className={`text-[9px] uppercase font-bold tracking-widest pl-2 ${biz.is_open ? 'text-green-500' : 'text-neutral-500'}`}>
                 {biz.is_open ? 'Open' : 'Closed'}
               </span>
-              <button 
+              <button
                 onClick={toggleOpen}
                 className={`w-10 h-5 rounded-full relative transition-colors ${biz.is_open ? 'bg-green-500' : 'bg-neutral-800'}`}
               >
                 <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-all ${biz.is_open ? 'left-5.5' : 'left-0.5'}`} />
               </button>
             </div>
-            
+
             {/* Far Right: Logout */}
-            <button 
-              onClick={() => { signOut(); navigate('/login'); }} 
+            <button
+              onClick={() => { signOut(); navigate('/login'); }}
               className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full text-neutral-300 hover:text-white hover:bg-white/10 transition-colors font-bold text-xs uppercase"
             >
               <Power size={14} /> Logout
@@ -77,7 +77,7 @@ export default function Dashboard() {
       {!isSubActive && (
         <div className="bg-red-500/10 border-b border-red-500/20 text-red-500 py-3 text-center text-sm font-medium px-6">
           <AlertTriangle size={16} className="inline mr-2" />
-          Subscription inactive. Your business is hidden from search results. 
+          Subscription inactive. Your business is hidden from search results.
           <button onClick={() => setActiveTab('subscription')} className="underline ml-2 font-bold">Renew Access</button>
         </div>
       )}
@@ -104,7 +104,7 @@ export default function Dashboard() {
         </nav>
 
         {/* Content */}
-        <section className="flex-1 bg-neutral-900/30 rounded-[32px] border border-white/5 p-8 relative min-h-[600px]">
+        <section className="flex-1 bg-neutral-900/30 rounded-[24px] border border-white/5 p-6 relative min-h-[600px]">
           {activeTab === 'overview' && <OverviewTab biz={biz} />}
           {activeTab === 'listings' && <ListingsTab />}
           {activeTab === 'info' && <InfoTab biz={biz} setBiz={setBiz} />}
@@ -224,9 +224,9 @@ function ListingsTab() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <h2 className="text-xl font-syne font-bold">Manage Listings</h2>
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          <input 
-            type="text" 
-            placeholder="Search listings..." 
+          <input
+            type="text"
+            placeholder="Search listings..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="bg-neutral-800 border-none rounded-2xl px-4 py-2 text-sm w-full md:w-48 focus:outline-none"
@@ -252,12 +252,12 @@ function ListingsTab() {
             <button onClick={() => setShowAdd(false)}><X size={20} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input placeholder="Item Name" className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none" value={newItem.name} onChange={e => setNewItem({...newItem, name: e.target.value})} />
-            <select className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none" value={newItem.type} onChange={e => setNewItem({...newItem, type: e.target.value})}>
+            <input placeholder="Item Name" className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none" value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} />
+            <select className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none" value={newItem.type} onChange={e => setNewItem({ ...newItem, type: e.target.value })}>
               <option value="product">Product</option>
               <option value="service">Service</option>
             </select>
-            <input placeholder="Price (UGX)" type="number" className="bg-neutral-800 border-none rounded-2xl p-4 font-mono focus:outline-none" value={newItem.price} onChange={e => setNewItem({...newItem, price: e.target.value})} />
+            <input placeholder="Price (UGX)" type="number" className="bg-neutral-800 border-none rounded-2xl p-4 font-mono focus:outline-none" value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} />
             <button onClick={addItem} className="bg-white text-black font-bold rounded-2xl p-4 hover:bg-neutral-200 transition-colors">Add →</button>
           </div>
         </div>
@@ -270,12 +270,12 @@ function ListingsTab() {
             <button onClick={() => setEditingItem(null)} className="text-neutral-500 hover:text-white transition-colors"><X size={20} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <input placeholder="Item Name" className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none text-sm" value={editingItem.name} onChange={e => setEditingItem({...editingItem, name: e.target.value})} />
-            <select className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none text-sm" value={editingItem.type} onChange={e => setEditingItem({...editingItem, type: e.target.value})}>
+            <input placeholder="Item Name" className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none text-sm" value={editingItem.name} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} />
+            <select className="bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none text-sm" value={editingItem.type} onChange={e => setEditingItem({ ...editingItem, type: e.target.value })}>
               <option value="product">Product</option>
               <option value="service">Service</option>
             </select>
-            <input placeholder="Price (UGX)" type="number" className="bg-neutral-800 border-none rounded-2xl p-4 font-mono focus:outline-none text-sm" value={editingItem.price} onChange={e => setEditingItem({...editingItem, price: e.target.value})} />
+            <input placeholder="Price (UGX)" type="number" className="bg-neutral-800 border-none rounded-2xl p-4 font-mono focus:outline-none text-sm" value={editingItem.price} onChange={e => setEditingItem({ ...editingItem, price: e.target.value })} />
             <button onClick={saveEdit} className="bg-indigo-600 text-white font-bold rounded-2xl p-4 hover:bg-indigo-500 transition-colors text-sm shadow-xl">Update Item →</button>
           </div>
         </div>
@@ -355,8 +355,8 @@ function InfoTab({ biz, setBiz }) {
         <div className="space-y-6">
           <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500">Identity</h3>
           <div className="space-y-4">
-            <InfoField label="Owner's Name" value={form.owner_name} onChange={v => setForm({...form, owner_name: v})} />
-            <InfoField label="Business Name" value={form.name} onChange={v => setForm({...form, name: v})} />
+            <InfoField label="Owner's Name" value={form.owner_name} onChange={v => setForm({ ...form, owner_name: v })} />
+            <InfoField label="Business Name" value={form.name} onChange={v => setForm({ ...form, name: v })} />
           </div>
         </div>
 
@@ -364,17 +364,17 @@ function InfoTab({ biz, setBiz }) {
         <div className="space-y-6">
           <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500">Contact Info</h3>
           <div className="space-y-4">
-            <InfoField label="WhatsApp (e.g. 256...)" value={form.whatsapp} onChange={v => setForm({...form, whatsapp: v})} icon={<Send size={16}/>} />
-            <InfoField label="Phone Number" value={form.phone} onChange={v => setForm({...form, phone: v})} icon={<Phone size={16}/>} />
-            <InfoField label="Instagram handle" value={form.instagram} onChange={v => setForm({...form, instagram: v})} icon={<Instagram size={16}/>} />
-            <InfoField label="X / Twitter handle" value={form.x_handle} onChange={v => setForm({...form, x_handle: v})} icon={<Twitter size={16}/>} />
-            <InfoField label="Website" value={form.website} onChange={v => setForm({...form, website: v})} icon={<Globe size={16}/>} />
+            <InfoField label="WhatsApp (e.g. 256...)" value={form.whatsapp} onChange={v => setForm({ ...form, whatsapp: v })} icon={<Send size={16} />} />
+            <InfoField label="Phone Number" value={form.phone} onChange={v => setForm({ ...form, phone: v })} icon={<Phone size={16} />} />
+            <InfoField label="Instagram handle" value={form.instagram} onChange={v => setForm({ ...form, instagram: v })} icon={<Instagram size={16} />} />
+            <InfoField label="X / Twitter handle" value={form.x_handle} onChange={v => setForm({ ...form, x_handle: v })} icon={<Twitter size={16} />} />
+            <InfoField label="Website" value={form.website} onChange={v => setForm({ ...form, website: v })} icon={<Globe size={16} />} />
           </div>
         </div>
       </div>
 
       {/* Location */}
-      <div className="bg-neutral-900 p-8 rounded-[32px] border border-white/5">
+      <div className="bg-neutral-900 p-8 rounded-[24px] border border-white/5">
         <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Set Location</h3>
         <div className="flex items-center gap-4">
           <div className="flex-1 bg-black p-4 rounded-xl font-mono text-sm text-neutral-400">
@@ -394,7 +394,7 @@ function InfoField({ label, value, onChange, icon }) {
     <div>
       <label className="block text-xs uppercase text-neutral-500 font-bold mb-2 ml-1">{label}</label>
       <div className="relative">
-        <input 
+        <input
           type="text"
           className="w-full bg-neutral-900 border border-white/5 rounded-2xl p-4 pl-12 font-sans text-sm focus:border-white focus:outline-none"
           value={value || ''}
@@ -416,7 +416,7 @@ function SubscriptionTab({ biz }) {
     <div className="space-y-8">
       <h2 className="text-xl font-syne font-bold">Subscription</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-neutral-900 border border-white/5 p-8 rounded-[32px] space-y-6">
+        <div className="bg-neutral-900 border border-white/5 p-6 rounded-[24px] hover:border-white/20 transition-all cursor-pointer group">
           <div className="flex justify-between items-start">
             <div>
               <div className="text-neutral-500 text-xs uppercase tracking-widest font-bold mb-1">Current Plan</div>
@@ -446,7 +446,7 @@ function SubscriptionTab({ biz }) {
           </button>
         </div>
 
-        <div className="bg-white/5 p-8 rounded-[32px] border border-dashed border-white/10 flex flex-col justify-center items-center text-center">
+        <div className="bg-white/5 p-8 rounded-[24px] border border-dashed border-white/10 flex flex-col justify-center items-center text-center">
           <CreditCard size={48} className="text-neutral-600 mb-4" />
           <h4 className="font-bold text-neutral-400">Payment History coming soon.</h4>
           <p className="text-xs text-neutral-600 max-w-[200px] mt-2">All transactions are securely processed via Pesapal.</p>

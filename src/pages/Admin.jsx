@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
-import { 
-  Activity, Users, CreditCard, ShieldAlert, 
-  Search, CheckCircle2, XCircle, 
+import {
+  Activity, Users, CreditCard, ShieldAlert,
+  Search, CheckCircle2, XCircle,
   ChevronDown, Loader2, Download, Power
 } from 'lucide-react';
 
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
   };
 
   const exportCSV = () => {
-    const header = ['Business Name','Amount','Paid At','Method','Reference'];
+    const header = ['Business Name', 'Amount', 'Paid At', 'Method', 'Reference'];
     const rows = transactions.map(p => [p.business_name, p.amount, p.paid_at, p.method, p.reference]);
     const csv = [header, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
@@ -69,9 +69,9 @@ export default function AdminDashboard() {
   const filteredBiz = businesses.filter(b => {
     const term = searchTerm.toLowerCase();
     return b.name.toLowerCase().includes(term) ||
-           (b.owner_name || '').toLowerCase().includes(term) ||
-           (b.email || '').toLowerCase().includes(term) ||
-           (b.phone || '').toLowerCase().includes(term);
+      (b.owner_name || '').toLowerCase().includes(term) ||
+      (b.email || '').toLowerCase().includes(term) ||
+      (b.phone || '').toLowerCase().includes(term);
   });
 
   return (
@@ -86,8 +86,8 @@ export default function AdminDashboard() {
             </span>
           </div>
           <div className="flex items-center gap-6">
-            <button 
-              onClick={() => { signOut(); navigate('/login'); }} 
+            <button
+              onClick={() => { signOut(); navigate('/login'); }}
               className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full text-neutral-300 hover:text-white hover:bg-white/10 transition-colors font-bold text-xs uppercase"
             >
               <Power size={14} /> Logout
@@ -99,9 +99,9 @@ export default function AdminDashboard() {
       <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-12">
         {/* Tabs */}
         <div className="flex gap-2 bg-neutral-900/50 p-1.5 rounded-2xl border border-white/5 w-fit">
-          <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<Activity size={18}/>} label="Overview" />
-          <TabButton active={activeTab === 'businesses'} onClick={() => setActiveTab('businesses')} icon={<Users size={18}/>} label="Businesses" />
-          <TabButton active={activeTab === 'transactions'} onClick={() => setActiveTab('transactions')} icon={<CreditCard size={18}/>} label="Transactions" />
+          <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<Activity size={18} />} label="Overview" />
+          <TabButton active={activeTab === 'businesses'} onClick={() => setActiveTab('businesses')} icon={<Users size={18} />} label="Businesses" />
+          <TabButton active={activeTab === 'transactions'} onClick={() => setActiveTab('transactions')} icon={<CreditCard size={18} />} label="Transactions" />
         </div>
 
         {/* ─── OVERVIEW TAB ─── */}
@@ -120,14 +120,14 @@ export default function AdminDashboard() {
           <div className="space-y-6">
             <div className="relative max-w-md">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={20} />
-              <input 
-                placeholder="Search businesses..." 
+              <input
+                placeholder="Search businesses..."
                 className="w-full bg-neutral-900 border border-white/5 rounded-2xl p-4 pl-12 focus:border-white transition-colors outline-none"
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="bg-neutral-900/30 rounded-[32px] border border-white/5 overflow-hidden">
+            <div className="bg-neutral-900/30 rounded-[24px] border border-white/5 overflow-hidden">
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[900px]">
                   <thead>
@@ -163,7 +163,7 @@ export default function AdminDashboard() {
                             onClick={() => toggleSub(b.id)}
                             className={`p-2 rounded-xl border transition-colors ${b.subscription_status === 'active' ? 'border-red-500/20 text-red-500 hover:bg-red-500 hover:text-white' : 'border-green-500/20 text-green-500 hover:bg-green-500 hover:text-white'}`}
                           >
-                            {b.subscription_status === 'active' ? <XCircle size={18}/> : <CheckCircle2 size={18}/>}
+                            {b.subscription_status === 'active' ? <XCircle size={18} /> : <CheckCircle2 size={18} />}
                           </button>
                         </td>
                       </tr>
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
                 <Download size={14} /> Export CSV
               </button>
             </div>
-            <div className="bg-neutral-900/30 rounded-[32px] border border-white/5 overflow-hidden">
+            <div className="bg-neutral-900/30 rounded-[24px] border border-white/5 overflow-hidden">
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[800px]">
                   <thead>
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
 
 function TabButton({ active, onClick, icon, label }) {
   return (
-    <button 
+    <button
       onClick={onClick}
       className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all ${active ? 'bg-white text-black font-bold' : 'text-neutral-500 hover:text-white'}`}
     >
@@ -237,7 +237,7 @@ function TabButton({ active, onClick, icon, label }) {
 
 function AdminStatCard({ label, value, color }) {
   return (
-    <div className="bg-neutral-900 border border-white/5 p-8 rounded-[32px] hover:border-white/20 transition-all cursor-pointer group">
+    <div className="bg-neutral-900 border border-white/5 p-6 rounded-[24px] hover:border-white/20 transition-all cursor-pointer group">
       <div className="flex justify-between items-start mb-4">
         <div className="text-neutral-500 text-[10px] uppercase font-black tracking-widest">{label}</div>
         <ChevronDown size={14} className="text-neutral-700 group-hover:text-white transition-colors" />

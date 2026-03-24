@@ -14,7 +14,7 @@ export default function SearchOverlay() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const fullText = "Looking for something?";
-  
+
   const {
     setSelectedBusiness,
     setSearchResults,
@@ -47,7 +47,7 @@ export default function SearchOverlay() {
         setLat(pos.coords.latitude);
         setLng(pos.coords.longitude);
       },
-      () => {}
+      () => { }
     );
   }, []);
 
@@ -61,9 +61,9 @@ export default function SearchOverlay() {
       }
 
       setIsLoading(true);
-      
+
       await new Promise(r => setTimeout(r, 500));
-      
+
       // MOCK DATA — will be replaced with D1 backend calls
       const mockDB = [
         { business_id: '1', item_id: '1', item_name: 'Premium Coffee Beans', business_name: 'Café Javas', sector: 'Goods', price: 25000, distance_km: 0.8, lat: 0.3486, lng: 32.5835, whatsapp: '256700000001', phone: '+256700000001', instagram: 'cafejavas', x_handle: 'cafejavas', website: 'cafejavas.ug' },
@@ -73,10 +73,10 @@ export default function SearchOverlay() {
         { business_id: '5', item_id: '5', item_name: 'Haircut', business_name: 'Kampala Barbers', sector: 'Services', price: 30000, distance_km: 1.8, lat: 0.3460, lng: 32.5810, phone: '+256700000005', instagram: 'kampalabarbers' },
         { business_id: '6', item_id: '6', item_name: 'Car Wash', business_name: 'Sparkle Auto', sector: 'Services', price: 20000, distance_km: 3.0, lat: 0.3500, lng: 32.5860, whatsapp: '256700000006', phone: '+256700000006' },
       ];
-      
+
       const results = mockDB
-        .filter(item => 
-          item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+        .filter(item =>
+          item.item_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.business_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
           item.sector.toLowerCase().includes(searchTerm.toLowerCase())
         )
@@ -115,7 +115,7 @@ export default function SearchOverlay() {
     <div className="fixed inset-0 z-[1000] pointer-events-none flex flex-col items-center">
       <AnimatePresence>
         {!showSearchInput && (
-          <Motion.div 
+          <Motion.div
             key="text-backdrop"
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -126,7 +126,7 @@ export default function SearchOverlay() {
               initial={{ y: 0, opacity: 1, filter: "blur(0px)" }}
               exit={{ y: -30, opacity: 0, filter: "blur(8px)" }}
               transition={{ duration: 0.6, ease: "easeIn" }}
-              className="text-xl md:text-3xl font-syne font-extrabold text-white tracking-tighter"
+              className="text-2xl md:text-3xl lg:text-4xl font-syne font-black text-white tracking-tighter text-center px-8"
             >
               {text}
               <span className="animate-pulse">|</span>
@@ -137,18 +137,18 @@ export default function SearchOverlay() {
 
       <AnimatePresence>
         {showSearchInput && (
-          <Motion.div 
+          <Motion.div
             key="search-bar"
             initial={{ y: "45vh", scale: 0.85, opacity: 0, filter: "blur(10px)" }}
-            animate={{ y: 80, scale: 1, opacity: 1, filter: "blur(0px)" }}
+            animate={{ y: "15vh", scale: 1, opacity: 1, filter: "blur(0px)" }}
             transition={{ 
               type: "spring",
-              stiffness: 110,
-              damping: 20,
+              stiffness: 100,
+              damping: 22,
               mass: 0.8,
-              delay: 0.15 
+              delay: 0.1 
             }}
-            className="absolute top-0 w-full max-w-xl px-4 pointer-events-auto"
+            className="absolute top-0 w-full max-w-lg lg:max-w-xl px-6 pointer-events-auto"
           >
             <div className="relative group">
               <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-white transition-colors duration-300">
@@ -158,16 +158,16 @@ export default function SearchOverlay() {
                 type="text"
                 autoFocus
                 placeholder="Search products or services..."
-                className="w-full bg-neutral-900/80 backdrop-blur-md border border-neutral-800 rounded-full py-3 pl-11 pr-4 text-white text-sm font-sans focus:outline-none focus:border-neutral-600 transition-all shadow-2xl placeholder-neutral-500"
+                className="w-full bg-neutral-900/95 backdrop-blur-2xl border border-white/10 rounded-full py-3 md:py-3.5 pl-12 pr-6 text-white text-sm md:text-sm font-sans focus:outline-none focus:border-white transition-all shadow-2xl placeholder-neutral-500"
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onFocus={() => setIsDropdownOpen(true)}
               />
-              
+
               {/* Results Dropdown */}
               <AnimatePresence>
                 {(isDropdownOpen && searchTerm.length >= 2 && (isLoading || searchResults)) && (
-                  <Motion.div 
+                  <Motion.div
                     initial={{ opacity: 0, y: 15, scale: 0.98 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.98 }}
