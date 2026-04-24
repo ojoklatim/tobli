@@ -269,9 +269,16 @@ function ListingsTab({ biz }) {
     setListings(prev => prev.filter(i => i.id !== id));
   };
 
+  const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+  const ALLOWED_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'gif'];
+
   const handleItemImageChange = async (e, isEdit = false) => {
     const file = e.target.files[0];
     if (!file) return;
+    if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+      setError('Only JPG, PNG, WebP, and GIF images are allowed.');
+      return;
+    }
     const url = URL.createObjectURL(file);
     if (isEdit) {
       setEditingItem(prev => ({ ...prev, imageFile: file, imagePreview: url }));
@@ -283,10 +290,11 @@ function ListingsTab({ biz }) {
   const uploadItemImage = async (file, itemId) => {
     const imageCompression = (await import('browser-image-compression')).default;
     const compressed = await imageCompression(file, { maxSizeMB: 0.4, maxWidthOrHeight: 1200, useWebWorker: true });
-    const ext = file.name.split('.').pop();
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!ALLOWED_EXTENSIONS.includes(ext)) throw new Error('Invalid file type');
     const path = `items/${biz.id}/${itemId}.${ext}`;
     const { data, error } = await insforge.storage.from('tobli-media').upload(path, compressed);
-    if (error) throw new Error(error.message);
+    if (error) throw new Error('Failed to upload image. Please try again.');
     return data?.url;
   };
 
@@ -322,8 +330,7 @@ function ListingsTab({ biz }) {
       setNewItem({ name: '', type: 'product', price: '', imageFile: null, imagePreview: null });
       setShowAdd(false);
     } catch (err) {
-      console.error('Failed to add item:', err);
-      setError(err.message || 'Failed to add item. Please try again.');
+      setError('Failed to add item. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -358,8 +365,7 @@ function ListingsTab({ biz }) {
       setListings(prev => prev.map(i => i.id === editingItem.id ? { ...editingItem, price: parseFloat(editingItem.price), image_url: imageUrl } : i));
       setEditingItem(null);
     } catch (err) {
-      console.error('Failed to update item:', err);
-      setError('Failed to update item.');
+      setError('Failed to update item. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

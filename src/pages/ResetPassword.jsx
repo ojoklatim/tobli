@@ -105,8 +105,14 @@ export default function ResetPassword() {
                   {...register('password', { 
                     required: 'Password is required',
                     minLength: {
-                      value: 6,
-                      message: "Password must be at least 6 characters"
+                      value: 8,
+                      message: "Password must be at least 8 characters"
+                    },
+                    validate: (val) => {
+                      if (!/[A-Z]/.test(val)) return 'Must include an uppercase letter';
+                      if (!/[a-z]/.test(val)) return 'Must include a lowercase letter';
+                      if (!/[0-9]/.test(val)) return 'Must include a number';
+                      return true;
                     }
                   })}
                   type="password"

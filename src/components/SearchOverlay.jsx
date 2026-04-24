@@ -84,7 +84,7 @@ export default function SearchOverlay() {
         if (impressions.length > 0) {
           insforge.database.from('search_impressions').insert(impressions)
             .then(({ error: impError }) => {
-              if (impError) console.error('Impression tracking error:', impError);
+              if (impError) { /* impression tracking failed silently */ }
             });
         }
       }

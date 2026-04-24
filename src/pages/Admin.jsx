@@ -45,7 +45,7 @@ export default function AdminDashboard() {
           business_name: s.businesses?.name || '—',
         })));
       } catch (err) {
-        console.error('Failed to load admin stats:', err);
+        // Silently handle load failure
       } finally {
         setStatsLoading(false);
       }

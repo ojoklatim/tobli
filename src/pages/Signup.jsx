@@ -269,7 +269,13 @@ export default function Signup() {
                     <input
                       {...register('password', {
                         required: 'Required',
-                        minLength: { value: 6, message: 'Min 6 characters' }
+                        minLength: { value: 8, message: 'Min 8 characters' },
+                        validate: (val) => {
+                          if (!/[A-Z]/.test(val)) return 'Must include an uppercase letter';
+                          if (!/[a-z]/.test(val)) return 'Must include a lowercase letter';
+                          if (!/[0-9]/.test(val)) return 'Must include a number';
+                          return true;
+                        }
                       })}
                       type="password"
                       className="w-full bg-neutral-950 border border-neutral-800 rounded-2xl p-4 text-white focus:outline-none focus:border-white transition-colors"

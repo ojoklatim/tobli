@@ -27,7 +27,7 @@ export const useAuthStore = create((set) => ({
           .select('*')
           .eq('auth_user_id', user.id);
         const biz = rows?.[0] || null;
-        set({ session: { user }, business: biz, isAdmin: isAdminUser || biz?.is_admin || false });
+        set({ session: { user }, business: biz, isAdmin: isAdminUser });
       } else {
         set({ session: null, business: null, isAdmin: false });
       }
@@ -115,7 +115,7 @@ export const useAuthStore = create((set) => ({
         .from('businesses')
         .select('email')
         .eq('phone', identifier);
-      if (!rows || rows.length === 0) throw new Error('No account found with that phone number');
+      if (!rows || rows.length === 0) throw new Error('Invalid credentials');
       email = rows[0].email;
     }
     const { data, error } = await insforge.auth.signInWithPassword({ email, password });
@@ -133,7 +133,7 @@ export const useAuthStore = create((set) => ({
       .select('*')
       .eq('auth_user_id', data.user.id);
     const biz = rows?.[0] || null;
-    set({ session: { user: data.user }, business: biz, isAdmin: isAdminUser || biz?.is_admin || false, loading: false });
+    set({ session: { user: data.user }, business: biz, isAdmin: isAdminUser, loading: false });
     return data;
   },
 
