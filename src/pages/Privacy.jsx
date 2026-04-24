@@ -20,8 +20,8 @@ export default function Privacy() {
           <section>
             <h2 className="text-white text-lg font-bold mb-3">1. Data Controller</h2>
             <div className="bg-neutral-900/50 border border-white/5 p-4 rounded-2xl space-y-1">
-              <p className="text-white font-bold">Tobli Technologies</p>
-              <p>Data Protection Officer: <a href="mailto:dpo@tobli.app" className="text-white underline">dpo@tobli.app</a></p>
+              <p className="text-white font-bold">TOBLI (The OBL Initiative)</p>
+              <p>Data Protection Officer: <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a></p>
               <p>Kampala, Uganda</p>
             </div>
             <p className="mt-2">As the data controller, we determine the purposes and means of processing your personal data in accordance with Section 2 of the DPPA.</p>
@@ -148,7 +148,7 @@ export default function Privacy() {
               <li><strong className="text-white">Object</strong> — object to processing based on legitimate interest.</li>
               <li><strong className="text-white">Withdraw consent</strong> — withdraw consent at any time (e.g., revoking GPS permission via browser settings).</li>
             </ul>
-            <p className="mt-3">To exercise any of these rights, contact our Data Protection Officer at <a href="mailto:dpo@tobli.app" className="text-white underline">dpo@tobli.app</a>. We will respond within <strong className="text-white">30 days</strong>.</p>
+            <p className="mt-3">To exercise any of these rights, contact our Data Protection Officer at <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a>. We will respond within <strong className="text-white">30 days</strong>.</p>
             <p className="mt-2">You also have the right to lodge a complaint with the <strong className="text-white">Personal Data Protection Office (PDPO)</strong> of Uganda.</p>
           </section>
 
@@ -171,7 +171,7 @@ export default function Privacy() {
 
           <section>
             <h2 className="text-white text-lg font-bold mb-3">11. Children&apos;s Privacy</h2>
-            <p>The Service is not directed at persons under 18. We do not knowingly collect data from minors. If we learn that a minor has provided personal data, we will delete it promptly. If you believe a child has registered, please contact us at <a href="mailto:dpo@tobli.app" className="text-white underline">dpo@tobli.app</a>.</p>
+            <p>The Service is not directed at persons under 18. We do not knowingly collect data from minors. If we learn that a minor has provided personal data, we will delete it promptly. If you believe a child has registered, please contact us at <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a>.</p>
           </section>
 
           <section>
@@ -182,9 +182,9 @@ export default function Privacy() {
           <section>
             <h2 className="text-white text-lg font-bold mb-3">13. Contact Us</h2>
             <div className="bg-neutral-900/50 border border-white/5 p-4 rounded-2xl space-y-1">
-              <p className="text-white font-bold">Tobli Technologies — Data Protection Officer</p>
-              <p>Email: <a href="mailto:dpo@tobli.app" className="text-white underline">dpo@tobli.app</a></p>
-              <p>General: <a href="mailto:support@tobli.app" className="text-white underline">support@tobli.app</a></p>
+              <p className="text-white font-bold">TOBLI (The OBL Initiative) — Data Protection Officer</p>
+              <p>Email: <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a></p>
+              <p>Phone: <a href="tel:0773946713" className="text-white underline">0773946713</a></p>
               <p>Kampala, Uganda</p>
             </div>
           </section>

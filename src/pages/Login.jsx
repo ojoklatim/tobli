@@ -117,6 +117,10 @@ export default function Login() {
               Sign up
             </Link>
           </div>
+          <div className="mt-4 text-center text-xs text-neutral-500 flex flex-col gap-1">
+            <p>Contact us at <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a></p>
+            <p>or call <a href="tel:0773946713" className="text-white underline">0773946713</a></p>
+          </div>
         </div>
       </div>
     </div>

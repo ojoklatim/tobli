@@ -2,6 +2,8 @@
 -- TOBLI — Full Postgres Schema (run this in InsForge SQL editor)
 -- ============================================================
 
+CREATE EXTENSION IF NOT EXISTS postgis;
+
 -- ── 1. BUSINESSES ────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS businesses (
     id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -23,8 +25,31 @@ CREATE TABLE IF NOT EXISTS businesses (
     is_open     BOOLEAN DEFAULT FALSE,
     is_admin    BOOLEAN DEFAULT FALSE,
     created_at  TIMESTAMPTZ DEFAULT NOW(),
-    updated_at  TIMESTAMPTZ DEFAULT NOW()
+    updated_at  TIMESTAMPTZ DEFAULT NOW(),
+    location    GEOGRAPHY(POINT, 4326)
 );
+
+-- Trigger to keep location geography synced with lat/lng automatically
+CREATE OR REPLACE FUNCTION sync_business_location()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.lat IS NOT NULL AND NEW.lng IS NOT NULL THEN
+        NEW.location := ST_SetSRID(ST_MakePoint(NEW.lng, NEW.lat), 4326)::geography;
+    ELSE
+        NEW.location := NULL;
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_sync_business_location ON businesses;
+CREATE TRIGGER trg_sync_business_location
+BEFORE INSERT OR UPDATE OF lat, lng
+ON businesses
+FOR EACH ROW
+EXECUTE FUNCTION sync_business_location();
+
+CREATE INDEX IF NOT EXISTS idx_businesses_location ON businesses USING GIST (location);
 
 -- ── 2. ITEMS ─────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS items (
@@ -93,18 +118,16 @@ RETURNS TABLE (
     website       TEXT,
     distance_km   DOUBLE PRECISION
 ) AS $$
+DECLARE
+    user_location GEOGRAPHY(POINT, 4326);
 BEGIN
+    user_location := ST_SetSRID(ST_MakePoint(user_lng, user_lat), 4326)::geography;
+    
     RETURN QUERY
     SELECT
         b.id, b.name, i.id, i.name, i.price, i.image_url,
         b.lat, b.lng, b.whatsapp, b.phone, b.instagram, b.x_handle, b.website,
-        6371.0 * 2 * ASIN(
-            SQRT(
-                POWER(SIN(RADIANS(b.lat - user_lat) / 2), 2) +
-                COS(RADIANS(user_lat)) * COS(RADIANS(b.lat)) *
-                POWER(SIN(RADIANS(b.lng - user_lng) / 2), 2)
-            )
-        ) AS distance_km
+        (ST_Distance(b.location, user_location) / 1000.0)::DOUBLE PRECISION AS distance_km
     FROM items i
     JOIN businesses b ON b.id = i.business_id
     WHERE
@@ -112,15 +135,9 @@ BEGIN
         AND b.subscription_status = 'active'
         AND i.available = TRUE
         AND i.name ILIKE '%' || search_query || '%'
-        AND b.lat IS NOT NULL AND b.lng IS NOT NULL
-        AND 6371.0 * 2 * ASIN(
-            SQRT(
-                POWER(SIN(RADIANS(b.lat - user_lat) / 2), 2) +
-                COS(RADIANS(user_lat)) * COS(RADIANS(b.lat)) *
-                POWER(SIN(RADIANS(b.lng - user_lng) / 2), 2)
-            )
-        ) <= radius_km
-    ORDER BY distance_km ASC;
+        AND b.location IS NOT NULL
+        AND ST_DWithin(b.location, user_location, radius_km * 1000.0)
+    ORDER BY b.location <-> user_location ASC;
 END;
 $$ LANGUAGE plpgsql STABLE;
 

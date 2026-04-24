@@ -18,7 +18,7 @@ export default function Terms() {
 
           <section>
             <h2 className="text-white text-lg font-bold mb-3">1. Introduction &amp; Acceptance</h2>
-            <p>These Terms and Conditions (&quot;Terms&quot;) govern your access to and use of the Tobli location-based business discovery platform (&quot;Platform&quot;), including the website, mobile-optimised web application, related APIs, and all services offered through them (collectively, the &quot;Service&quot;). The Service is owned and operated by <strong className="text-white">Tobli Technologies</strong> (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;), a company operating under the laws of the Republic of Uganda.</p>
+            <p>These Terms and Conditions (&quot;Terms&quot;) govern your access to and use of the Tobli location-based business discovery platform (&quot;Platform&quot;), including the website, mobile-optimised web application, related APIs, and all services offered through them (collectively, the &quot;Service&quot;). The Service is owned and operated by <strong className="text-white">TOBLI (The OBL Initiative)</strong> (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;), a company operating under the laws of the Republic of Uganda.</p>
             <p className="mt-2">By creating an account, accessing, or using the Service you acknowledge that you have read, understood, and agree to be bound by these Terms and our <Link to="/privacy" className="text-white underline hover:text-neutral-300">Privacy Policy</Link>. If you do not agree, you must not use the Service.</p>
           </section>
 
@@ -45,7 +45,7 @@ export default function Terms() {
             <ol className="list-decimal pl-5 space-y-2">
               <li>To access Business Owner features you must create an account providing: Business Name, Owner Name, Business Type, Phone Number, Email Address, and a password (minimum 6 characters).</li>
               <li>You are solely responsible for safeguarding your login credentials.</li>
-              <li>Notify us immediately at <strong className="text-white">support@tobli.app</strong> if you suspect unauthorised access.</li>
+              <li>Notify us immediately at <strong className="text-white">ojoklatim1@gmail.com</strong> or call <strong className="text-white">0773946713</strong> if you suspect unauthorised access.</li>
               <li>We may suspend or terminate accounts that violate these Terms or exhibit suspicious activity.</li>
             </ol>
           </section>
@@ -95,7 +95,7 @@ export default function Terms() {
 
           <section>
             <h2 className="text-white text-lg font-bold mb-3">10. Intellectual Property</h2>
-            <p>All rights in the Platform — design, code, &quot;Tobli&quot; brand, logos, and proprietary technology — are owned by Tobli Technologies. No right to use our trademarks is granted without written consent.</p>
+            <p>All rights in the Platform — design, code, &quot;Tobli&quot; brand, logos, and proprietary technology — are owned by TOBLI (The OBL Initiative). No right to use our trademarks is granted without written consent.</p>
           </section>
 
           <section>
@@ -110,14 +110,14 @@ export default function Terms() {
 
           <section>
             <h2 className="text-white text-lg font-bold mb-3">12. Indemnification</h2>
-            <p>You agree to indemnify and hold harmless Tobli Technologies, its directors, officers, employees, and agents from any claims, losses, or expenses arising from your use of the Service, violation of these Terms, or infringement of third-party rights.</p>
+            <p>You agree to indemnify and hold harmless TOBLI (The OBL Initiative), its directors, officers, employees, and agents from any claims, losses, or expenses arising from your use of the Service, violation of these Terms, or infringement of third-party rights.</p>
           </section>
 
           <section>
             <h2 className="text-white text-lg font-bold mb-3">13. Suspension &amp; Termination</h2>
             <ol className="list-decimal pl-5 space-y-2">
               <li>We may suspend or terminate accounts for breach, non-payment, or as required by law.</li>
-              <li>You may close your account by contacting support@tobli.app. Closure does not entitle you to unused subscription refunds.</li>
+              <li>You may close your account by contacting ojoklatim1@gmail.com. Closure does not entitle you to unused subscription refunds.</li>
               <li>Upon termination, Listings are removed and data handled per our Privacy Policy.</li>
             </ol>
           </section>
@@ -139,8 +139,9 @@ export default function Terms() {
           <section>
             <h2 className="text-white text-lg font-bold mb-3">16. Contact Us</h2>
             <div className="bg-neutral-900/50 border border-white/5 p-4 rounded-2xl space-y-1">
-              <p className="text-white font-bold">Tobli Technologies</p>
-              <p>Email: <a href="mailto:support@tobli.app" className="text-white underline">support@tobli.app</a></p>
+              <p className="text-white font-bold">TOBLI (The OBL Initiative)</p>
+              <p>Email: <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a></p>
+              <p>Phone: <a href="tel:0773946713" className="text-white underline">0773946713</a></p>
               <p>Kampala, Uganda</p>
             </div>
           </section>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
 import { insforge } from '../lib/insforge';
@@ -20,8 +20,10 @@ const XIcon = ({ size = 18 }) => (
 export default function Dashboard() {
 
   const navigate = useNavigate();
+  const location = useLocation();
   const { session, business, isAdmin, loading: authLoading, signOut } = useAuthStore();
   const [activeTab, setActiveTab] = useState('overview');
+  const [showSetupPrompt, setShowSetupPrompt] = useState(location.state?.isNewSignup || false);
 
   useEffect(() => {
     if (!authLoading) {
@@ -139,6 +141,41 @@ export default function Dashboard() {
           {activeTab === 'subscription' && <SubscriptionTab biz={biz} />}
         </section>
       </main>
+
+      {/* Full screen setup prompt for new signups */}
+      {showSetupPrompt && (
+        <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
+          <div className="bg-neutral-900 border border-white/10 p-8 md:p-12 rounded-[32px] max-w-lg w-full text-center shadow-2xl">
+            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Settings size={36} className="text-white" />
+            </div>
+            <h2 className="text-3xl font-syne font-bold mb-4">Welcome to TOBLI!</h2>
+            <p className="text-neutral-400 mb-8 leading-relaxed">
+              To get the most out of your business profile and help customers find you easily, please take a moment to fully set up your business info, contact details, and location.
+            </p>
+            <button
+              onClick={() => {
+                setShowSetupPrompt(false);
+                setActiveTab('info');
+                // Replace state to avoid showing it again on refresh
+                window.history.replaceState({}, document.title);
+              }}
+              className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-neutral-200 transition-colors"
+            >
+              Set Up Business Info
+            </button>
+            <button
+              onClick={() => {
+                setShowSetupPrompt(false);
+                window.history.replaceState({}, document.title);
+              }}
+              className="mt-4 text-sm text-neutral-500 hover:text-white transition-colors"
+            >
+              Maybe Later
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -172,7 +209,7 @@ function OverviewTab({ biz }) {
     <div className="space-y-8">
       <h2 className="text-xl font-syne font-bold">Performance Overview</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Active' : 'Expired'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
+        <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Coming Soon' : 'Expired'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
         <StatCard label="Status" value={biz.is_open ? 'Open' : 'Closed'} dotColor={biz.is_open ? 'bg-green-500' : 'bg-red-500'} />
         <StatCard label="Total Listings" value={listingsCount} />
         <StatCard label="Map Appearances" value={impressionsCount} />
@@ -428,6 +465,10 @@ function ListingsTab({ biz }) {
 
       {/* Listings Table */}
       <div className="bg-neutral-900/40 rounded-3xl border border-white/5 overflow-hidden">
+        {/* Mobile scroll hint */}
+        <div className="md:hidden text-[10px] text-neutral-400 text-center py-3 bg-neutral-800/50 border-b border-white/5 font-bold tracking-widest uppercase">
+          Swipe horizontally to view more ↔
+        </div>
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full text-left min-w-[700px]">
             <thead>

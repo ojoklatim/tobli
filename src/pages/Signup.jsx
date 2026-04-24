@@ -100,7 +100,7 @@ export default function Signup() {
       } else {
         // No confirmation needed — go straight to dashboard
         setSuccess('Account created!');
-        setTimeout(() => navigate('/dashboard'), 500);
+        setTimeout(() => navigate('/dashboard', { state: { isNewSignup: true } }), 500);
       }
     } catch (err) {
       setError(err.message);
@@ -117,7 +117,7 @@ export default function Signup() {
     try {
       await useAuthStore.getState().verifyEmailAndCreateBusiness(pendingEmail, otpCode);
       setSuccess('Email verified! Welcome to TOBLI.');
-      setTimeout(() => navigate('/dashboard'), 600);
+      setTimeout(() => navigate('/dashboard', { state: { isNewSignup: true } }), 600);
     } catch (err) {
       setError(err.message);
     } finally {
