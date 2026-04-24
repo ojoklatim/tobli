@@ -9,6 +9,7 @@ import {
   Search, CheckCircle2, XCircle,
   ChevronDown, Loader2, Download, Power
 } from 'lucide-react';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -138,7 +139,7 @@ export default function AdminDashboard() {
           <div className="space-y-12">
             {statsLoading ? (
               <div className="flex items-center justify-center py-20">
-                <Loader2 className="animate-spin text-white/20 w-12 h-12" />
+                <Loader2 className={`animate-spin w-12 h-12 ${theme === 'dark' ? 'text-white/20' : 'text-black/20'}`} />
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -180,7 +181,7 @@ export default function AdminDashboard() {
                     {statsLoading ? (
                       <tr>
                         <td colSpan="7" className="p-12 text-center">
-                          <Loader2 className="animate-spin text-white/20 w-8 h-8 mx-auto" />
+                          <Loader2 className={`animate-spin w-8 h-8 mx-auto ${theme === 'dark' ? 'text-white/20' : 'text-black/20'}`} />
                         </td>
                       </tr>
                     ) : filteredBiz.map(b => (
@@ -247,7 +248,7 @@ export default function AdminDashboard() {
                     {statsLoading ? (
                       <tr>
                         <td colSpan="5" className="p-12 text-center">
-                          <Loader2 className="animate-spin text-white/20 w-8 h-8 mx-auto" />
+                          <Loader2 className={`animate-spin w-8 h-8 mx-auto ${theme === 'dark' ? 'text-white/20' : 'text-black/20'}`} />
                         </td>
                       </tr>
                     ) : transactions.map(p => (

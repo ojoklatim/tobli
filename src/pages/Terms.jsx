@@ -1,37 +1,46 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
+import { useStore } from '../store/useStore';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Terms() {
+  const theme = useStore(state => state.theme);
+
   return (
-    <div className="min-h-screen bg-[#080A0F] text-white font-sans">
-      <div className="p-6 flex justify-between items-center border-b border-white/5">
-        <Link to="/" className="text-xl font-syne font-extrabold tracking-tighter text-white">TOBLI</Link>
-        <Link to="/signup" className="p-2 bg-white/5 hover:bg-white/10 rounded-full transition-colors"><ArrowLeft size={20} /></Link>
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
+      <div className={`p-6 flex justify-between items-center border-b transition-colors ${theme === 'dark' ? 'border-white/5' : 'border-black/5'}`}>
+        <div className="flex items-center gap-6">
+          <Link to="/" className={`text-xl font-syne font-extrabold tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>TOBLI</Link>
+          <ThemeToggle />
+        </div>
+        <Link to="/signup" className={`p-2 rounded-full transition-colors ${theme === 'dark' ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-black/5 text-black hover:bg-black/10'}`}>
+          <ArrowLeft size={20} />
+        </Link>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-12">
         <h1 className="text-4xl font-syne font-bold mb-2 tracking-tight">Terms &amp; Conditions</h1>
-        <p className="text-neutral-500 text-sm mb-10">Last updated: 22 April 2026</p>
+        <p className={`text-sm mb-10 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'}`}>Last updated: 22 April 2026</p>
 
-        <div className="space-y-8 text-neutral-300 text-sm leading-relaxed">
+        <div className={`space-y-8 text-sm leading-relaxed transition-colors ${theme === 'dark' ? 'text-neutral-300' : 'text-neutral-600'}`}>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">1. Introduction &amp; Acceptance</h2>
-            <p>These Terms and Conditions (&quot;Terms&quot;) govern your access to and use of the Tobli location-based business discovery platform (&quot;Platform&quot;), including the website, mobile-optimised web application, related APIs, and all services offered through them (collectively, the &quot;Service&quot;). The Service is owned and operated by <strong className="text-white">TOBLI (The OBL Initiative)</strong> (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;), a company operating under the laws of the Republic of Uganda.</p>
-            <p className="mt-2">By creating an account, accessing, or using the Service you acknowledge that you have read, understood, and agree to be bound by these Terms and our <Link to="/privacy" className="text-white underline hover:text-neutral-300">Privacy Policy</Link>. If you do not agree, you must not use the Service.</p>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>1. Introduction &amp; Acceptance</h2>
+            <p>These Terms and Conditions (&quot;Terms&quot;) govern your access to and use of the Tobli location-based business discovery platform (&quot;Platform&quot;), including the website, mobile-optimised web application, related APIs, and all services offered through them (collectively, the &quot;Service&quot;). The Service is owned and operated by <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>TOBLI (The OBL Initiative)</strong> (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;), a company operating under the laws of the Republic of Uganda.</p>
+            <p className="mt-2">By creating an account, accessing, or using the Service you acknowledge that you have read, understood, and agree to be bound by these Terms and our <Link to="/privacy" className={`underline transition-colors ${theme === 'dark' ? 'text-white hover:text-neutral-300' : 'text-black hover:text-neutral-600'}`}>Privacy Policy</Link>. If you do not agree, you must not use the Service.</p>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">2. Definitions</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>2. Definitions</h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-white">&quot;User&quot;</strong> — any person who accesses the public map view to discover businesses.</li>
-              <li><strong className="text-white">&quot;Business Owner&quot;</strong> — a registered account holder who lists goods or services.</li>
-              <li><strong className="text-white">&quot;Admin&quot;</strong> — authorised personnel who manage Platform operations.</li>
-              <li><strong className="text-white">&quot;Listing&quot;</strong> — a product or service entry published by a Business Owner.</li>
-              <li><strong className="text-white">&quot;Subscription&quot;</strong> — a paid, time-bound licence granting map visibility.</li>
-              <li><strong className="text-white">&quot;Pesapal&quot;</strong> — Pesapal Limited, the third-party payment processor.</li>
-              <li><strong className="text-white">&quot;Personal Data&quot;</strong> — information relating to an identified or identifiable natural person, per the Data Protection and Privacy Act, 2019 of Uganda (&quot;DPPA&quot;).</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;User&quot;</strong> — any person who accesses the public map view to discover businesses.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;Business Owner&quot;</strong> — a registered account holder who lists goods or services.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;Admin&quot;</strong> — authorised personnel who manage Platform operations.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;Listing&quot;</strong> — a product or service entry published by a Business Owner.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;Subscription&quot;</strong> — a paid, time-bound licence granting map visibility.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;Pesapal&quot;</strong> — Pesapal Limited, the third-party payment processor.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>&quot;Personal Data&quot;</strong> — information relating to an identified or identifiable natural person, per the Data Protection and Privacy Act, 2019 of Uganda (&quot;DPPA&quot;).</li>
             </ul>
           </section>
 
@@ -89,17 +98,17 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">9. Geolocation &amp; Third-Party Services</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>9. Geolocation &amp; Third-Party Services</h2>
             <p>The Service uses device GPS (with your permission) for map positioning and distance calculations. Map tiles are served by CartoDB/OpenStreetMap; routing by the OSRM Project. These third parties have their own terms. We are not responsible for their accuracy or availability.</p>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">10. Intellectual Property</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>10. Intellectual Property</h2>
             <p>All rights in the Platform — design, code, &quot;Tobli&quot; brand, logos, and proprietary technology — are owned by TOBLI (The OBL Initiative). No right to use our trademarks is granted without written consent.</p>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">11. Disclaimers &amp; Limitation of Liability</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>11. Disclaimers &amp; Limitation of Liability</h2>
             <ol className="list-decimal pl-5 space-y-2">
               <li>The Service is provided &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; without warranties of any kind.</li>
               <li>Tobli is a discovery platform only — we are not a party to transactions between Users and Business Owners.</li>
@@ -109,12 +118,12 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">12. Indemnification</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>12. Indemnification</h2>
             <p>You agree to indemnify and hold harmless TOBLI (The OBL Initiative), its directors, officers, employees, and agents from any claims, losses, or expenses arising from your use of the Service, violation of these Terms, or infringement of third-party rights.</p>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">13. Suspension &amp; Termination</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>13. Suspension &amp; Termination</h2>
             <ol className="list-decimal pl-5 space-y-2">
               <li>We may suspend or terminate accounts for breach, non-payment, or as required by law.</li>
               <li>You may close your account by contacting ojoklatim1@gmail.com. Closure does not entitle you to unused subscription refunds.</li>
@@ -123,25 +132,25 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">14. Governing Law &amp; Dispute Resolution</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>14. Governing Law &amp; Dispute Resolution</h2>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>These Terms are governed by the laws of the <strong className="text-white">Republic of Uganda</strong>.</li>
+              <li>These Terms are governed by the laws of the <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Republic of Uganda</strong>.</li>
               <li>Disputes shall first be resolved through good-faith negotiation. If unresolved within 30 days, they shall be submitted to mediation under CADER, Kampala.</li>
               <li>The courts of Uganda have exclusive jurisdiction over unresolved matters.</li>
             </ol>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">15. Changes to These Terms</h2>
-            <p>Material changes will be communicated via email or in-app notification at least <strong className="text-white">14 days</strong> before taking effect. Continued use constitutes acceptance.</p>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>15. Changes to These Terms</h2>
+            <p>Material changes will be communicated via email or in-app notification at least <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>14 days</strong> before taking effect. Continued use constitutes acceptance.</p>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">16. Contact Us</h2>
-            <div className="bg-neutral-900/50 border border-white/5 p-4 rounded-2xl space-y-1">
-              <p className="text-white font-bold">TOBLI (The OBL Initiative)</p>
-              <p>Email: <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a></p>
-              <p>Phone: <a href="tel:0773946713" className="text-white underline">0773946713</a></p>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>16. Contact Us</h2>
+            <div className={`p-4 rounded-2xl space-y-1 border transition-colors ${theme === 'dark' ? 'bg-neutral-900/50 border-white/5' : 'bg-gray-100 border-black/5'}`}>
+              <p className={`font-bold transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>TOBLI (The OBL Initiative)</p>
+              <p>Email: <a href="mailto:ojoklatim1@gmail.com" className={`underline transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>ojoklatim1@gmail.com</a></p>
+              <p>Phone: <a href="tel:0773946713" className={`underline transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>0773946713</a></p>
               <p>Kampala, Uganda</p>
             </div>
           </section>
