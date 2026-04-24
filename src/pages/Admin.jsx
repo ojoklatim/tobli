@@ -14,6 +14,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const { session, isAdmin, signOut, loading: authLoading } = useAuthStore();
   const liveUsers = useStore(state => state.liveUsers);
+  const theme = useStore(state => state.theme);
   const [activeTab, setActiveTab] = useState('overview');
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -102,20 +103,21 @@ export default function AdminDashboard() {
   });
 
   return (
-    <div className="min-h-screen bg-[#080A0F] text-white font-sans">
+    <div className={`min-h-screen font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
       {/* Topbar */}
-      <nav className="border-b border-white/5 bg-neutral-900/10 backdrop-blur-xl sticky top-0 z-50">
+      <nav className={`border-b sticky top-0 z-50 transition-colors duration-300 ${theme === 'dark' ? 'border-white/5 bg-neutral-900/10 backdrop-blur-xl' : 'border-black/5 bg-white/70 backdrop-blur-md'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           <div className="flex items-center gap-4">
-            <Link to="/" className="text-2xl font-syne font-extrabold tracking-tighter">TOBLI</Link>
+            <Link to="/" className={`text-2xl font-syne font-extrabold tracking-tighter ${theme === 'dark' ? 'text-white' : 'text-black'}`}>TOBLI</Link>
             <span className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] uppercase font-bold tracking-widest border border-red-500/20">
               Admin
             </span>
           </div>
           <div className="flex items-center gap-6">
+            <ThemeToggle />
             <button
               onClick={() => { signOut(); navigate('/login'); }}
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full text-neutral-300 hover:text-white hover:bg-white/10 transition-colors font-bold text-xs uppercase"
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors font-bold text-xs uppercase ${theme === 'dark' ? 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10' : 'bg-black/5 text-neutral-600 hover:text-black hover:bg-black/10'}`}
             >
               <Power size={14} /> Logout
             </button>
@@ -125,7 +127,7 @@ export default function AdminDashboard() {
 
       <main className="max-w-7xl mx-auto p-6 md:p-8 space-y-12">
         {/* Tabs - Scrollable on mobile */}
-        <div className="flex gap-2 bg-neutral-900/50 p-1.5 rounded-2xl border border-white/5 w-full md:w-fit overflow-x-auto no-scrollbar whitespace-nowrap">
+        <div className={`flex gap-2 p-1.5 rounded-2xl border w-full md:w-fit overflow-x-auto no-scrollbar whitespace-nowrap transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/50 border-white/5' : 'bg-gray-100 border-black/5'}`}>
           <TabButton active={activeTab === 'overview'} onClick={() => setActiveTab('overview')} icon={<Activity size={18} />} label="Overview" />
           <TabButton active={activeTab === 'businesses'} onClick={() => setActiveTab('businesses')} icon={<Users size={18} />} label="Businesses" />
           <TabButton active={activeTab === 'transactions'} onClick={() => setActiveTab('transactions')} icon={<CreditCard size={18} />} label="Transactions" />
@@ -155,12 +157,12 @@ export default function AdminDashboard() {
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500" size={20} />
               <input
                 placeholder="Search businesses..."
-                className="w-full bg-neutral-900 border border-white/5 rounded-2xl p-4 pl-12 focus:border-white transition-colors outline-none"
+                className={`w-full border rounded-2xl p-4 pl-12 transition-colors outline-none ${theme === 'dark' ? 'bg-neutral-900 border-white/5 focus:border-white text-white placeholder-neutral-700' : 'bg-white border-black/10 focus:border-black text-black placeholder-neutral-400 shadow-sm'}`}
                 value={searchTerm}
                 onChange={e => setSearchTerm(e.target.value)}
               />
             </div>
-            <div className="bg-neutral-900/30 rounded-[24px] border border-white/5 overflow-hidden">
+            <div className={`rounded-[24px] border overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/30 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[900px]">
                   <thead>
@@ -220,16 +222,16 @@ export default function AdminDashboard() {
             <div className="flex justify-between items-end">
               <div>
                 <h2 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-1">Total This Month</h2>
-                <p className="text-4xl font-syne font-bold">UGX {monthlyIncome.toLocaleString()}</p>
+                <p className={`text-4xl font-syne font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>UGX {monthlyIncome.toLocaleString()}</p>
               </div>
               <button
                 onClick={exportCSV}
-                className="bg-white text-black px-4 py-2 rounded-full text-xs font-bold hover:bg-neutral-200 transition-colors flex items-center gap-2"
+                className={`px-4 py-2 rounded-full text-xs font-bold transition-colors flex items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200 shadow-xl' : 'bg-black text-white hover:bg-neutral-800 shadow-lg'}`}
               >
                 <Download size={14} /> Export CSV
               </button>
             </div>
-            <div className="bg-neutral-900/30 rounded-[24px] border border-white/5 overflow-hidden">
+            <div className={`rounded-[24px] border overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/30 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
               <div className="overflow-x-auto no-scrollbar">
                 <table className="w-full text-left min-w-[800px]">
                   <thead>
@@ -269,10 +271,11 @@ export default function AdminDashboard() {
 }
 
 function TabButton({ active, onClick, icon, label }) {
+  const theme = useStore(state => state.theme);
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all ${active ? 'bg-white text-black font-bold' : 'text-neutral-500 hover:text-white'}`}
+      className={`flex items-center gap-3 px-6 py-3 rounded-xl transition-all ${active ? (theme === 'dark' ? 'bg-white text-black font-bold' : 'bg-black text-white font-bold') : 'text-neutral-500 hover:text-white'}`}
     >
       {icon}
       <span className="text-sm">{label}</span>
@@ -281,13 +284,14 @@ function TabButton({ active, onClick, icon, label }) {
 }
 
 function AdminStatCard({ label, value, color }) {
+  const theme = useStore(state => state.theme);
   return (
-    <div className="bg-neutral-900 border border-white/5 p-6 rounded-[24px] hover:border-white/20 transition-all cursor-pointer group">
+    <div className={`border p-6 rounded-[24px] transition-all cursor-pointer group ${theme === 'dark' ? 'bg-neutral-900 border-white/5 hover:border-white/20' : 'bg-white border-black/5 shadow-sm hover:border-black/20'}`}>
       <div className="flex justify-between items-start mb-4">
-        <div className="text-neutral-500 text-[10px] uppercase font-black tracking-widest">{label}</div>
+        <div className={`text-[10px] uppercase font-black tracking-widest transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>{label}</div>
         <ChevronDown size={14} className="text-neutral-700 group-hover:text-white transition-colors" />
       </div>
-      <div className={`text-3xl font-syne font-black ${color}`}>{value}</div>
+      <div className={`text-3xl font-syne font-black ${theme === 'dark' ? color : (color === 'text-white' ? 'text-black' : color)}`}>{value}</div>
     </div>
   );
 }

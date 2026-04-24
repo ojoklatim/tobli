@@ -9,6 +9,8 @@ import {
   Save, AlertTriangle, Loader2, X as CloseIcon, Phone,
   Globe, Instagram, Send, Download, Edit2
 } from 'lucide-react';
+import { useStore } from '../store/useStore';
+import ThemeToggle from '../components/ThemeToggle';
 
 
 const XIcon = ({ size = 18 }) => (
@@ -22,6 +24,7 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { session, business, isAdmin, loading: authLoading, signOut } = useAuthStore();
+  const theme = useStore(state => state.theme);
   const [activeTab, setActiveTab] = useState('overview');
   const [showSetupPrompt, setShowSetupPrompt] = useState(location.state?.isNewSignup || false);
 
@@ -48,8 +51,8 @@ export default function Dashboard() {
   // Don't show the business loader if we are an admin (we'll be redirected anyway)
   // or if we are still loading the auth state.
   if (authLoading || (!biz && !isAdmin)) return (
-    <div className="h-screen w-full flex items-center justify-center bg-[#080A0F]">
-      <Loader2 className="animate-spin text-white w-12 h-12" />
+    <div className={`h-screen w-full flex items-center justify-center transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]' : 'bg-gray-100'}`}>
+      <Loader2 className={`animate-spin w-12 h-12 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
     </div>
   );
 
@@ -65,18 +68,19 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080A0F] text-white font-sans flex flex-col">
+    <div className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
       {/* Header */}
-      <header className="border-b border-white/5 bg-neutral-900/20 backdrop-blur-md sticky top-0 z-50">
+      <header className={`border-b backdrop-blur-md sticky top-0 z-50 transition-colors duration-300 ${theme === 'dark' ? 'border-white/5 bg-neutral-900/20 text-white' : 'border-black/5 bg-white/70 text-black'}`}>
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           {/* Top Left: Business Name */}
-          <div className="text-xl font-syne font-extrabold tracking-tighter text-white">
+          <div className="text-xl font-syne font-extrabold tracking-tighter">
             {biz.name}
           </div>
 
           <div className="flex items-center gap-6">
+            <ThemeToggle />
             {/* Centre: Open/Closed Toggle */}
-            <div className="flex items-center gap-2 bg-neutral-900/50 p-1.5 rounded-full border border-white/5">
+            <div className={`flex items-center gap-2 p-1.5 rounded-full border transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/50 border-white/5' : 'bg-gray-200 border-black/5'}`}>
               <span className={`text-[10px] uppercase font-black tracking-widest pl-2 ${biz.is_open ? 'text-green-500' : 'text-red-500'}`}>
                 {biz.is_open ? 'Open' : 'Closed'}
               </span>
@@ -95,7 +99,7 @@ export default function Dashboard() {
             {/* Far Right: Logout */}
             <button
               onClick={() => { signOut(); navigate('/login'); }}
-              className="flex items-center gap-2 px-4 py-2 bg-white/5 rounded-full text-neutral-300 hover:text-white hover:bg-white/10 transition-colors font-bold text-xs uppercase"
+              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors font-bold text-xs uppercase ${theme === 'dark' ? 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10' : 'bg-black/5 text-neutral-600 hover:text-black hover:bg-black/10'}`}
             >
               <Power size={14} /> Logout
             </button>
@@ -116,25 +120,27 @@ export default function Dashboard() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col md:flex-row gap-8">
         {/* Sidebar */}
         <nav className="w-full md:w-64 space-y-2">
-          {[
-            { id: 'overview', label: 'Overview', icon: BarChart3 },
-            { id: 'listings', label: 'Manage Listings', icon: List },
-            { id: 'info', label: 'Business Info', icon: Settings },
-            { id: 'subscription', label: 'Subscription', icon: CreditCard },
-          ].map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm ${activeTab === tab.id ? 'bg-white text-black font-bold' : 'text-neutral-400 hover:bg-white/5 hover:text-white'}`}
-            >
-              <tab.icon size={18} />
-              {tab.label}
-            </button>
-          ))}
+            {[
+              { id: 'overview', label: 'Overview', icon: BarChart3 },
+              { id: 'listings', label: 'Manage Listings', icon: List },
+              { id: 'info', label: 'Business Info', icon: Settings },
+              { id: 'subscription', label: 'Subscription', icon: CreditCard },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all text-sm ${activeTab === tab.id 
+                  ? (theme === 'dark' ? 'bg-white text-black font-bold' : 'bg-black text-white font-bold shadow-md') 
+                  : (theme === 'dark' ? 'text-neutral-400 hover:bg-white/5 hover:text-white' : 'text-neutral-500 hover:bg-black/5 hover:text-black')}`}
+              >
+                <tab.icon size={18} />
+                {tab.label}
+              </button>
+            ))}
         </nav>
 
         {/* Content */}
-        <section className="flex-1 bg-neutral-900/30 rounded-[24px] border border-white/5 p-6 relative min-h-[600px]">
+        <section className={`flex-1 rounded-[24px] border p-6 relative min-h-[600px] transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/30 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
           {activeTab === 'overview' && <OverviewTab biz={biz} />}
           {activeTab === 'listings' && <ListingsTab biz={biz} />}
           {activeTab === 'info' && <InfoTab biz={biz} setBiz={setBiz} />}
@@ -145,12 +151,12 @@ export default function Dashboard() {
       {/* Full screen setup prompt for new signups */}
       {showSetupPrompt && (
         <div className="fixed inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-6">
-          <div className="bg-neutral-900 border border-white/10 p-8 md:p-12 rounded-[32px] max-w-lg w-full text-center shadow-2xl">
-            <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Settings size={36} className="text-white" />
+          <div className={`border p-8 md:p-12 rounded-[32px] max-w-lg w-full text-center shadow-2xl transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/10' : 'bg-white border-black/10'}`}>
+            <div className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 ${theme === 'dark' ? 'bg-white/10' : 'bg-black/5'}`}>
+              <Settings size={36} className={theme === 'dark' ? 'text-white' : 'text-black'} />
             </div>
-            <h2 className="text-3xl font-syne font-bold mb-4">Welcome to TOBLI!</h2>
-            <p className="text-neutral-400 mb-8 leading-relaxed">
+            <h2 className={`text-3xl font-syne font-bold mb-4 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Welcome to TOBLI!</h2>
+            <p className={`mb-8 leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
               To get the most out of your business profile and help customers find you easily, please take a moment to fully set up your business info, contact details, and location.
             </p>
             <button
@@ -160,7 +166,7 @@ export default function Dashboard() {
                 // Replace state to avoid showing it again on refresh
                 window.history.replaceState({}, document.title);
               }}
-              className="w-full bg-white text-black font-bold py-4 rounded-xl hover:bg-neutral-200 transition-colors"
+              className={`w-full font-bold py-4 rounded-xl transition-colors ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
               Set Up Business Info
             </button>
@@ -169,7 +175,7 @@ export default function Dashboard() {
                 setShowSetupPrompt(false);
                 window.history.replaceState({}, document.title);
               }}
-              className="mt-4 text-sm text-neutral-500 hover:text-white transition-colors"
+              className={`mt-4 text-sm transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-400 hover:text-black'}`}
             >
               Maybe Later
             </button>
@@ -219,12 +225,13 @@ function OverviewTab({ biz }) {
 }
 
 function StatCard({ label, value, dotColor }) {
+  const theme = useStore(state => state.theme);
   return (
-    <div className="bg-neutral-900 border border-white/5 p-6 rounded-3xl">
-      <div className="text-neutral-500 text-xs uppercase tracking-widest font-bold mb-2">{label}</div>
+    <div className={`border p-6 rounded-3xl transition-all duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
+      <div className={`text-xs uppercase tracking-widest font-bold mb-2 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>{label}</div>
       <div className="flex items-center gap-2">
         {dotColor && <div className={`w-2 h-2 rounded-full ${dotColor}`} />}
-        <span className="text-xl font-bold">{value}</span>
+        <span className={`text-xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{value}</span>
       </div>
     </div>
   );
@@ -371,6 +378,7 @@ function ListingsTab({ biz }) {
     }
   };
 
+  const theme = useStore(state => state.theme);
   const filtered = listings.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
@@ -383,9 +391,9 @@ function ListingsTab({ biz }) {
             placeholder="Search listings..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="bg-neutral-800 border-none rounded-2xl px-4 py-2 text-sm w-full md:w-48 focus:outline-none"
+            className={`border-none rounded-2xl px-4 py-2 text-sm w-full md:w-48 focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white placeholder-neutral-500' : 'bg-gray-100 text-black placeholder-neutral-400'}`}
           />
-          <button onClick={() => setShowAdd(true)} className="bg-white text-black px-4 py-2 rounded-full flex items-center gap-2 font-bold text-xs hover:bg-neutral-200 transition-colors">
+          <button onClick={() => setShowAdd(true)} className={`px-4 py-2 rounded-full flex items-center gap-2 font-bold text-xs transition-colors duration-300 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}>
             <Plus size={14} /> Add Item
           </button>
         </div>
@@ -393,23 +401,23 @@ function ListingsTab({ biz }) {
 
       {/* Add form */}
       {showAdd && (
-        <div className="bg-neutral-900 border border-white/10 rounded-3xl p-6">
+        <div className={`border rounded-3xl p-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/10' : 'bg-white border-black/10 shadow-lg'}`}>
           <div className="flex justify-between mb-6">
             <h3 className="font-bold">New Item</h3>
-            <button onClick={() => setShowAdd(false)}><CloseIcon size={20} /></button>
+            <button onClick={() => setShowAdd(false)} className={theme === 'dark' ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-black'}><CloseIcon size={20} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Item Name</label>
-              <input placeholder="Name" className="w-full bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none" value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} />
+              <input placeholder="Name" className={`w-full border-none rounded-2xl p-4 focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Price (UGX)</label>
-              <input placeholder="Price" type="number" className="w-full bg-neutral-800 border-none rounded-2xl p-4 font-mono focus:outline-none" value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} />
+              <input placeholder="Price" type="number" className={`w-full border-none rounded-2xl p-4 font-mono focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Image</label>
-              <label className="w-full h-[56px] flex items-center justify-center bg-neutral-800 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-white/30 transition-all overflow-hidden relative">
+              <label className={`w-full h-[56px] flex items-center justify-center border-2 border-dashed rounded-2xl cursor-pointer transition-all overflow-hidden relative ${theme === 'dark' ? 'bg-neutral-800 border-white/10 hover:border-white/30' : 'bg-gray-100 border-black/10 hover:border-black/30'}`}>
                 {newItem.imagePreview ? (
                   <img src={newItem.imagePreview} className="w-full h-full object-cover" alt="Preview" />
                 ) : (
@@ -421,7 +429,7 @@ function ListingsTab({ biz }) {
             <button 
               onClick={addItem} 
               disabled={isSubmitting}
-              className="h-[56px] bg-white text-black font-bold rounded-2xl hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2"
+              className={`h-[56px] font-bold rounded-2xl transition-all duration-300 flex items-center justify-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
               {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : 'Add Item →'}
             </button>
@@ -432,23 +440,23 @@ function ListingsTab({ biz }) {
 
       {/* Edit form */}
       {editingItem && (
-        <div className="bg-neutral-900 border border-white/20 rounded-3xl p-6 mb-6">
+        <div className={`border rounded-3xl p-6 mb-6 transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/20' : 'bg-white border-black/20 shadow-lg'}`}>
           <div className="flex justify-between mb-6">
-            <h3 className="font-bold text-white uppercase text-xs tracking-widest">Edit Item</h3>
+            <h3 className={`font-bold uppercase text-xs tracking-widest ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Edit Item</h3>
             <button onClick={() => setEditingItem(null)} className="text-neutral-500 hover:text-white transition-colors"><CloseIcon size={20} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Item Name</label>
-              <input className="w-full bg-neutral-800 border-none rounded-2xl p-4 focus:outline-none text-sm" value={editingItem.name} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} />
+              <input className={`w-full border-none rounded-2xl p-4 focus:outline-none text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.name} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Price (UGX)</label>
-              <input type="number" className="w-full bg-neutral-800 border-none rounded-2xl p-4 font-mono focus:outline-none text-sm" value={editingItem.price} onChange={e => setEditingItem({ ...editingItem, price: e.target.value })} />
+              <input type="number" className={`w-full border-none rounded-2xl p-4 font-mono focus:outline-none text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.price} onChange={e => setEditingItem({ ...editingItem, price: e.target.value })} />
             </div>
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Image</label>
-              <label className="w-full h-[56px] flex items-center justify-center bg-neutral-800 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-white/30 transition-all overflow-hidden relative">
+              <label className={`w-full h-[56px] flex items-center justify-center border-2 border-dashed rounded-2xl cursor-pointer transition-all overflow-hidden relative ${theme === 'dark' ? 'bg-neutral-800 border-white/10 hover:border-white/30' : 'bg-gray-100 border-black/10 hover:border-black/30'}`}>
                 {editingItem.imagePreview || editingItem.image_url ? (
                   <img src={editingItem.imagePreview || editingItem.image_url} className="w-full h-full object-cover" alt="Preview" />
                 ) : (
@@ -460,7 +468,7 @@ function ListingsTab({ biz }) {
             <button 
               onClick={saveEdit} 
               disabled={isSubmitting}
-              className="h-[56px] bg-white text-black font-bold rounded-2xl hover:bg-neutral-200 transition-colors text-sm shadow-xl flex items-center justify-center gap-2"
+              className={`h-[56px] font-bold rounded-2xl transition-all duration-300 text-sm shadow-xl flex items-center justify-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
               {isSubmitting ? <Loader2 className="animate-spin" size={20} /> : 'Update Item →'}
             </button>
@@ -470,15 +478,15 @@ function ListingsTab({ biz }) {
       )}
 
       {/* Listings Table */}
-      <div className="bg-neutral-900/40 rounded-3xl border border-white/5 overflow-hidden">
+      <div className={`rounded-3xl border overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/40 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
         {/* Mobile scroll hint */}
-        <div className="md:hidden text-[10px] text-neutral-400 text-center py-3 bg-neutral-800/50 border-b border-white/5 font-bold tracking-widest uppercase">
+        <div className={`md:hidden text-[10px] text-center py-3 border-b font-bold tracking-widest uppercase ${theme === 'dark' ? 'text-neutral-400 bg-neutral-800/50 border-white/5' : 'text-neutral-500 bg-gray-50 border-black/5'}`}>
           Swipe horizontally to view more ↔
         </div>
         <div className="overflow-x-auto no-scrollbar">
           <table className="w-full text-left min-w-[700px]">
             <thead>
-              <tr className="text-neutral-500 text-[10px] uppercase tracking-widest border-b border-white/5 font-black">
+              <tr className={`text-[10px] uppercase tracking-widest border-b font-black ${theme === 'dark' ? 'text-neutral-500 border-white/5' : 'text-neutral-600 border-black/5'}`}>
                 <th className="p-6">Image</th>
                 <th className="p-6">Name</th>
                 <th className="p-6 text-right">Price</th>
@@ -496,12 +504,12 @@ function ListingsTab({ biz }) {
               ) : filtered.length > 0 ? filtered.map(item => (
                 <tr key={item.id} className="group hover:bg-white/5 transition-colors">
                   <td className="p-6">
-                    <div className="w-12 h-12 rounded-xl bg-neutral-800 overflow-hidden border border-white/5">
+                    <div className={`w-12 h-12 rounded-xl overflow-hidden border ${theme === 'dark' ? 'bg-neutral-800 border-white/5' : 'bg-gray-100 border-black/5'}`}>
                       {item.image_url && <img src={item.image_url} className="w-full h-full object-cover" alt={item.name} />}
                     </div>
                   </td>
                   <td className="p-6 font-medium">{item.name}</td>
-                  <td className="p-6 text-right font-mono text-white/80">UGX {item.price?.toLocaleString()}</td>
+                  <td className={`p-6 text-right font-mono ${theme === 'dark' ? 'text-white/80' : 'text-black/80'}`}>UGX {item.price?.toLocaleString()}</td>
                   <td className="p-6 text-center">
                     <button 
                       onClick={() => toggle(item.id)} 
@@ -537,6 +545,7 @@ function InfoTab({ biz, setBiz }) {
 
   useEffect(() => { setForm({ ...biz }); }, [biz]);
 
+  const theme = useStore(state => state.theme);
   const save = async () => {
     const { error } = await insforge.database
       .from('businesses')
@@ -570,7 +579,7 @@ function InfoTab({ biz, setBiz }) {
     <div className="space-y-12">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-syne font-bold">Business Info</h2>
-        <button onClick={save} className="bg-white text-black px-6 py-2.5 rounded-full font-bold text-sm hover:bg-neutral-200 flex items-center gap-2 transition-colors">
+        <button onClick={save} className={`px-6 py-2.5 rounded-full font-bold text-sm flex items-center gap-2 transition-colors duration-300 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}>
           <Save size={16} /> Save Changes
         </button>
       </div>
@@ -601,13 +610,13 @@ function InfoTab({ biz, setBiz }) {
       </div>
 
       {/* Location */}
-      <div className="bg-neutral-900 p-8 rounded-[24px] border border-white/5">
+      <div className={`p-8 rounded-[24px] border transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5' : 'bg-gray-50 border-black/5 shadow-sm'}`}>
         <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Set Location</h3>
         <div className="flex items-center gap-4">
-          <div className="flex-1 bg-black p-4 rounded-xl font-mono text-sm text-neutral-400">
+          <div className={`flex-1 p-4 rounded-xl font-mono text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-neutral-400' : 'bg-white border border-black/5 text-neutral-600'}`}>
             {form.lat ? `${form.lat.toFixed(4)}, ${form.lng?.toFixed(4)}` : 'Not set'}
           </div>
-          <button onClick={getGeo} className="bg-white/5 hover:bg-white/10 p-4 rounded-xl transition-colors flex items-center gap-2">
+          <button onClick={getGeo} className={`p-4 rounded-xl transition-colors flex items-center gap-2 ${theme === 'dark' ? 'bg-white/5 hover:bg-white/10' : 'bg-black/5 hover:bg-black/10'}`}>
             <MapPin size={18} /> Pin Current Location
           </button>
         </div>
@@ -617,17 +626,18 @@ function InfoTab({ biz, setBiz }) {
 }
 
 function InfoField({ label, value, onChange, icon }) {
+  const theme = useStore(state => state.theme);
   return (
     <div>
-      <label className="block text-xs uppercase text-neutral-500 font-bold mb-2 ml-1">{label}</label>
+      <label className={`block text-xs uppercase font-bold mb-2 ml-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-700'}`}>{label}</label>
       <div className="relative">
         <input
           type="text"
-          className="w-full bg-neutral-900 border border-white/5 rounded-2xl p-4 pl-12 font-sans text-sm focus:border-white focus:outline-none"
+          className={`w-full border rounded-2xl p-4 pl-12 font-sans text-sm focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5 focus:border-white text-white' : 'bg-white border-black/10 focus:border-black text-black'}`}
           value={value || ''}
           onChange={e => onChange(e.target.value)}
         />
-        <div className="absolute left-4 inset-y-0 flex items-center text-neutral-600">
+        <div className={`absolute left-4 inset-y-0 flex items-center ${theme === 'dark' ? 'text-neutral-600' : 'text-neutral-400'}`}>
           {icon || <Globe size={16} />}
         </div>
       </div>
@@ -638,6 +648,7 @@ function InfoField({ label, value, onChange, icon }) {
 /* ─── SUBSCRIPTION TAB ──────────────────────────────────────── */
 function SubscriptionTab({ biz }) {
   const [latestSub, setLatestSub] = useState(null);
+  const theme = useStore(state => state.theme);
 
   useEffect(() => {
     if (!biz?.id) return;
@@ -656,31 +667,31 @@ function SubscriptionTab({ biz }) {
     <div className="space-y-8">
       <h2 className="text-xl font-syne font-bold">Subscription</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-neutral-900 border border-white/5 p-6 rounded-[24px] hover:border-white/20 transition-all cursor-pointer group">
+        <div className={`border p-6 rounded-[24px] transition-all cursor-pointer group ${theme === 'dark' ? 'bg-neutral-900 border-white/5 hover:border-white/20' : 'bg-white border-black/5 shadow-sm hover:border-black/20'}`}>
           <div className="flex justify-between items-start">
             <div>
-              <div className="text-neutral-500 text-xs uppercase tracking-widest font-bold mb-1">Current Plan</div>
-              <h3 className="text-2xl font-bold">Premium</h3>
+              <div className={`text-xs uppercase tracking-widest font-bold mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Current Plan</div>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Premium</h3>
             </div>
             <div className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${isExpired || biz.subscription_status !== 'active' ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`}>
               {biz.subscription_status}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-6">
+          <div className={`grid grid-cols-2 gap-4 border-t pt-6 transition-colors duration-300 ${theme === 'dark' ? 'border-white/5' : 'border-black/5'}`}>
             <div>
-              <div className="text-neutral-500 text-[10px] uppercase font-bold tracking-widest mb-1">Date Paid</div>
-              <div className="font-mono text-sm">{latestSub?.paid_at ? new Date(latestSub.paid_at).toLocaleDateString() : '—'}</div>
+              <div className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Date Paid</div>
+              <div className={`font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{latestSub?.paid_at ? new Date(latestSub.paid_at).toLocaleDateString() : '—'}</div>
             </div>
             <div>
-              <div className="text-neutral-500 text-[10px] uppercase font-bold tracking-widest mb-1">Expiry Date</div>
-              <div className="font-mono text-sm">{latestSub?.expires_at ? new Date(latestSub.expires_at).toLocaleDateString() : '—'}</div>
+              <div className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Expiry Date</div>
+              <div className={`font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{latestSub?.expires_at ? new Date(latestSub.expires_at).toLocaleDateString() : '—'}</div>
             </div>
           </div>
 
           <button
             onClick={() => window.alert('Renewal will be available online soon. Contact support.')}
-            className="w-full bg-white text-black font-extrabold py-3.5 rounded-xl hover:bg-neutral-200 transition-colors text-sm"
+            className={`w-full font-extrabold py-3.5 rounded-xl transition-colors text-sm ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
           >
             Renew Subscription
           </button>

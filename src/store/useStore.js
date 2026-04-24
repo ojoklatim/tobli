@@ -17,6 +17,13 @@ export const useStore = create((set) => ({
   currentIndex: 0,
   setCurrentIndex: (i) => set({ currentIndex: i }),
 
+  // Theme management
+  theme: localStorage.getItem('tobli-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'),
+  setTheme: (theme) => {
+    localStorage.setItem('tobli-theme', theme);
+    set({ theme });
+  },
+
   // directions mode
   showDirections: false,
   setShowDirections: (v) => set({ showDirections: v }),

@@ -13,16 +13,27 @@ import Privacy from './pages/Privacy';
 import PresenceManager from './components/PresenceManager';
 import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
+import { useStore } from './store/useStore';
 
 function App() {
+  const theme = useStore(state => state.theme);
+
   useEffect(() => {
     useAuthStore.getState().loadSession();
   }, []);
 
+  useEffect(() => {
+    if (theme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [theme]);
+
   return (
     <QueryClientProvider client={queryClient}>
       <Router>
-        <div className="min-h-screen bg-gray-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100">
+        <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-white text-black'}`}>
           <PresenceManager />
           <Routes>
             <Route path="/" element={<Home />} />

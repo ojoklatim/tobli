@@ -4,7 +4,10 @@
 
 @layer base {
   body {
-    @apply bg-[#080A0F] text-white font-sans;
+    @apply bg-white text-black font-sans transition-colors duration-300;
+  }
+  .dark body {
+    @apply bg-[#080A0F] text-white;
   }
 }
 
@@ -14,6 +17,10 @@
 
 /* Leaflet Dark Styles */
 .leaflet-container {
+    background: #f3f4f6 !important;
+    transition: background 0.3s ease;
+}
+.dark .leaflet-container {
     background: #080A0F !important;
 }
 
@@ -57,14 +64,22 @@
 
 /* ── Tobli Map Popup Card ──────────────────────────── */
 .tobli-popup .leaflet-popup-content-wrapper {
-  background: rgba(23, 23, 23, 0.95) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
   border-radius: 20px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1), 0 0 0 1px rgba(0,0,0,0.04) !important;
+  color: #171717 !important;
+  padding: 0 !important;
+  transition: all 0.3s ease;
+}
+
+.dark .tobli-popup .leaflet-popup-content-wrapper {
+  background: rgba(23, 23, 23, 0.95) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255,255,255,0.04) !important;
   color: white !important;
-  padding: 0 !important;
 }
 
 .tobli-popup .leaflet-popup-content {
@@ -75,8 +90,13 @@
 }
 
 .tobli-popup .leaflet-popup-tip {
-  background: rgba(23, 23, 23, 0.95) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
   border: none !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.dark .tobli-popup .leaflet-popup-tip {
+  background: rgba(23, 23, 23, 0.95) !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 }
 

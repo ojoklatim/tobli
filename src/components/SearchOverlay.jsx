@@ -20,6 +20,7 @@ export default function SearchOverlay() {
   const setShowDirections = useStore(state => state.setShowDirections);
   const searchResults = useStore(state => state.searchResults);
   const userLocation = useStore(state => state.userLocation);
+  const theme = useStore(state => state.theme);
 
   useEffect(() => {
     const hasSeen = localStorage.getItem('hasSeenWelcome');
@@ -124,13 +125,13 @@ export default function SearchOverlay() {
             initial={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
-            className="absolute inset-0 flex items-center justify-center bg-[#080A0F]/50 backdrop-blur-sm pointer-events-auto"
+            className={`absolute inset-0 flex items-center justify-center backdrop-blur-sm pointer-events-auto transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]/50' : 'bg-white/50'}`}
           >
             <Motion.h1 
               initial={{ y: 0, opacity: 1, filter: "blur(0px)" }}
               exit={{ y: -30, opacity: 0, filter: "blur(8px)" }}
               transition={{ duration: 0.6, ease: "easeIn" }}
-              className="text-2xl md:text-3xl lg:text-4xl font-syne font-black text-white tracking-tighter text-center px-8"
+              className={`text-2xl md:text-3xl lg:text-4xl font-syne font-black tracking-tighter text-center px-8 transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`}
             >
               {text}
               <span className="animate-pulse">|</span>
@@ -155,14 +156,14 @@ export default function SearchOverlay() {
             className="absolute top-0 w-full max-w-lg lg:max-w-xl px-6 pointer-events-auto"
           >
             <div className="relative group">
-              <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-white transition-colors duration-300">
+              <div className={`absolute inset-y-0 left-4 flex items-center pointer-events-none transition-colors duration-300 ${theme === 'dark' ? 'text-neutral-400 group-focus-within:text-white' : 'text-neutral-500 group-focus-within:text-black'}`}>
                 <Search className="w-5 h-5" />
               </div>
               <input
                 type="text"
                 autoFocus
                 placeholder="Search products or services..."
-                className="w-full bg-neutral-900/95 backdrop-blur-2xl border border-white/10 rounded-full py-3 md:py-3.5 pl-12 pr-6 text-white text-sm md:text-sm font-sans focus:outline-none focus:border-white transition-all shadow-2xl placeholder-neutral-500"
+                className={`w-full backdrop-blur-2xl border rounded-full py-3 md:py-3.5 pl-12 pr-6 text-sm md:text-sm font-sans focus:outline-none transition-all shadow-2xl ${theme === 'dark' ? 'bg-neutral-900/95 border-white/10 text-white focus:border-white placeholder-neutral-500' : 'bg-white/95 border-black/10 text-black focus:border-black placeholder-neutral-400'}`}
                 value={searchTerm}
                 onChange={handleSearchChange}
                 onFocus={() => setIsDropdownOpen(true)}
@@ -171,13 +172,13 @@ export default function SearchOverlay() {
               {/* Results Dropdown */}
               <AnimatePresence>
                 {(isDropdownOpen && searchTerm.length >= 2 && (isLoading || searchResults)) && (
-                  <Motion.div
-                    initial={{ opacity: 0, y: 15, scale: 0.98 }}
-                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                    exit={{ opacity: 0, y: 10, scale: 0.98 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    className="absolute top-full mt-3 w-full bg-neutral-900/90 backdrop-blur-2xl border border-neutral-800/80 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.4)] max-h-[60vh] overflow-y-auto no-scrollbar"
-                  >
+                    <Motion.div
+                      initial={{ opacity: 0, y: 15, scale: 0.98 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                      className={`absolute top-full mt-3 w-full backdrop-blur-2xl border rounded-2xl overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.4)] max-h-[60vh] overflow-y-auto no-scrollbar transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/90 border-neutral-800/80' : 'bg-white/95 border-black/10'}`}
+                    >
                     {isLoading ? (
                       <div className="p-10 flex flex-col items-center justify-center gap-3">
                         <Loader2 className="w-6 h-6 animate-spin text-white/70" />
@@ -189,22 +190,22 @@ export default function SearchOverlay() {
                           <button
                             key={`${res.business_id}-${res.item_id}`}
                             onClick={() => handleSelectResult(res, idx)}
-                            className="w-full px-5 py-4 flex items-center justify-between hover:bg-white/5 active:bg-white/10 border-b border-white/[0.04] last:border-0 transition-colors text-left group"
+                            className={`w-full px-5 py-4 flex items-center justify-between border-b last:border-0 transition-colors text-left group ${theme === 'dark' ? 'hover:bg-white/5 active:bg-white/10 border-white/[0.04]' : 'hover:bg-black/5 active:bg-black/10 border-black/[0.04]'}`}
                           >
                             <div className="flex-1 pr-4">
-                              <div className="text-white font-medium text-base mb-1 transition-colors">{res.item_name}</div>
+                              <div className={`font-medium text-base mb-1 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{res.item_name}</div>
                               <div className="text-neutral-400 text-sm flex items-center gap-2">
                                 <span>{res.business_name}</span>
                                 {res.distance_km != null && (
                                   <>
                                     <span className="w-1 h-1 rounded-full bg-neutral-600"></span>
-                                    <span className="text-white/70 font-medium">{res.distance_km.toFixed(1)}km</span>
+                                    <span className={`font-medium ${theme === 'dark' ? 'text-white/70' : 'text-black/70'}`}>{res.distance_km.toFixed(1)}km</span>
                                   </>
                                 )}
                               </div>
                             </div>
                             <div className="text-right flex-shrink-0">
-                              <div className="text-white/90 font-mono font-medium tracking-tight bg-white/10 px-3 py-1.5 rounded-lg text-sm">
+                              <div className={`font-mono font-medium tracking-tight px-3 py-1.5 rounded-lg text-sm ${theme === 'dark' ? 'text-white/90 bg-white/10' : 'text-black/90 bg-black/5'}`}>
                                 {res.price ? `UGX ${res.price.toLocaleString()}` : '—'}
                               </div>
                             </div>
@@ -213,11 +214,11 @@ export default function SearchOverlay() {
                       </div>
                     ) : (
                       <div className="p-10 text-center flex flex-col items-center justify-center gap-2">
-                        <Search className="w-8 h-8 text-neutral-600 mb-2" />
-                        <span className="text-neutral-400 font-medium text-base">
+                        <Search className={`w-8 h-8 mb-2 transition-colors ${theme === 'dark' ? 'text-neutral-600' : 'text-neutral-300'}`} />
+                        <span className={`font-medium text-base transition-colors ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
                           {noResultsMessage || 'Nothing found near you'}
                         </span>
-                        <span className="text-neutral-500 text-sm">Try exploring different keywords</span>
+                        <span className={`text-sm transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'}`}>Try exploring different keywords</span>
                       </div>
                     )}
                   </Motion.div>

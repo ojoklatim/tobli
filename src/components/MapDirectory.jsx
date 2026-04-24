@@ -82,6 +82,7 @@ function BusinessPopupContent() {
   const setSelectedBusiness = useStore(state => state.setSelectedBusiness);
   const setShowDirections = useStore(state => state.setShowDirections);
   const showDirections = useStore(state => state.showDirections);
+  const theme = useStore(state => state.theme);
   
   const [isImgExpanded, setIsImgExpanded] = useState(false);
   const [fetchedImage, setFetchedImage] = useState(null);
@@ -140,7 +141,7 @@ function BusinessPopupContent() {
   };
 
   return (
-    <div className="min-w-[260px] max-w-[300px] text-white">
+    <div className={`min-w-[260px] max-w-[300px] transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-neutral-900'}`}>
       {/* Expanded Image Overlay */}
       <AnimatePresence>
         {isImgExpanded && (
@@ -165,21 +166,21 @@ function BusinessPopupContent() {
 
       {/* Close button */}
       <div className="flex justify-end -mt-1 -mr-1 mb-1">
-        <button onClick={handleClose} className="p-1 rounded-full hover:bg-white/10 transition-colors pointer-events-auto">
-          <CloseIcon size={14} className="text-neutral-400" />
+        <button onClick={handleClose} className={`p-1 rounded-full transition-colors pointer-events-auto ${theme === 'dark' ? 'hover:bg-white/10' : 'hover:bg-black/5'}`}>
+          <CloseIcon size={14} className={theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'} />
         </button>
       </div>
 
       {/* Header with Title and Price */}
       <div className="flex justify-between items-start gap-4 mb-4">
         <div className="flex-1 min-w-0">
-          <h3 className="text-[16px] font-syne font-bold text-white leading-tight mb-1 truncate">
+          <h3 className={`text-[16px] font-syne font-bold leading-tight mb-1 truncate ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
             {product_name || 'Offer'}
           </h3>
-          <div className="font-mono text-[15px] text-white font-bold mb-2">
+          <div className={`font-mono text-[15px] font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
             {product_price ? `UGX ${product_price.toLocaleString()}` : 'Price on request'}
           </div>
-          <span className="inline-block px-2 py-0.5 bg-white/10 rounded-full text-[10px] uppercase tracking-widest text-neutral-300 font-bold">
+          <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold ${theme === 'dark' ? 'bg-white/10 text-neutral-300' : 'bg-black/5 text-neutral-600'}`}>
             {biz.business_name}
           </span>
         </div>
@@ -187,7 +188,7 @@ function BusinessPopupContent() {
         {product_image && (
           <div 
             onClick={() => setIsImgExpanded(true)}
-            className="w-24 h-24 rounded-2xl overflow-hidden cursor-zoom-in flex-shrink-0 shadow-2xl border border-white/10 bg-neutral-800 group relative pointer-events-auto"
+            className={`w-24 h-24 rounded-2xl overflow-hidden cursor-zoom-in flex-shrink-0 shadow-2xl border bg-neutral-800 group relative pointer-events-auto ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}
           >
             <img 
               src={product_image} 
@@ -206,7 +207,7 @@ function BusinessPopupContent() {
           <div className="flex gap-2 mb-2">
             {biz.phone && (
               <a href={`tel:${biz.phone}`}
-                className="flex-1 flex items-center justify-center gap-1.5 bg-white text-black py-2.5 rounded-xl text-[12px] font-black hover:bg-neutral-100 transition-all pointer-events-auto border-none no-underline">
+                className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[12px] font-black transition-all pointer-events-auto border-none no-underline ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-100' : 'bg-black text-white hover:bg-neutral-800'}`}>
                 <Phone size={14} /> CALL
               </a>
             )}
@@ -234,7 +235,7 @@ function BusinessPopupContent() {
               )}
               {biz.website && (
                 <a href={biz.website.startsWith('http') ? biz.website : `https://${biz.website}`} target="_blank" rel="noreferrer"
-                  className="w-10 h-10 flex items-center justify-center rounded-xl bg-neutral-800 border border-white/10 text-white hover:bg-neutral-700 transition-colors pointer-events-auto shadow-lg">
+                  className={`w-10 h-10 flex items-center justify-center rounded-xl border transition-colors pointer-events-auto shadow-lg ${theme === 'dark' ? 'bg-neutral-800 border-white/10 text-white hover:bg-neutral-700' : 'bg-gray-100 border-black/10 text-black hover:bg-gray-200'}`}>
                   <Globe size={18} />
                 </a>
               )}
@@ -246,22 +247,22 @@ function BusinessPopupContent() {
       {canRoute && (
         <button
           onClick={(e) => { e.stopPropagation(); setShowDirections(true); }}
-          className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[12px] font-black mb-3 transition-all pointer-events-auto ${showDirections ? 'bg-black border border-white/20 text-white' : 'bg-white/10 text-white hover:bg-white/20 border border-white/5'}`}
+          className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-[12px] font-black mb-3 transition-all pointer-events-auto ${showDirections ? (theme === 'dark' ? 'bg-black border border-white/20 text-white' : 'bg-white border border-black/20 text-black') : (theme === 'dark' ? 'bg-white/10 text-white hover:bg-white/20 border border-white/5' : 'bg-black/5 text-black hover:bg-black/10 border border-black/5')}`}
         >
           <Navigation size={14} /> {showDirections ? 'ROUTING...' : 'GET DIRECTIONS'}
         </button>
       )}
 
       {totalResults > 1 && (
-        <div className="border-t border-white/10 pt-3 flex items-center justify-between">
+        <div className={`border-t pt-3 flex items-center justify-between ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}>
           <div className="flex-1">
-            <div className="text-white text-[11px] font-bold">
+            <div className={`text-[11px] font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
               {isLast ? 'Cycle alternatives' : 'Next Alternative'}
             </div>
           </div>
           <button
             onClick={handleNext}
-            className="flex items-center gap-1 bg-white text-black px-4 py-2 rounded-full text-[11px] font-black hover:bg-neutral-200 transition-all pointer-events-auto shrink-0 shadow-xl"
+            className={`flex items-center gap-1 px-4 py-2 rounded-full text-[11px] font-black transition-all pointer-events-auto shrink-0 shadow-xl ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
           >
             Next <ChevronRight size={13} strokeWidth={3} />
           </button>
@@ -278,6 +279,7 @@ function RecenterButton() {
   const setUserLocation = useStore(state => state.setUserLocation);
   const setSelectedBusiness = useStore(state => state.setSelectedBusiness);
   const setShowDirections = useStore(state => state.setShowDirections);
+  const theme = useStore(state => state.theme);
 
   const handleRecenter = () => {
     // Refresh location only on manual request
@@ -298,7 +300,7 @@ function RecenterButton() {
     <div className="absolute bottom-32 right-8 z-[1000] pointer-events-auto">
       <button
         onClick={handleRecenter}
-        className="w-14 h-14 bg-neutral-900/95 backdrop-blur-2xl border border-white/10 rounded-full flex items-center justify-center text-white shadow-[0_8px_30px_rgb(0,0,0,0.5)] hover:bg-neutral-800 hover:border-white/20 transition-all active:scale-90 group"
+        className={`w-14 h-14 backdrop-blur-2xl border rounded-full flex items-center justify-center shadow-[0_8px_30px_rgb(0,0,0,0.5)] transition-all active:scale-90 group ${theme === 'dark' ? 'bg-neutral-900/95 border-white/10 text-white hover:bg-neutral-800 hover:border-white/20' : 'bg-white/95 border-black/10 text-black hover:bg-neutral-100 hover:border-black/20'}`}
         title="Recenter to my location"
       >
         <LocateFixed size={24} className="group-hover:scale-110 transition-transform" />
@@ -317,6 +319,7 @@ export default function MapDirectory() {
   const currentIndex = useStore(state => state.currentIndex);
   const showDirections = useStore(state => state.showDirections);
   const setShowDirections = useStore(state => state.setShowDirections);
+  const theme = useStore(state => state.theme);
 
   const hasGeo = "geolocation" in navigator;
   const [mapConfig, setMapConfig] = useState(null);
@@ -392,17 +395,25 @@ export default function MapDirectory() {
   const finalMapConfig = effectiveMapConfig || { center: [0.3476, 32.5825], zoom: 13 };
   const liveUserCount = Object.keys(liveUsers).length;
 
+  const tileLayerUrl = theme === 'dark' 
+    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+
+  const labelsLayerUrl = theme === 'dark'
+    ? "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
+    : "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png";
+
   return (
-    <div className="h-screen w-full bg-[#080A0F]">
+    <div className={`h-screen w-full transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]' : 'bg-gray-100'}`}>
       <MapContainer center={finalMapConfig.center} zoom={finalMapConfig.zoom} className="h-full w-full" zoomControl={false} scrollWheelZoom={true} doubleClickZoom={true} touchZoom={true} dragging={true}>
         <MapController center={activeBounds ? null : finalMapConfig.center} zoom={finalMapConfig.zoom} bounds={activeBounds} selectedBusiness={!showDirections ? selectedBusiness : null} />
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png" attribution='&copy; OSM' />
-        <TileLayer url="https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png" zIndex={10} />
+        <TileLayer url={tileLayerUrl} attribution='&copy; OSM' />
+        <TileLayer url={labelsLayerUrl} zIndex={10} />
         
         <RecenterButton />
 
 
-        {userLocation && <CircleMarker center={[userLocation.lat, userLocation.lng]} radius={6} pathOptions={{ color: 'white', fillColor: 'white', fillOpacity: 0.8 }} />}
+        {userLocation && <CircleMarker center={[userLocation.lat, userLocation.lng]} radius={6} pathOptions={{ color: theme === 'dark' ? 'white' : 'black', fillColor: theme === 'dark' ? 'white' : 'black', fillOpacity: 0.8 }} />}
 
 
         {businesses
@@ -429,7 +440,7 @@ export default function MapDirectory() {
           </Popup>
         )}
 
-        {showDirections && routeCoordinates && <Polyline positions={routeCoordinates} pathOptions={{ color: 'white', weight: 4, dashArray: '8, 8' }} className="animate-pulse" />}
+        {showDirections && routeCoordinates && <Polyline positions={routeCoordinates} pathOptions={{ color: theme === 'dark' ? 'white' : 'black', weight: 4, dashArray: '8, 8' }} className="animate-pulse" />}
       </MapContainer>
     </div>
   );

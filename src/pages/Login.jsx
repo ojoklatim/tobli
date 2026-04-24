@@ -3,6 +3,8 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
+import { useStore } from '../store/useStore';
+import ThemeToggle from '../components/ThemeToggle';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -12,6 +14,7 @@ export default function Login() {
 
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { session, business, isAdmin } = useAuthStore();
+  const theme = useStore(state => state.theme);
   const hasProfile = !!business;
 
   React.useEffect(() => {
@@ -48,19 +51,22 @@ export default function Login() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080A0F] text-white font-sans flex flex-col">
+    <div className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
       {/* Topbar */}
-      <div className="p-6">
-        <Link to="/" className="text-xl font-syne font-extrabold tracking-tighter text-white">
+      <div className="p-6 flex justify-between items-center">
+        <Link to="/" className={`text-xl font-syne font-extrabold tracking-tighter transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
           TOBLI
         </Link>
+        <ThemeToggle />
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6">
-        <div className="w-full max-w-md">
+        <div className={`w-full max-w-md p-8 rounded-[32px] border transition-all duration-300 ${theme === 'dark' ? 'bg-neutral-900/40 border-neutral-800' : 'bg-white border-gray-100 shadow-xl'}`}>
           <div className="mb-10 text-center">
             <h1 className="text-2xl font-syne font-bold mb-1">Welcome Back</h1>
-            <p className="text-neutral-500 text-sm">Enter your credentials to access your dashboard</p>
+            <p className={`text-center text-xs transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>
+              Enter your credentials to access your dashboard
+            </p>
           </div>
 
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -78,11 +84,11 @@ export default function Login() {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Email</label>
+              <label className={`block text-sm font-medium mb-2 ml-1 transition-colors ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>Email</label>
               <input
                 {...register('identifier', { required: 'This field is required' })}
                 type="text"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                className={`w-full border rounded-xl p-3 text-sm focus:outline-none transition-colors ${theme === 'dark' ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
                 placeholder="email@example.com"
               />
               {errors.identifier && <p className="text-red-500 text-xs mt-1 ml-1">{errors.identifier.message}</p>}
@@ -90,13 +96,13 @@ export default function Login() {
 
             <div>
               <div className="flex justify-between items-center mb-2 ml-1">
-                <label className="text-sm font-medium text-neutral-400">Password</label>
-                <Link to="/forgot-password" className="text-xs text-neutral-400 hover:text-white transition-colors">Forgot password?</Link>
+                <label className={`text-sm font-medium transition-colors ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>Password</label>
+                <Link to="/forgot-password" className={`text-xs transition-colors ${theme === 'dark' ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black'}`}>Forgot password?</Link>
               </div>
               <input
                 {...register('password', { required: 'Password is required' })}
                 type="password"
-                className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                className={`w-full border rounded-xl p-3 text-sm focus:outline-none transition-colors ${theme === 'dark' ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
                 placeholder="••••••••"
               />
               {errors.password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.password.message}</p>}
@@ -105,21 +111,22 @@ export default function Login() {
             <button
               disabled={isLoading}
               type="submit"
-              className="w-full bg-white text-black font-bold py-3 rounded-xl hover:bg-neutral-200 transition-colors flex items-center justify-center gap-2 text-sm"
+              className={`w-full font-bold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 text-sm ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
               {isLoading ? <Loader2 className="animate-spin" size={16} /> : 'Login'}
             </button>
           </form>
 
           <div className="mt-8 text-center text-sm">
-            <span className="text-neutral-500">Don't have an account? </span>
-            <Link to="/signup" className="text-white font-bold hover:underline">
+            <p className={`mb-2 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Join the premium business network.</p>
+            <span className={`transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Don't have an account? </span>
+            <Link to="/signup" className={`font-bold hover:underline ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
               Sign up
             </Link>
           </div>
-          <div className="mt-4 text-center text-xs text-neutral-500 flex flex-col gap-1">
-            <p>Contact us at <a href="mailto:ojoklatim1@gmail.com" className="text-white underline">ojoklatim1@gmail.com</a></p>
-            <p>or call <a href="tel:0773946713" className="text-white underline">0773946713</a></p>
+          <div className={`mt-4 text-center text-xs flex flex-col gap-1 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>
+            <p>Contact us at <a href="mailto:ojoklatim1@gmail.com" className={`underline ${theme === 'dark' ? 'text-white' : 'text-black'}`}>ojoklatim1@gmail.com</a></p>
+            <p>or call <a href="tel:0773946713" className={`underline ${theme === 'dark' ? 'text-white' : 'text-black'}`}>0773946713</a></p>
           </div>
         </div>
       </div>
