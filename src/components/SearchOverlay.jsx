@@ -145,7 +145,7 @@ export default function SearchOverlay() {
           <Motion.div
             key="search-bar"
             initial={{ y: "45vh", scale: 0.85, opacity: 0, filter: "blur(10px)" }}
-            animate={{ y: "11vh", scale: 1, opacity: 1, filter: "blur(0px)" }}
+            animate={{ y: "8vh", scale: 1, opacity: 1, filter: "blur(0px)" }}
             transition={{ 
               type: "spring",
               stiffness: 100,
