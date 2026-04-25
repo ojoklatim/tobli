@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <div className={`relative h-screen w-full overflow-hidden transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]' : 'bg-gray-100'}`}>
       {/* Topbar */}
-      <div className={`fixed top-0 inset-x-0 z-[3000] flex justify-between items-center px-6 py-4 backdrop-blur-md border-b transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]/5 border-white/5' : 'bg-white/50 border-black/5'} pointer-events-none`}>
+      <div className={`fixed top-0 inset-x-0 z-[3000] flex justify-between items-center px-6 py-4 transition-colors duration-300 pointer-events-none`}>
         <div 
           className={`text-xl font-syne font-extrabold tracking-tighter pointer-events-auto cursor-pointer transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`}
           onClick={() => window.location.reload()}

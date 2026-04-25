@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 
 export default function ResetPassword() {
@@ -12,6 +12,8 @@ export default function ResetPassword() {
   const [isLoading, setIsLoading] = useState(false);
   const [isValidLink, setIsValidLink] = useState(false);
   const [token, setToken] = useState(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, watch } = useForm();
   
@@ -101,38 +103,56 @@ export default function ResetPassword() {
 
               <div>
                 <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">New Password</label>
-                <input
-                  {...register('password', { 
-                    required: 'Password is required',
-                    minLength: {
-                      value: 8,
-                      message: "Password must be at least 8 characters"
-                    },
-                    validate: (val) => {
-                      if (!/[A-Z]/.test(val)) return 'Must include an uppercase letter';
-                      if (!/[a-z]/.test(val)) return 'Must include a lowercase letter';
-                      if (!/[0-9]/.test(val)) return 'Must include a number';
-                      return true;
-                    }
-                  })}
-                  type="password"
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    {...register('password', { 
+                      required: 'Password is required',
+                      minLength: {
+                        value: 8,
+                        message: "Password must be at least 8 characters"
+                      },
+                      validate: (val) => {
+                        if (!/[A-Z]/.test(val)) return 'Must include an uppercase letter';
+                        if (!/[a-z]/.test(val)) return 'Must include a lowercase letter';
+                        if (!/[0-9]/.test(val)) return 'Must include a number';
+                        return true;
+                      }
+                    })}
+                    type={showPassword ? "text" : "password"}
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 pr-10 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.password.message}</p>}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Confirm New Password</label>
-                <input
-                  {...register('confirmPassword', { 
-                    required: 'Please confirm your password',
-                    validate: value => value === newPassword || "Passwords do not match"
-                  })}
-                  type="password"
-                  className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-white transition-colors"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <input
+                    {...register('confirmPassword', { 
+                      required: 'Please confirm your password',
+                      validate: value => value === newPassword || "Passwords do not match"
+                    })}
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="w-full bg-neutral-900 border border-neutral-800 rounded-xl p-3 pr-10 text-sm text-white focus:outline-none focus:border-white transition-colors"
+                    placeholder="••••••••"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-500 hover:text-white transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
                 {errors.confirmPassword && <p className="text-red-500 text-xs mt-1 ml-1">{errors.confirmPassword.message}</p>}
               </div>
 

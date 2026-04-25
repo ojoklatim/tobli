@@ -71,17 +71,17 @@ export default function Dashboard() {
     <div className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
       {/* Header */}
       <header className={`border-b backdrop-blur-md sticky top-0 z-50 transition-colors duration-300 ${theme === 'dark' ? 'border-white/5 bg-neutral-900/20 text-white' : 'border-black/5 bg-white/70 text-black'}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex justify-between items-center gap-2 sm:gap-4">
           {/* Top Left: Business Name */}
-          <div className="text-xl font-syne font-extrabold tracking-tighter">
+          <div className="text-xl font-syne font-extrabold tracking-tighter flex-1 min-w-0 truncate">
             {biz.name}
           </div>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-2 sm:gap-6 shrink-0">
             <ThemeToggle />
             {/* Centre: Open/Closed Toggle */}
             <div className={`flex items-center gap-2 p-1.5 rounded-full border transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/50 border-white/5' : 'bg-gray-200 border-black/5'}`}>
-              <span className={`text-[10px] uppercase font-black tracking-widest pl-2 ${biz.is_open ? 'text-green-500' : 'text-red-500'}`}>
+              <span className={`text-[10px] uppercase font-black tracking-widest pl-2 hidden sm:inline ${biz.is_open ? 'text-green-500' : 'text-red-500'}`}>
                 {biz.is_open ? 'Open' : 'Closed'}
               </span>
               <button
@@ -99,9 +99,9 @@ export default function Dashboard() {
             {/* Far Right: Logout */}
             <button
               onClick={() => { signOut(); navigate('/login'); }}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full transition-colors font-bold text-xs uppercase ${theme === 'dark' ? 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10' : 'bg-black/5 text-neutral-600 hover:text-black hover:bg-black/10'}`}
+              className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full transition-colors font-bold text-xs uppercase ${theme === 'dark' ? 'bg-white/5 text-neutral-300 hover:text-white hover:bg-white/10' : 'bg-black/5 text-neutral-600 hover:text-black hover:bg-black/10'}`}
             >
-              <Power size={14} /> Logout
+              <Power size={14} /> <span className="hidden sm:inline">Logout</span>
             </button>
           </div>
         </div>
@@ -547,6 +547,11 @@ function InfoTab({ biz, setBiz }) {
 
   const theme = useStore(state => state.theme);
   const save = async () => {
+    if (!form.lat || !form.lng) {
+      setMsg('Business location is mandatory. Please pin your location.');
+      return;
+    }
+    setMsg('');
     const { error } = await insforge.database
       .from('businesses')
       .update({
@@ -583,7 +588,7 @@ function InfoTab({ biz, setBiz }) {
           <Save size={16} /> Save Changes
         </button>
       </div>
-      {msg && <div className="text-sm text-green-500">{msg}</div>}
+      {msg && <div className={`text-sm font-bold mb-4 ${msg.includes('mandatory') ? 'text-red-500' : 'text-green-500'}`}>{msg}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
         {/* Identity */}
@@ -601,17 +606,17 @@ function InfoTab({ biz, setBiz }) {
           <div className="space-y-4">
             <InfoField label="WhatsApp (e.g. 256...)" value={form.whatsapp} onChange={v => setForm({ ...form, whatsapp: v })} icon={<Send size={16} />} />
             <InfoField label="Phone Number" value={form.phone} onChange={v => setForm({ ...form, phone: v })} icon={<Phone size={16} />} />
-            <InfoField label="Instagram handle" value={form.instagram} onChange={v => setForm({ ...form, instagram: v })} icon={<Instagram size={16} />} />
-            <InfoField label="X / Twitter handle" value={form.x_handle} onChange={v => setForm({ ...form, x_handle: v })} icon={<XIcon size={16} />} />
+            <InfoField label="Instagram handle (Optional)" value={form.instagram} onChange={v => setForm({ ...form, instagram: v })} icon={<Instagram size={16} />} />
+            <InfoField label="X / Twitter handle (Optional)" value={form.x_handle} onChange={v => setForm({ ...form, x_handle: v })} icon={<XIcon size={16} />} />
 
-            <InfoField label="Website" value={form.website} onChange={v => setForm({ ...form, website: v })} icon={<Globe size={16} />} />
+            <InfoField label="Website (Optional)" value={form.website} onChange={v => setForm({ ...form, website: v })} icon={<Globe size={16} />} />
           </div>
         </div>
       </div>
 
       {/* Location */}
       <div className={`p-8 rounded-[24px] border transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5' : 'bg-gray-50 border-black/5 shadow-sm'}`}>
-        <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Set Location</h3>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Set Business Location</h3>
         <div className="flex items-center gap-4">
           <div className={`flex-1 p-4 rounded-xl font-mono text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-neutral-400' : 'bg-white border border-black/5 text-neutral-600'}`}>
             {form.lat ? `${form.lat.toFixed(4)}, ${form.lng?.toFixed(4)}` : 'Not set'}

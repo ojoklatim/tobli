@@ -145,7 +145,7 @@ export default function SearchOverlay() {
           <Motion.div
             key="search-bar"
             initial={{ y: "45vh", scale: 0.85, opacity: 0, filter: "blur(10px)" }}
-            animate={{ y: "15vh", scale: 1, opacity: 1, filter: "blur(0px)" }}
+            animate={{ y: "7vh", scale: 1, opacity: 1, filter: "blur(0px)" }}
             transition={{ 
               type: "spring",
               stiffness: 100,
@@ -190,12 +190,12 @@ export default function SearchOverlay() {
                           <button
                             key={`${res.business_id}-${res.item_id}`}
                             onClick={() => handleSelectResult(res, idx)}
-                            className={`w-full px-5 py-4 flex items-center justify-between border-b last:border-0 transition-colors text-left group ${theme === 'dark' ? 'hover:bg-white/5 active:bg-white/10 border-white/[0.04]' : 'hover:bg-black/5 active:bg-black/10 border-black/[0.04]'}`}
+                            className={`w-full px-5 py-4 flex items-start justify-between border-b last:border-0 transition-colors text-left group ${theme === 'dark' ? 'hover:bg-white/5 active:bg-white/10 border-white/[0.04]' : 'hover:bg-black/5 active:bg-black/10 border-black/[0.04]'}`}
                           >
-                            <div className="flex-1 pr-4">
-                              <div className={`font-medium text-base mb-1 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{res.item_name}</div>
+                            <div className="flex-1 pr-4 min-w-0">
+                              <div className={`font-medium text-base mb-1 break-words transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{res.item_name}</div>
                               <div className="text-neutral-400 text-sm flex items-center gap-2">
-                                <span>{res.business_name}</span>
+                                <span className="truncate">{res.business_name}</span>
                                 {res.distance_km != null && (
                                   <>
                                     <span className="w-1 h-1 rounded-full bg-neutral-600"></span>

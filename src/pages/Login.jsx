@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Loader2, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Loader2, AlertCircle, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useStore } from '../store/useStore';
 import ThemeToggle from '../components/ThemeToggle';
@@ -11,6 +11,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const { register, handleSubmit, formState: { errors } } = useForm();
   const { session, business, isAdmin } = useAuthStore();
@@ -99,12 +100,21 @@ export default function Login() {
                 <label className={`text-sm font-medium transition-colors ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>Password</label>
                 <Link to="/forgot-password" className={`text-xs transition-colors ${theme === 'dark' ? 'text-neutral-400 hover:text-white' : 'text-neutral-600 hover:text-black'}`}>Forgot password?</Link>
               </div>
-              <input
-                {...register('password', { required: 'Password is required' })}
-                type="password"
-                className={`w-full border rounded-xl p-3 text-sm focus:outline-none transition-colors ${theme === 'dark' ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                placeholder="••••••••"
-              />
+              <div className="relative">
+                <input
+                  {...register('password', { required: 'Password is required' })}
+                  type={showPassword ? "text" : "password"}
+                  className={`w-full border rounded-xl p-3 pr-10 text-sm focus:outline-none transition-colors ${theme === 'dark' ? 'bg-neutral-900 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                  placeholder="••••••••"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className={`absolute right-3 top-1/2 -translate-y-1/2 transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-400 hover:text-black'}`}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
               {errors.password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.password.message}</p>}
             </div>
 

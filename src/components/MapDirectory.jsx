@@ -141,7 +141,7 @@ function BusinessPopupContent() {
   };
 
   return (
-    <div className={`min-w-[260px] max-w-[300px] transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-neutral-900'}`}>
+    <div className={`w-[min(300px,calc(100vw-48px))] transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-neutral-900'}`}>
       {/* Expanded Image Overlay */}
       <AnimatePresence>
         {isImgExpanded && (
@@ -172,15 +172,15 @@ function BusinessPopupContent() {
       </div>
 
       {/* Header with Title and Price */}
-      <div className="flex justify-between items-start gap-4 mb-4">
+      <div className="flex justify-between items-start gap-3 mb-4">
         <div className="flex-1 min-w-0">
-          <h3 className={`text-[16px] font-syne font-bold leading-tight mb-1 truncate ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+          <h3 className={`text-[16px] font-syne font-bold leading-tight mb-1 break-words ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
             {product_name || 'Offer'}
           </h3>
           <div className={`font-mono text-[15px] font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
             {product_price ? `UGX ${product_price.toLocaleString()}` : 'Price on request'}
           </div>
-          <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold ${theme === 'dark' ? 'bg-white/10 text-neutral-300' : 'bg-black/5 text-neutral-600'}`}>
+          <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold max-w-full truncate ${theme === 'dark' ? 'bg-white/10 text-neutral-300' : 'bg-black/5 text-neutral-600'}`}>
             {biz.business_name}
           </span>
         </div>

@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { Loader2, ArrowRight, ArrowLeft, AlertCircle, CheckCircle2, Mail } from 'lucide-react';
+import { Loader2, ArrowRight, ArrowLeft, AlertCircle, CheckCircle2, Mail, Eye, EyeOff } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { useStore } from '../store/useStore';
 import ThemeToggle from '../components/ThemeToggle';
@@ -73,6 +73,8 @@ export default function Signup() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   // OTP verification step state
   const [step, setStep] = useState('form'); // 'form' | 'verify'
@@ -272,35 +274,53 @@ export default function Signup() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Password</label>
-                      <input
-                        {...register('password', {
-                          required: 'Required',
-                          minLength: { value: 8, message: 'Min 8 characters' },
-                          validate: (val) => {
-                            if (!/[A-Z]/.test(val)) return 'Must include an uppercase letter';
-                            if (!/[a-z]/.test(val)) return 'Must include a lowercase letter';
-                            if (!/[0-9]/.test(val)) return 'Must include a number';
-                            return true;
-                          }
-                        })}
-                        type="password"
-                        className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                        placeholder="••••••••"
-                      />
+                      <div className="relative">
+                        <input
+                          {...register('password', {
+                            required: 'Required',
+                            minLength: { value: 8, message: 'Min 8 characters' },
+                            validate: (val) => {
+                              if (!/[A-Z]/.test(val)) return 'Must include an uppercase letter';
+                              if (!/[a-z]/.test(val)) return 'Must include a lowercase letter';
+                              if (!/[0-9]/.test(val)) return 'Must include a number';
+                              return true;
+                            }
+                          })}
+                          type={showPassword ? "text" : "password"}
+                          className={`w-full border rounded-2xl p-4 pr-12 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="••••••••"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-400 hover:text-black'}`}
+                        >
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
                       {errors.password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.password.message}</p>}
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Confirm Password</label>
-                      <input
-                        {...register('confirm_password', {
-                          required: 'Required',
-                          validate: (val) => val === password || "Passwords do not match"
-                        })}
-                        type="password"
-                        className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                        placeholder="••••••••"
-                      />
+                      <div className="relative">
+                        <input
+                          {...register('confirm_password', {
+                            required: 'Required',
+                            validate: (val) => val === password || "Passwords do not match"
+                          })}
+                          type={showConfirmPassword ? "text" : "password"}
+                          className={`w-full border rounded-2xl p-4 pr-12 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="••••••••"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className={`absolute right-4 top-1/2 -translate-y-1/2 transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-400 hover:text-black'}`}
+                        >
+                          {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
                       {errors.confirm_password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.confirm_password.message}</p>}
                     </div>
                 </div>
