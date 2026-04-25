@@ -26,6 +26,14 @@ export default function Dashboard() {
   const { session, business, isAdmin, loading: authLoading, signOut } = useAuthStore();
   const theme = useStore(state => state.theme);
   const [activeTab, setActiveTab] = useState('overview');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [activeTab]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [showSetupPrompt, setShowSetupPrompt] = useState(location.state?.isNewSignup || false);
 
   useEffect(() => {
