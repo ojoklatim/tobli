@@ -84,7 +84,7 @@ export default function AdminDashboard() {
 
   const exportCSV = () => {
     const header = ['Business Name', 'Amount', 'Paid At', 'Method', 'Reference'];
-    const rows = transactions.map(p => [p.business_name, p.amount, p.paid_at, p.method, p.reference]);
+    const rows = transactions.map(p => [p.business_name, p.amount, p.paid_at, p.method, p.pesapal_reference]);
     const csv = [header, ...rows].map(r => r.join(',')).join('\n');
     const blob = new Blob([csv], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);

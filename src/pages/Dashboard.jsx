@@ -177,10 +177,12 @@ export default function Dashboard() {
 
       {/* Subscription Notice */}
       {!isSubActive && (
-        <div className="bg-red-500/10 border-b border-red-500/20 text-red-500 py-3 text-center text-sm font-medium px-6">
-          <AlertTriangle size={16} className="inline mr-2" />
-          Subscription inactive. Your business is hidden from search results.
-          <button onClick={() => setActiveTab('subscription')} className="underline ml-2 font-bold">Renew Access</button>
+        <div className="bg-red-500/10 border-b border-red-500/20 text-red-500 py-3 text-center text-sm font-bold px-6">
+           <AlertCircle size={16} className="inline mr-2" />
+           Action Required: Subscription Inactive. Your listings are currently hidden. 
+           <button onClick={() => setActiveTab('subscription')} className="underline font-black ml-2 hover:text-red-600 transition-colors">
+             {latestSub ? 'Renew Access' : 'Get Access'}
+           </button>
         </div>
       )}
 
@@ -294,27 +296,7 @@ function OverviewTab({ biz, checklist, completionPercent, listingsCount }) {
 
   return (
     <div className="space-y-8">
-      {biz.subscription_status !== 'active' && (
-        <div className="relative group cursor-pointer" onClick={() => setActiveTab('subscription')}>
-          <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-[28px] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-          <div className={`relative p-6 rounded-[24px] border border-red-500/20 bg-red-500/10 flex flex-col md:flex-row items-center justify-between gap-4 backdrop-blur-xl transition-all`}>
-            <div className="flex items-center gap-4 text-center md:text-left">
-              <div className="w-14 h-14 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 animate-pulse">
-                <CreditCard className="text-red-500" size={28} />
-              </div>
-              <div>
-                <h3 className="font-syne font-black text-xl text-red-500 tracking-tight">ACTION REQUIRED: Listing Hidden</h3>
-                <p className="text-sm text-red-500/80 font-medium">Your subscription has expired. Pay UGX 1,000 to reappear on the Tobli map.</p>
-              </div>
-            </div>
-            <button 
-              className="bg-red-500 text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-red-600 hover:scale-105 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.3)] active:scale-95 shrink-0"
-            >
-              PAY & GO LIVE
-            </button>
-          </div>
-        </div>
-      )}
+
       {completionPercent < 100 && (
         <div className={`p-6 rounded-3xl border ${theme === 'dark' ? 'bg-neutral-800/50 border-white/10' : 'bg-blue-50 border-blue-100'}`}>
           <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-blue-900'}`}>Getting Started</h3>
@@ -336,7 +318,9 @@ function OverviewTab({ biz, checklist, completionPercent, listingsCount }) {
 
       <h2 className="text-xl font-syne font-bold">Performance Overview</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Active' : 'Inactive'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
+        <div className="cursor-pointer" onClick={() => setActiveTab('subscription')}>
+          <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Active' : 'Inactive'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
+        </div>
         <StatCard label="Status" value={biz.is_open ? 'Open' : 'Closed'} dotColor={biz.is_open ? 'bg-green-500' : 'bg-red-500'} />
         <StatCard label="Total Listings" value={listingsCount} />
         <StatCard label="Map Appearances" value={impressionsCount} />
@@ -667,7 +651,6 @@ function ListingsTab({ biz, setListingsCount }) {
   );
 }
 
-/* ─── BUSINESS INFO TAB ─────────────────────────────────────── */
 function InfoTab({ biz, setBiz }) {
   const [form, setForm] = useState({ ...biz });
   const [msg, setMsg] = useState('');
