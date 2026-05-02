@@ -63,7 +63,7 @@ export const useAuthStore = create((set) => ({
         sector,
         phone,
         email,
-        subscription_status: 'active',
+        subscription_status: 'inactive',
         is_open: false,
         is_admin: false,
       }])
@@ -95,7 +95,7 @@ export const useAuthStore = create((set) => ({
         sector: pending.sector || null,
         phone: pending.phone,
         email: pending.email || email,
-        subscription_status: 'active',
+        subscription_status: 'inactive',
         is_open: false,
         is_admin: false,
       }])
@@ -151,7 +151,7 @@ export const useAuthStore = create((set) => ({
       .insert([{
         auth_user_id: session.user.id,
         ...businessData,
-        subscription_status: 'active',
+        subscription_status: 'inactive',
         is_open: false,
         is_admin: false,
       }])
