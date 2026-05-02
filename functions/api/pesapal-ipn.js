@@ -43,40 +43,26 @@ export async function onRequestPost(context) {
       if (['076','077','078','039'].includes(prefix)) method = 'MTN';
       if (['075','070'].includes(prefix)) method = 'Airtel';
 
-      // c. Call Insforge REST API with service role key
-      const now = new Date();
-      const expiresAt = new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
-
-      const insforgeHeaders = {
-        'Content-Type': 'application/json',
-        'apikey': env.INSFORGE_SERVICE_ROLE_KEY,
-        'Authorization': `Bearer ${env.INSFORGE_SERVICE_ROLE_KEY}`,
-        'Prefer': 'return=minimal'
-      };
-
-      // INSERT into subscriptions
-      await fetch(`${env.INSFORGE_URL}/rest/v1/subscriptions`, {
+      // c. Call the secure RPC function
+      const res = await fetch(`${env.INSFORGE_URL}/rest/v1/rpc/process_subscription_payment`, {
         method: 'POST',
-        headers: insforgeHeaders,
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': env.VITE_INSFORGE_ANON_KEY,
+          'Authorization': `Bearer ${env.VITE_INSFORGE_ANON_KEY}`
+        },
         body: JSON.stringify({
-          business_id,
-          amount: 1000,
-          paid_at: now.toISOString(),
-          expires_at: expiresAt.toISOString(),
-          method,
-          pesapal_reference: statusData.confirmation_code
+          target_business_id: business_id,
+          payment_amount: 1000,
+          payment_method: method,
+          pesapal_ref: statusData.confirmation_code
         })
       });
 
-      // UPDATE businesses
-      await fetch(`${env.INSFORGE_URL}/rest/v1/businesses?id=eq.${business_id}`, {
-        method: 'PATCH',
-        headers: insforgeHeaders,
-        body: JSON.stringify({ 
-          subscription_status: 'active',
-          subscription_expires_at: expiresAt.toISOString() 
-        })
-      });
+      if (!res.ok) {
+        const errorText = await res.text();
+        throw new Error("DB Update Failed: " + errorText);
+      }
 
       // d. Respond success to Pesapal
       return new Response(JSON.stringify({ 
