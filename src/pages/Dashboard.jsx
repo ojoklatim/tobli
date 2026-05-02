@@ -799,6 +799,7 @@ function SubscriptionTab({ biz }) {
   const [step, setStep] = useState('view'); // 'view' | 'phone_input' | 'waiting' | 'success'
   const [paymentPhone, setPaymentPhone] = useState(biz?.phone || '');
   const [orderTrackingId, setOrderTrackingId] = useState(null);
+  const [redirectUrl, setRedirectUrl] = useState(null);
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -854,6 +855,7 @@ function SubscriptionTab({ biz }) {
       if (!res.ok) throw new Error(data.error || 'Payment request failed');
       
       setOrderTrackingId(data.orderTrackingId);
+      setRedirectUrl(data.redirectUrl);
       setStep('waiting');
     } catch (err) {
       setError(err.message);
@@ -1001,14 +1003,24 @@ function SubscriptionTab({ biz }) {
           )}
 
           {step === 'waiting' && (
-            <div className="text-center py-4 space-y-4">
-              <Loader2 className={`animate-spin mx-auto w-8 h-8 ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-              <p className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-                Prompt sent to {paymentPhone}.
-              </p>
-              <p className={`text-xs ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                Approve on your phone to complete renewal.
-              </p>
+            <div className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-white dark:bg-neutral-900">
+              <div className="p-3 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
+                <span className={`text-xs font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Complete Payment</span>
+                <Loader2 className="w-4 h-4 animate-spin opacity-50" />
+              </div>
+              <iframe 
+                src={redirectUrl} 
+                className="w-full h-[500px] border-0 bg-white" 
+                title="Pesapal Checkout"
+              />
+              <div className="p-3">
+                <button
+                  onClick={() => { setStep('phone_input'); setError(null); }}
+                  className={`text-xs underline transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
+                >
+                  Cancel and try again
+                </button>
+              </div>
             </div>
           )}
 

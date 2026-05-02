@@ -38,6 +38,7 @@ export default function Subscribe() {
   
   const [paymentPhone, setPaymentPhone] = useState('');
   const [orderTrackingId, setOrderTrackingId] = useState(null);
+  const [redirectUrl, setRedirectUrl] = useState(null);
 
   useEffect(() => {
     if (authLoading) return;
@@ -69,6 +70,7 @@ export default function Subscribe() {
       if (!res.ok) throw new Error(data.error || 'Payment request failed');
       
       setOrderTrackingId(data.orderTrackingId);
+      setRedirectUrl(data.redirectUrl);
       setStep('waiting');
     } catch (err) {
       setError(err.message);
@@ -205,31 +207,25 @@ export default function Subscribe() {
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.95 }}
-              className={`w-full max-w-md border p-8 md:p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
+              className={`w-full max-w-md border rounded-[32px] overflow-hidden text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
             >
-              <div className="relative flex justify-center mb-10">
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className={`absolute w-24 h-24 rounded-full ${theme === 'dark' ? 'bg-white/10' : 'bg-black/5'}`}
-                />
-                <div className={`w-24 h-24 rounded-full flex items-center justify-center relative z-10 ${theme === 'dark' ? 'bg-white/10' : 'bg-black/5'}`}>
-                  <Loader2 className={`w-10 h-10 animate-spin ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-                </div>
+              <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/5 dark:bg-white/5">
+                <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Complete Payment</span>
+                <Loader2 className={`w-4 h-4 animate-spin ${theme === 'dark' ? 'text-white/50' : 'text-black/50'}`} />
               </div>
-              
-              <h1 className="text-3xl font-syne font-bold mb-4 tracking-tight">Check your phone</h1>
-              <p className={`text-base leading-relaxed mb-8 ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                A UGX 1,000 mobile money prompt has been sent to <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>{paymentPhone}</strong>.<br/><br/>
-                Approve it to activate your Tobli listing.
-              </p>
-
-              <button
-                onClick={() => { setStep('phone_confirm'); setError(null); }}
-                className={`text-sm underline transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
-              >
-                Use a different number
-              </button>
+              <iframe 
+                src={redirectUrl} 
+                className="w-full h-[500px] border-0 bg-white" 
+                title="Pesapal Checkout"
+              />
+              <div className="p-4 bg-black/5 dark:bg-white/5">
+                <button
+                  onClick={() => { setStep('phone_confirm'); setError(null); }}
+                  className={`text-sm underline transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
+                >
+                  Cancel and use a different number
+                </button>
+              </div>
             </motion.div>
           )}
 

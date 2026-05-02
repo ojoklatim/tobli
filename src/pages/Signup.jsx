@@ -104,6 +104,7 @@ export default function Signup() {
   // Payment state
   const [paymentPhone, setPaymentPhone] = useState('');
   const [orderTrackingId, setOrderTrackingId] = useState(null);
+  const [redirectUrl, setRedirectUrl] = useState(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm();
   const password = watch("password");
@@ -177,6 +178,7 @@ export default function Signup() {
       if (!res.ok) throw new Error(data.error || 'Payment request failed');
       
       setOrderTrackingId(data.orderTrackingId);
+      setRedirectUrl(data.redirectUrl);
       setStep('waiting');
     } catch (err) {
       setError(err.message);
