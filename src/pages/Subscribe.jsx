@@ -97,7 +97,12 @@ export default function Subscribe() {
           } else if (data.status === 'FAILED' || data.statusCode === 2 || data.statusCode === 3) {
             clearInterval(interval);
             clearTimeout(timeout);
-            setError('Payment failed or cancelled. Please try again.');
+            setError(`Payment failed. Status: ${data.status} (Code: ${data.statusCode})`);
+            setStep('phone_confirm');
+          } else if (data.error) {
+            clearInterval(interval);
+            clearTimeout(timeout);
+            setError(`Backend error: ${data.error}`);
             setStep('phone_confirm');
           }
         } catch (err) {

@@ -875,13 +875,18 @@ function SubscriptionTab({ biz }) {
           if (data.statusCode === 1) { // COMPLETED
             clearInterval(interval);
             clearTimeout(timeout);
-            await useAuthStore.getState().loadSession(); // refresh business object in auth store
+            await useAuthStore.getState().loadSession();
             setStep('success');
             setTimeout(() => setStep('view'), 3000);
           } else if (data.status === 'FAILED' || data.statusCode === 2 || data.statusCode === 3) {
             clearInterval(interval);
             clearTimeout(timeout);
-            setError('Payment failed or cancelled. Please try again.');
+            setError(`Payment failed. Pesapal status: ${data.status} (Code: ${data.statusCode})`);
+            setStep('phone_input');
+          } else if (data.error) {
+            clearInterval(interval);
+            clearTimeout(timeout);
+            setError(`Backend error: ${data.error}`);
             setStep('phone_input');
           }
         } catch (err) {
