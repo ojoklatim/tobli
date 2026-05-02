@@ -47,6 +47,9 @@ export default function Dashboard() {
   const [activeTab, setActiveTab] = useState('overview');
 
   const [showTour, setShowTour] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [latestSub, setLatestSub] = useState(null);
+  const [loadingHistory, setLoadingHistory] = useState(true);
   const [isSwallowing, setIsSwallowing] = useState(false);
 
   useEffect(() => {
@@ -94,6 +97,19 @@ export default function Dashboard() {
       .select('id', { count: 'exact' })
       .eq('business_id', biz.id)
       .then(({ count }) => setListingsCount(count || 0));
+
+    const fetchHistory = async () => {
+      const { data } = await insforge.database
+        .from('subscriptions')
+        .select('*')
+        .eq('business_id', biz.id)
+        .order('paid_at', { ascending: false });
+      
+      setHistory(data || []);
+      setLatestSub(data?.[0] || null);
+      setLoadingHistory(false);
+    };
+    fetchHistory();
   }, [biz?.id]);
 
   // Don't show the business loader if we are an admin (we'll be redirected anyway)
@@ -211,10 +227,10 @@ export default function Dashboard() {
 
         {/* Content */}
         <section className={`flex-1 rounded-[24px] border p-6 relative min-h-[600px] transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/30 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
-          {activeTab === 'overview' && <OverviewTab biz={biz} checklist={checklist} completionPercent={completionPercent} listingsCount={listingsCount} />}
+          {activeTab === 'overview' && <OverviewTab biz={biz} setActiveTab={setActiveTab} checklist={checklist} completionPercent={completionPercent} listingsCount={listingsCount} theme={theme} />}
           {activeTab === 'listings' && <ListingsTab biz={biz} setListingsCount={setListingsCount} />}
           {activeTab === 'info' && <InfoTab biz={biz} setBiz={setBiz} />}
-          {activeTab === 'subscription' && <SubscriptionTab biz={biz} />}
+          {activeTab === 'subscription' && <SubscriptionTab biz={biz} history={history} latestSub={latestSub} loadingHistory={loadingHistory} setHistory={setHistory} setLatestSub={setLatestSub} setLoadingHistory={setLoadingHistory} />}
         </section>
       </main>
 
@@ -793,10 +809,7 @@ function InfoField({ label, value, onChange, icon }) {
 }
 
 /* ─── SUBSCRIPTION TAB ──────────────────────────────────────── */
-function SubscriptionTab({ biz }) {
-  const [latestSub, setLatestSub] = useState(null);
-  const [history, setHistory] = useState([]);
-  const [loadingHistory, setLoadingHistory] = useState(true);
+function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, setLatestSub, setLoadingHistory }) {
   const theme = useStore(state => state.theme);
 
   // Renewal flow state
