@@ -1,0 +1,3 @@
+/*
+  Permissions-Policy: geolocation=*
+  X-Content-Type-Options: nosniff
