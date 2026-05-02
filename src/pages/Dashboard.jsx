@@ -1014,7 +1014,7 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
           <div className="flex justify-between items-start mb-6">
             <div>
               <div className={`text-xs uppercase tracking-widest font-bold mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Current Plan</div>
-              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Standard</h3>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{isExpired ? 'Standard' : 'Premium'}</h3>
             </div>
             <div className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${isExpired ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`}>
               {isExpired ? 'Inactive' : 'Active'}
