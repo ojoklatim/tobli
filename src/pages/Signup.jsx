@@ -478,6 +478,24 @@ export default function Signup() {
                             </button>
                           </div>
                           {errors.password && <p className="text-red-500 text-xs mt-1 ml-1">{errors.password.message}</p>}
+                          {/* Password requirements checklist */}
+                          {password && (
+                            <div className={`mt-2 ml-1 space-y-1 text-xs transition-all`}>
+                              {[
+                                { label: 'At least 8 characters', pass: password.length >= 8 },
+                                { label: 'One uppercase letter', pass: /[A-Z]/.test(password) },
+                                { label: 'One lowercase letter', pass: /[a-z]/.test(password) },
+                                { label: 'One number', pass: /[0-9]/.test(password) },
+                              ].map(req => (
+                                <div key={req.label} className={`flex items-center gap-1.5 transition-colors ${req.pass ? 'text-green-500' : (theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400')}`}>
+                                  <div className={`w-3 h-3 rounded-full flex items-center justify-center flex-shrink-0 ${req.pass ? 'bg-green-500' : (theme === 'dark' ? 'bg-neutral-700' : 'bg-neutral-200')}`}>
+                                    {req.pass && <svg className="w-2 h-2 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>}
+                                  </div>
+                                  {req.label}
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
 
                         <div>

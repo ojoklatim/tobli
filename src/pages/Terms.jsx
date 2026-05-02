@@ -21,7 +21,7 @@ export default function Terms() {
 
       <div className="max-w-3xl mx-auto px-6 py-12">
         <h1 className="text-4xl font-syne font-bold mb-2 tracking-tight">Terms &amp; Conditions</h1>
-        <p className={`text-sm mb-10 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'}`}>Last updated: 22 April 2026</p>
+        <p className={`text-sm mb-10 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'}`}>Last updated: 2 May 2026</p>
 
         <div className={`space-y-8 text-sm leading-relaxed transition-colors ${theme === 'dark' ? 'text-neutral-300' : 'text-neutral-600'}`}>
 
@@ -45,45 +45,45 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">3. Eligibility</h2>
-            <p>You must be at least <strong className="text-white">18 years of age</strong> and have the legal capacity to enter into binding agreements under Ugandan law. By registering, you represent that all information you provide is accurate, current, and complete.</p>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>3. Eligibility</h2>
+            <p>You must be at least <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>18 years of age</strong> and have the legal capacity to enter into binding agreements under Ugandan law. By registering, you represent that all information you provide is accurate, current, and complete.</p>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">4. Account Registration &amp; Security</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>4. Account Registration &amp; Security</h2>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>To access Business Owner features you must create an account providing: Business Name, Owner Name, Business Type, Phone Number, Email Address, and a password (minimum 6 characters).</li>
+              <li>To access Business Owner features you must create an account providing: Business Name, Owner Name, Business Type, Phone Number, Email Address, and a password (minimum 8 characters with at least one uppercase letter, one lowercase letter, and one number).</li>
               <li>You are solely responsible for safeguarding your login credentials.</li>
-              <li>Notify us immediately at <strong className="text-white">ojoklatim1@gmail.com</strong> or call <strong className="text-white">+256773946713</strong> if you suspect unauthorised access.</li>
+              <li>Notify us immediately at <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>ojoklatim1@gmail.com</strong> or call <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>+256773946713</strong> if you suspect unauthorised access.</li>
               <li>We may suspend or terminate accounts that violate these Terms or exhibit suspicious activity.</li>
             </ol>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">5. Services Provided</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>5. Services Provided</h2>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-white">Map Discovery</strong> — GPS-powered map for finding nearby businesses and offerings.</li>
-              <li><strong className="text-white">Business Dashboard</strong> — manage Listings, contacts, GPS location, and subscriptions.</li>
-              <li><strong className="text-white">Search</strong> — full-text search returning nearest-first results.</li>
-              <li><strong className="text-white">Routing</strong> — directions via third-party OSRM.</li>
-              <li><strong className="text-white">Contact Links</strong> — WhatsApp, call, Instagram, X, and website links.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Map Discovery</strong> — GPS-powered map for finding nearby businesses and offerings.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Business Dashboard</strong> — manage Listings, contacts, GPS location, and subscriptions.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Search</strong> — full-text search returning nearest-first results.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Routing</strong> — directions via third-party OSRM.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Contact Links</strong> — WhatsApp, call, Instagram, X, and website links.</li>
             </ul>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">6. Subscriptions &amp; Payments</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>6. Subscriptions &amp; Payments</h2>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>An active Subscription is required for Listings to appear on the public map.</li>
-              <li>All payments are processed through <strong className="text-white">Pesapal Limited</strong>. By paying you also agree to Pesapal&apos;s terms and privacy policy.</li>
-              <li>We may modify pricing with <strong className="text-white">30 days&apos; prior notice</strong>.</li>
-              <li>Payments are in <strong className="text-white">Ugandan Shillings (UGX)</strong> via Mobile Money, bank cards, or other Pesapal-supported methods.</li>
-              <li>Refund requests may be submitted within <strong className="text-white">7 days</strong> of payment and are evaluated case-by-case.</li>
-              <li>Expired subscriptions result in Listings being hidden until renewal.</li>
+              <li>An active Subscription (Standard plan) is required for Listings to appear on the public map.</li>
+              <li>All payments are processed through <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Pesapal Limited</strong>. By paying you also agree to Pesapal&apos;s terms and privacy policy.</li>
+              <li>We may modify pricing with <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>30 days&apos; prior notice</strong>.</li>
+              <li>Payments are in <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Ugandan Shillings (UGX)</strong> via Mobile Money, bank cards, or other Pesapal-supported methods.</li>
+              <li>Refund requests may be submitted within <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>7 days</strong> of payment and are evaluated case-by-case.</li>
+              <li>Expired subscriptions result in Listings being hidden until renewal. The subscription status will show as <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Inactive</strong> until renewed.</li>
             </ol>
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">7. User-Generated Content</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>7. User-Generated Content</h2>
             <ol className="list-decimal pl-5 space-y-2">
               <li>Business Owners retain ownership of uploaded content (info, descriptions, images, logos).</li>
               <li>You grant Tobli a non-exclusive, worldwide, royalty-free licence to display and distribute that content for operating the Service.</li>
@@ -93,7 +93,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-white text-lg font-bold mb-3">8. Acceptable Use</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>8. Acceptable Use</h2>
             <p>You agree not to: use the Service unlawfully; scrape or reverse-engineer the Platform; gain unauthorised access to accounts or infrastructure; disrupt the Service; impersonate others; or use automated bots without consent.</p>
           </section>
 

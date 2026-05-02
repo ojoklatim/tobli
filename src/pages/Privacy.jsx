@@ -21,10 +21,10 @@ export default function Privacy() {
 
       <div className="max-w-3xl mx-auto px-6 py-12">
         <h1 className="text-4xl font-syne font-bold mb-2 tracking-tight">Privacy Policy</h1>
-        <p className={`text-sm mb-4 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'}`}>Last updated: 22 April 2026</p>
+        <p className={`text-sm mb-4 transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-400'}`}>Last updated: 2 May 2026</p>
         <p className={`text-sm mb-10 transition-colors ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>This Privacy Policy is issued in compliance with the <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Data Protection and Privacy Act, 2019</strong> of Uganda (&quot;DPPA&quot;) and the regulations made thereunder.</p>
 
-        <div className="space-y-8 text-neutral-300 text-sm leading-relaxed">
+        <div className={`space-y-8 text-sm leading-relaxed transition-colors ${theme === 'dark' ? 'text-neutral-300' : 'text-neutral-600'}`}>
 
           <section>
             <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>1. Data Controller</h2>

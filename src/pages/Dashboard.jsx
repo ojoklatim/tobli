@@ -203,7 +203,7 @@ export default function Dashboard() {
       {!isSubActive && (
         <div className="bg-red-500/10 border-b border-red-500/20 text-red-500 py-3 text-center text-sm font-bold px-6">
            <AlertCircle size={16} className="inline mr-2" />
-           Action Required: Subscription Inactive. Your listings are currently hidden. 
+           Action Required: Your listings will not appear on the map.
            <button onClick={() => setActiveTab('subscription')} className="underline font-black ml-2 hover:text-red-600 transition-colors">
              {latestSub ? 'Renew Access' : 'Get Access'}
            </button>
@@ -996,7 +996,9 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
       {isExpired && step === 'view' && (
         <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl flex items-center gap-3 text-sm font-bold">
           <AlertCircle size={18} />
-          Your listing is inactive. Renew your subscription to appear on the map and search results.
+          {latestSub
+            ? 'Renew your subscription to appear on the map and search results.'
+            : 'Activate your subscription to appear on the map and search results.'}
         </div>
       )}
 
@@ -1012,10 +1014,10 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
           <div className="flex justify-between items-start mb-6">
             <div>
               <div className={`text-xs uppercase tracking-widest font-bold mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Current Plan</div>
-              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Premium</h3>
+              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Standard</h3>
             </div>
             <div className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${isExpired ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`}>
-              {isExpired ? 'Expired' : 'Active'}
+              {isExpired ? 'Inactive' : 'Active'}
             </div>
           </div>
 
