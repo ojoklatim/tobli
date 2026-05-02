@@ -22,7 +22,7 @@ export async function onRequestPost(context) {
       currency: "UGX",
       amount: 1000,
       description: "Tobli Monthly Subscription",
-      callback_url: env.TOBLI_CALLBACK_URL,
+      callback_url: env.TOBLI_CALLBACK_URL || `${new URL(request.url).origin}/dashboard`,
       notification_id: env.PESAPAL_NOTIFICATION_ID,
       billing_address: {
         phone_number: phone_number || "",
