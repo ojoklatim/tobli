@@ -109,7 +109,15 @@ export default function Dashboard() {
       setLatestSub(data?.[0] || null);
       setLoadingHistory(false);
     };
+
+    const refreshData = async () => {
+      await fetchHistory();
+      await useAuthStore.getState().loadSession();
+    };
+
     fetchHistory();
+    // Expose refreshData for use in tabs
+    window._tobli_refresh = refreshData;
   }, [biz?.id]);
 
   // Don't show the business loader if we are an admin (we'll be redirected anyway)
@@ -230,7 +238,7 @@ export default function Dashboard() {
           {activeTab === 'overview' && <OverviewTab biz={biz} setActiveTab={setActiveTab} checklist={checklist} completionPercent={completionPercent} listingsCount={listingsCount} theme={theme} />}
           {activeTab === 'listings' && <ListingsTab biz={biz} setListingsCount={setListingsCount} />}
           {activeTab === 'info' && <InfoTab biz={biz} setBiz={setBiz} />}
-          {activeTab === 'subscription' && <SubscriptionTab biz={biz} history={history} latestSub={latestSub} loadingHistory={loadingHistory} setHistory={setHistory} setLatestSub={setLatestSub} setLoadingHistory={setLoadingHistory} />}
+          {activeTab === 'subscription' && <SubscriptionTab biz={biz} history={history} latestSub={latestSub} loadingHistory={loadingHistory} setHistory={setHistory} setLatestSub={setLatestSub} setLoadingHistory={setLoadingHistory} onRefresh={() => window._tobli_refresh?.()} />}
         </section>
       </main>
 
@@ -809,7 +817,7 @@ function InfoField({ label, value, onChange, icon }) {
 }
 
 /* ─── SUBSCRIPTION TAB ──────────────────────────────────────── */
-function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, setLatestSub, setLoadingHistory }) {
+function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, setLatestSub, setLoadingHistory, onRefresh }) {
   const theme = useStore(state => state.theme);
 
   // Renewal flow state
@@ -891,10 +899,10 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
         try {
           const res = await fetch(`/api/pesapal-status?orderTrackingId=${orderTrackingId}`);
           const data = await res.json();
-          if (data.statusCode === 1) { // COMPLETED
+          if (data.status_code === 1) { // COMPLETED
             clearInterval(interval);
             clearTimeout(timeout);
-            await useAuthStore.getState().loadSession();
+            if (onRefresh) await onRefresh();
             setStep('success');
             setTimeout(() => setStep('view'), 3000);
           } else if (data.status_code === 2 || data.status_code === 3) {
