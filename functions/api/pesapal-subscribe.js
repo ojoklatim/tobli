@@ -16,7 +16,7 @@ export async function onRequestPost(context) {
     if (tokenData.status !== "200") throw new Error("Pesapal auth failed: " + JSON.stringify(tokenData));
 
     // 2. POST to Pesapal Transactions/SubmitOrderRequest
-    const merchantRef = `SUB-${Date.now()}`; // Shorter and safer
+    const merchantRef = `${business_id}-${Date.now()}`; 
     const orderBody = {
       id: merchantRef,
       currency: "UGX",

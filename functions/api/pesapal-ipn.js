@@ -27,10 +27,9 @@ export async function onRequestPost(context) {
 
     // 3. If COMPLETED
     if (statusData.status_code === 1) {
-      // a. Parse business_id from merchant reference (TOBLI-{id}-{ts})
+      // a. Parse business_id from merchant reference ({uuid}-{ts})
       const parts = OrderMerchantReference.split('-');
-      // id can be a UUID, which itself contains hyphens. So slice from 1 to length-1 and join back.
-      const business_id = parts.slice(1, -1).join('-');
+      const business_id = parts.slice(0, -1).join('-');
 
       // b. Derive payment method from phone
       let method = 'Unknown';
