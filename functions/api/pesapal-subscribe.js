@@ -16,20 +16,24 @@ export async function onRequestPost(context) {
     if (tokenData.status !== "200") throw new Error("Pesapal auth failed: " + JSON.stringify(tokenData));
 
     // 2. POST to Pesapal Transactions/SubmitOrderRequest
-    const merchantRef = `TOBLI-${business_id}-${Date.now()}`.substring(0, 50);
+    const merchantRef = `SUB-${Date.now()}`; // Shorter and safer
     const orderBody = {
       id: merchantRef,
       currency: "UGX",
       amount: 1000,
-      description: "Tobli Monthly Subscription",
+      description: `Tobli Subscription: ${business_id}`,
       callback_url: env.TOBLI_CALLBACK_URL || `${new URL(request.url).origin}/dashboard`,
       notification_id: env.PESAPAL_NOTIFICATION_ID,
       billing_address: {
-        phone_number: phone_number || "",
         email_address: email || "info@tobli.ug",
+        phone_number: phone_number || "",
         first_name: first_name || "Business",
         last_name: last_name || "Owner",
-        country_code: "UG"
+        country_code: "UG",
+        line_1: "Kampala",
+        city: "Kampala",
+        state: "Central",
+        zip_code: "0000"
       }
     };
 

@@ -865,6 +865,12 @@ function SubscriptionTab({ biz }) {
   };
 
   useEffect(() => {
+    if (step === 'waiting' && redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }, [step, redirectUrl]);
+
+  useEffect(() => {
     let interval;
     let timeout;
     if (step === 'waiting' && orderTrackingId) {
@@ -963,69 +969,29 @@ function SubscriptionTab({ biz }) {
 
           {step === 'view' && (
             <button
-              onClick={startRenewal}
-              className={`w-full font-extrabold py-4 rounded-xl transition-colors text-sm ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
+              onClick={submitPayment}
+              disabled={isSubmitting}
+              className={`w-full font-extrabold py-4 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
-              Renew — UGX 1,000
+              {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Renew — UGX 1,000'}
             </button>
           )}
 
-          {step === 'phone_input' && (
-            <div className="space-y-4">
-              <div className="relative">
-                <input
-                  type="tel"
-                  value={paymentPhone}
-                  onChange={(e) => setPaymentPhone(e.target.value)}
-                  className={`w-full border rounded-xl p-4 transition-colors focus:outline-none text-base tracking-wider ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white' : 'bg-gray-50 border-gray-200 text-black focus:border-black'}`}
-                  placeholder="07XX XXX XXX"
-                />
-                {networkName && (
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                    <span className={`text-[10px] font-bold px-2 py-1 rounded-md ${networkName.includes('MTN') ? 'bg-yellow-400 text-black' : 'bg-red-500 text-white'}`}>
-                      {networkName}
-                    </span>
-                  </div>
-                )}
-              </div>
-              {error && <div className="text-red-500 text-xs font-bold">{error}</div>}
-              <div className="flex gap-2">
-                <button
-                  onClick={() => { setStep('view'); setError(null); }}
-                  className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${theme === 'dark' ? 'bg-neutral-800 text-white hover:bg-neutral-700' : 'bg-gray-200 text-black hover:bg-gray-300'}`}
-                >
-                  Cancel
-                </button>
-                <button
-                  disabled={isSubmitting || paymentPhone.length < 10}
-                  onClick={submitPayment}
-                  className={`flex-1 flex justify-center items-center gap-2 py-3 rounded-xl font-bold text-sm transition-colors disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
-                >
-                  {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Pay UGX 1,000'}
-                </button>
-              </div>
+          {error && <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold leading-relaxed">{error}</div>}
+
+          {step === 'waiting' && (
+            <div className="text-center py-8 space-y-4">
+              <Loader2 className="animate-spin mx-auto w-8 h-8 opacity-50" />
+              <p className="text-sm font-bold">Redirecting to Pesapal...</p>
+              <p className="text-xs opacity-50">Please complete the payment on the secure page.</p>
             </div>
           )}
 
-          {step === 'waiting' && (
-            <div className="rounded-2xl overflow-hidden border border-black/5 dark:border-white/5 bg-white dark:bg-neutral-900">
-              <div className="p-3 border-b border-black/5 dark:border-white/5 flex justify-between items-center">
-                <span className={`text-xs font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Complete Payment</span>
-                <Loader2 className="w-4 h-4 animate-spin opacity-50" />
-              </div>
-              <iframe 
-                src={redirectUrl} 
-                className="w-full h-[500px] border-0 bg-white" 
-                title="Pesapal Checkout"
-              />
-              <div className="p-3">
-                <button
-                  onClick={() => { setStep('phone_input'); setError(null); }}
-                  className={`text-xs underline transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
-                >
-                  Cancel and try again
-                </button>
-              </div>
+          {step === 'success' && (
+            <div className="text-center py-4 space-y-4 text-emerald-500">
+              <CheckCircle2 className="mx-auto w-12 h-12" />
+              <p className="text-lg font-bold">Renewal Successful!</p>
+              <p className="text-sm opacity-80">Your subscription is now active.</p>
             </div>
           )}
 

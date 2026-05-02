@@ -80,6 +80,12 @@ export default function Subscribe() {
   };
 
   useEffect(() => {
+    if (step === 'waiting' && redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }, [step, redirectUrl]);
+
+  useEffect(() => {
     let interval;
     let timeout;
     if (step === 'waiting' && orderTrackingId) {
@@ -212,25 +218,13 @@ export default function Subscribe() {
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.95 }}
-              className={`w-full max-w-md border rounded-[32px] overflow-hidden text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
+              className={`w-full max-w-md border p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
             >
-              <div className="p-4 border-b border-white/5 flex justify-between items-center bg-black/5 dark:bg-white/5">
-                <span className={`text-sm font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Complete Payment</span>
-                <Loader2 className={`w-4 h-4 animate-spin ${theme === 'dark' ? 'text-white/50' : 'text-black/50'}`} />
-              </div>
-              <iframe 
-                src={redirectUrl} 
-                className="w-full h-[500px] border-0 bg-white" 
-                title="Pesapal Checkout"
-              />
-              <div className="p-4 bg-black/5 dark:bg-white/5">
-                <button
-                  onClick={() => { setStep('phone_confirm'); setError(null); }}
-                  className={`text-sm underline transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
-                >
-                  Cancel and use a different number
-                </button>
-              </div>
+              <Loader2 className="animate-spin mx-auto w-12 h-12 mb-6 opacity-50" />
+              <h1 className="text-3xl font-syne font-bold mb-4 tracking-tight">Redirecting...</h1>
+              <p className={`text-base leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
+                Please complete your payment on the secure Pesapal checkout page.
+              </p>
             </motion.div>
           )}
 
