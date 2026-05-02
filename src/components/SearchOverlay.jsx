@@ -206,7 +206,13 @@ export default function SearchOverlay() {
                             </div>
                             <div className="text-right flex-shrink-0">
                               <div className={`font-mono font-medium tracking-tight px-3 py-1.5 rounded-lg text-sm ${theme === 'dark' ? 'text-white/90 bg-white/10' : 'text-black/90 bg-black/5'}`}>
-                                {res.price ? `UGX ${res.price.toLocaleString()}` : '—'}
+                                {res.price_type === 'negotiable' ? 'Negotiable' : (
+                                  <>
+                                    {res.price_type === 'starting' && <span className="text-[10px] uppercase opacity-50 mr-1">From</span>}
+                                    {res.price ? `UGX ${res.price.toLocaleString()}` : '—'}
+                                    {res.price_suffix && <span className="opacity-50 text-[10px] ml-1">{res.price_suffix}</span>}
+                                  </>
+                                )}
                               </div>
                             </div>
                           </button>

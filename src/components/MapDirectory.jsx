@@ -178,7 +178,15 @@ function BusinessPopupContent() {
             {product_name || 'Offer'}
           </h3>
           <div className={`font-mono text-[15px] font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-            {product_price ? `UGX ${product_price.toLocaleString()}` : 'Price on request'}
+            {selectedBusiness.price_type === 'negotiable' ? (
+              <span className="text-[13px] uppercase tracking-widest opacity-80">Negotiable</span>
+            ) : (
+              <>
+                {selectedBusiness.price_type === 'starting' && <span className="text-[10px] uppercase opacity-60">From </span>}
+                {selectedBusiness.price ? `UGX ${selectedBusiness.price.toLocaleString()}` : 'Price on request'}
+                {selectedBusiness.price_suffix && <span className="text-[12px] opacity-60 ml-1 font-sans">{selectedBusiness.price_suffix}</span>}
+              </>
+            )}
           </div>
           <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold max-w-full truncate ${theme === 'dark' ? 'bg-white/10 text-neutral-300' : 'bg-black/5 text-neutral-600'}`}>
             {biz.business_name}

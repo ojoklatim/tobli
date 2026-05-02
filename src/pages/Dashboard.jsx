@@ -368,7 +368,7 @@ function StatCard({ label, value, dotColor }) {
 
 /* ─── LISTINGS TAB ──────────────────────────────────────────── */
 function ListingsTab({ biz, setListingsCount }) {
-  const [newItem, setNewItem] = useState({ name: '', type: 'product', price: '', imageFile: null, imagePreview: null });
+  const [newItem, setNewItem] = useState({ name: '', type: 'product', price: '', price_type: 'fixed', price_suffix: '', imageFile: null, imagePreview: null });
   const [listings, setListings] = useState([]);
   const [listingsLoading, setListingsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -449,7 +449,9 @@ function ListingsTab({ biz, setListingsCount }) {
           business_id: biz.id,
           name: newItem.name,
           type: newItem.type,
-          price: parseFloat(newItem.price),
+          price: newItem.price_type === 'negotiable' ? null : parseFloat(newItem.price),
+          price_type: newItem.price_type,
+          price_suffix: newItem.price_suffix,
           available: true,
         }])
         .select('*');
@@ -499,7 +501,9 @@ function ListingsTab({ biz, setListingsCount }) {
         .update({ 
           name: editingItem.name, 
           type: editingItem.type, 
-          price: parseFloat(editingItem.price),
+          price: editingItem.price_type === 'negotiable' ? null : parseFloat(editingItem.price),
+          price_type: editingItem.price_type,
+          price_suffix: editingItem.price_suffix,
           image_url: imageUrl
         })
         .eq('id', editingItem.id);
@@ -544,14 +548,30 @@ function ListingsTab({ biz, setListingsCount }) {
             <button onClick={() => setShowAdd(false)} className={theme === 'dark' ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-black'}><CloseIcon size={20} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div className="space-y-2">
+            <div className="md:col-span-2 space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Item Name</label>
               <input placeholder="Name" className={`w-full border-none rounded-2xl p-4 focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.name} onChange={e => setNewItem({ ...newItem, name: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Price (UGX)</label>
-              <input placeholder="Price" type="number" className={`w-full border-none rounded-2xl p-4 font-mono focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} />
+              <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Pricing Mode</label>
+              <select className={`w-full border-none rounded-2xl p-4 focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.price_type} onChange={e => setNewItem({ ...newItem, price_type: e.target.value })}>
+                <option value="fixed">Fixed Price</option>
+                <option value="starting">Starting From</option>
+                <option value="negotiable">Negotiable / Varied</option>
+              </select>
             </div>
+            {newItem.price_type !== 'negotiable' && (
+              <>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Price (UGX)</label>
+                  <input placeholder="Price" type="number" className={`w-full border-none rounded-2xl p-4 font-mono focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.price} onChange={e => setNewItem({ ...newItem, price: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Unit (Optional)</label>
+                  <input placeholder="e.g. /hr, /day" className={`w-full border-none rounded-2xl p-4 focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={newItem.price_suffix} onChange={e => setNewItem({ ...newItem, price_suffix: e.target.value })} />
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Image</label>
               <label className={`w-full h-[56px] flex items-center justify-center border-2 border-dashed rounded-2xl cursor-pointer transition-all overflow-hidden relative ${theme === 'dark' ? 'bg-neutral-800 border-white/10 hover:border-white/30' : 'bg-gray-100 border-black/10 hover:border-black/30'}`}>
@@ -583,14 +603,30 @@ function ListingsTab({ biz, setListingsCount }) {
             <button onClick={() => setEditingItem(null)} className="text-neutral-500 hover:text-white transition-colors"><CloseIcon size={20} /></button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-            <div className="space-y-2">
+            <div className="md:col-span-2 space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Item Name</label>
               <input className={`w-full border-none rounded-2xl p-4 focus:outline-none text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.name} onChange={e => setEditingItem({ ...editingItem, name: e.target.value })} />
             </div>
             <div className="space-y-2">
-              <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Price (UGX)</label>
-              <input type="number" className={`w-full border-none rounded-2xl p-4 font-mono focus:outline-none text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.price} onChange={e => setEditingItem({ ...editingItem, price: e.target.value })} />
+              <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Pricing Mode</label>
+              <select className={`w-full border-none rounded-2xl p-4 focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.price_type} onChange={e => setEditingItem({ ...editingItem, price_type: e.target.value })}>
+                <option value="fixed">Fixed Price</option>
+                <option value="starting">Starting From</option>
+                <option value="negotiable">Negotiable / Varied</option>
+              </select>
             </div>
+            {editingItem.price_type !== 'negotiable' && (
+              <>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Price (UGX)</label>
+                  <input type="number" className={`w-full border-none rounded-2xl p-4 font-mono focus:outline-none text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.price} onChange={e => setEditingItem({ ...editingItem, price: e.target.value })} />
+                </div>
+                <div className="space-y-2">
+                  <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Unit (Optional)</label>
+                  <input placeholder="e.g. /hr" className={`w-full border-none rounded-2xl p-4 focus:outline-none text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-800 text-white' : 'bg-gray-100 text-black'}`} value={editingItem.price_suffix} onChange={e => setEditingItem({ ...editingItem, price_suffix: e.target.value })} />
+                </div>
+              </>
+            )}
             <div className="space-y-2">
               <label className="text-[10px] uppercase font-black text-neutral-500 tracking-widest px-1">Image</label>
               <label className={`w-full h-[56px] flex items-center justify-center border-2 border-dashed rounded-2xl cursor-pointer transition-all overflow-hidden relative ${theme === 'dark' ? 'bg-neutral-800 border-white/10 hover:border-white/30' : 'bg-gray-100 border-black/10 hover:border-black/30'}`}>
@@ -646,7 +682,19 @@ function ListingsTab({ biz, setListingsCount }) {
                     </div>
                   </td>
                   <td className="p-6 font-medium">{item.name}</td>
-                  <td className={`p-6 text-right font-mono ${theme === 'dark' ? 'text-white/80' : 'text-black/80'}`}>UGX {item.price?.toLocaleString()}</td>
+                  <td className="p-4">
+                    <div className="font-mono text-xs font-bold text-right">
+                      {item.price_type === 'negotiable' ? (
+                        <span className="text-neutral-500 uppercase text-[10px] tracking-widest">Negotiable</span>
+                      ) : (
+                        <>
+                          {item.price_type === 'starting' && <span className="text-[9px] uppercase opacity-50 block leading-none mb-1">From</span>}
+                          UGX {item.price?.toLocaleString() || '—'}
+                          {item.price_suffix && <span className="opacity-50 ml-1 text-[10px]">{item.price_suffix}</span>}
+                        </>
+                      )}
+                    </div>
+                  </td>
                   <td className="p-6 text-center">
                     <button 
                       onClick={() => toggle(item.id)} 
