@@ -295,22 +295,24 @@ function OverviewTab({ biz, checklist, completionPercent, listingsCount }) {
   return (
     <div className="space-y-8">
       {biz.subscription_status !== 'active' && (
-        <div className={`p-6 rounded-[24px] border border-red-500/20 bg-red-500/10 flex flex-col md:flex-row items-center justify-between gap-4`}>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
-              <CreditCard className="text-red-500" />
+        <div className="relative group cursor-pointer" onClick={() => setActiveTab('subscription')}>
+          <div className="absolute -inset-1 bg-gradient-to-r from-red-600 to-orange-600 rounded-[28px] blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+          <div className={`relative p-6 rounded-[24px] border border-red-500/20 bg-red-500/10 flex flex-col md:flex-row items-center justify-between gap-4 backdrop-blur-xl transition-all`}>
+            <div className="flex items-center gap-4 text-center md:text-left">
+              <div className="w-14 h-14 rounded-full bg-red-500/20 flex items-center justify-center shrink-0 animate-pulse">
+                <CreditCard className="text-red-500" size={28} />
+              </div>
+              <div>
+                <h3 className="font-syne font-black text-xl text-red-500 tracking-tight">ACTION REQUIRED: Listing Hidden</h3>
+                <p className="text-sm text-red-500/80 font-medium">Your subscription has expired. Pay UGX 1,000 to reappear on the Tobli map.</p>
+              </div>
             </div>
-            <div>
-              <h3 className="font-bold text-red-500">Subscription Inactive</h3>
-              <p className="text-sm text-red-500/80">Your listings are currently hidden from the map. Pay UGX 1,000 to go live.</p>
-            </div>
+            <button 
+              className="bg-red-500 text-white px-8 py-3 rounded-full font-bold text-sm hover:bg-red-600 hover:scale-105 transition-all shadow-[0_10px_20px_rgba(239,68,68,0.3)] active:scale-95 shrink-0"
+            >
+              PAY & GO LIVE
+            </button>
           </div>
-          <button 
-            onClick={() => setActiveTab('subscription')}
-            className="bg-red-500 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-red-600 transition-colors shrink-0"
-          >
-            Renew Now
-          </button>
         </div>
       )}
       {completionPercent < 100 && (
@@ -848,11 +850,7 @@ function SubscriptionTab({ biz }) {
     daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
   }
 
-  const startRenewal = () => {
-    setPaymentPhone(biz?.phone || '');
-    setError(null);
-    setStep('phone_input');
-  };
+
 
   const submitPayment = async () => {
     setIsSubmitting(true);
@@ -903,16 +901,16 @@ function SubscriptionTab({ biz }) {
             await useAuthStore.getState().loadSession();
             setStep('success');
             setTimeout(() => setStep('view'), 3000);
-          } else if (data.status === 'FAILED' || data.statusCode === 2 || data.statusCode === 3) {
+          } else if (data.status_code === 2 || data.status_code === 3) {
             clearInterval(interval);
             clearTimeout(timeout);
-            setError(`Payment failed. Pesapal status: ${data.status} (Code: ${data.statusCode})`);
-            setStep('phone_input');
+            setError(`Payment failed. Pesapal status: ${data.status} (Code: ${data.status_code})`);
+            setStep('view');
           } else if (data.error) {
             clearInterval(interval);
             clearTimeout(timeout);
             setError(`Backend error: ${data.error}`);
-            setStep('phone_input');
+            setStep('view');
           }
         } catch (err) {
           // silent error, keep polling
@@ -923,9 +921,9 @@ function SubscriptionTab({ biz }) {
       
       timeout = setTimeout(() => {
         clearInterval(interval);
-        setError('Prompt expired. Tap below to resend.');
-        setStep('phone_input');
-      }, 180000); // 3 minutes timeout
+        setError('Payment timeout. Please try again.');
+        setStep('view');
+      }, 300000); // 5 minutes timeout
     }
     return () => { clearInterval(interval); clearTimeout(timeout); };
   }, [step, orderTrackingId]);
@@ -1014,13 +1012,7 @@ function SubscriptionTab({ biz }) {
             </div>
           )}
 
-          {step === 'success' && (
-            <div className="text-center py-4 space-y-4 text-emerald-500">
-              <CheckCircle2 className="mx-auto w-12 h-12" />
-              <p className="text-lg font-bold">Renewal Successful!</p>
-              <p className="text-sm opacity-80">Your subscription is now active.</p>
-            </div>
-          )}
+
         </div>
 
         {/* Payment History */}
