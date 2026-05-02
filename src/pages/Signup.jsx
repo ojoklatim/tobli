@@ -130,7 +130,7 @@ export default function Signup() {
       } else {
         const biz = useAuthStore.getState().business;
         setPaymentPhone(biz?.phone || data.phone || '');
-        setStep('value_message');
+        navigate('/dashboard', { state: { isNewSignup: true } });
       }
     } catch (err) {
       setError(err.message);
@@ -147,7 +147,7 @@ export default function Signup() {
     try {
       const biz = await useAuthStore.getState().verifyEmailAndCreateBusiness(pendingEmail, otpCode);
       setPaymentPhone(biz?.phone || '');
-      setStep('value_message');
+      navigate('/dashboard', { state: { isNewSignup: true } });
     } catch (err) {
       setError(err.message);
     } finally {

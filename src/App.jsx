@@ -32,9 +32,6 @@ function ProtectedRoute({ children }) {
 
   if (loading) return null;
   if (!session?.user) return <Navigate to="/login" state={{ from: location }} replace />;
-  if (business?.subscription_status === 'inactive' && location.pathname !== '/subscribe') {
-    return <Navigate to="/subscribe" replace />;
-  }
   return children;
 }
 
