@@ -294,6 +294,25 @@ function OverviewTab({ biz, checklist, completionPercent, listingsCount }) {
 
   return (
     <div className="space-y-8">
+      {biz.subscription_status !== 'active' && (
+        <div className={`p-6 rounded-[24px] border border-red-500/20 bg-red-500/10 flex flex-col md:flex-row items-center justify-between gap-4`}>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center shrink-0">
+              <CreditCard className="text-red-500" />
+            </div>
+            <div>
+              <h3 className="font-bold text-red-500">Subscription Inactive</h3>
+              <p className="text-sm text-red-500/80">Your listings are currently hidden from the map. Pay UGX 1,000 to go live.</p>
+            </div>
+          </div>
+          <button 
+            onClick={() => setActiveTab('subscription')}
+            className="bg-red-500 text-white px-6 py-2.5 rounded-full font-bold text-sm hover:bg-red-600 transition-colors shrink-0"
+          >
+            Renew Now
+          </button>
+        </div>
+      )}
       {completionPercent < 100 && (
         <div className={`p-6 rounded-3xl border ${theme === 'dark' ? 'bg-neutral-800/50 border-white/10' : 'bg-blue-50 border-blue-100'}`}>
           <h3 className={`text-lg font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-blue-900'}`}>Getting Started</h3>
@@ -315,7 +334,7 @@ function OverviewTab({ biz, checklist, completionPercent, listingsCount }) {
 
       <h2 className="text-xl font-syne font-bold">Performance Overview</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Coming Soon' : 'Expired'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
+        <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Active' : 'Inactive'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
         <StatCard label="Status" value={biz.is_open ? 'Open' : 'Closed'} dotColor={biz.is_open ? 'bg-green-500' : 'bg-red-500'} />
         <StatCard label="Total Listings" value={listingsCount} />
         <StatCard label="Map Appearances" value={impressionsCount} />
@@ -1061,7 +1080,7 @@ function DashboardTourOverlay({ onClose }) {
     { title: "Open/Closed Status", desc: "Toggle your business open or closed. When closed, your listings won't appear on the map. You have full control — toggle whenever you like." },
     { title: "Manage Listings", desc: "Add, edit, or remove your products/services here. You can also temporarily hide items by toggling their availability." },
     { title: "Business Info", desc: "Update your contact details and location. A pinned GPS location is mandatory to appear on the map, while social links are optional." },
-    { title: "Subscription", desc: "Check your current plan and expiry date. Online subscription renewal is coming soon!" },
+    { title: "Subscription", desc: "Check your current plan and expiry date. Renew your subscription here to stay live on the map!" },
     { title: "Logout", desc: "Use the power icon at the top right to securely sign out of your dashboard." }
   ];
 

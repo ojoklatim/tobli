@@ -187,6 +187,12 @@ export default function Signup() {
     }
   };
 
+  useEffect(() => {
+    if (step === 'waiting' && redirectUrl) {
+      window.location.href = redirectUrl;
+    }
+  }, [step, redirectUrl]);
+
   // Polling for payment status
   useEffect(() => {
     let interval;
@@ -196,21 +202,21 @@ export default function Signup() {
         try {
           const res = await fetch(`/api/pesapal-status?orderTrackingId=${orderTrackingId}`);
           const data = await res.json();
-          if (data.statusCode === 1) { // COMPLETED
+          if (data.status_code === 1) { // COMPLETED
             clearInterval(interval);
             clearTimeout(timeout);
             setStep('success');
             setTimeout(() => navigate('/dashboard', { state: { isNewSignup: true } }), 2000);
-          } else if (data.status === 'FAILED' || data.statusCode === 2 || data.statusCode === 3) {
+          } else if (data.status_code === 2 || data.status_code === 3) {
             clearInterval(interval);
             clearTimeout(timeout);
-            setError(`Payment failed. Status: ${data.status} (Code: ${data.statusCode})`);
-            setStep('phone_confirm');
+            setError(`Payment failed. Status: ${data.status} (Code: ${data.status_code})`);
+            setStep('value_message');
           } else if (data.error) {
             clearInterval(interval);
             clearTimeout(timeout);
             setError(`Backend error: ${data.error}`);
-            setStep('phone_confirm');
+            setStep('value_message');
           }
         } catch (err) {
           // silent error, keep polling
@@ -222,8 +228,8 @@ export default function Signup() {
       timeout = setTimeout(() => {
         clearInterval(interval);
         setError('Prompt expired. Tap below to resend.');
-        setStep('phone_confirm');
-      }, 180000); // 3 minutes timeout
+        setStep('value_message');
+      }, 300000); // 5 minutes timeout
     }
     return () => { clearInterval(interval); clearTimeout(timeout); };
   }, [step, orderTrackingId, navigate]);
@@ -277,10 +283,11 @@ export default function Signup() {
               </p>
               <div className="flex flex-col gap-4 pt-6">
                 <button 
-                  onClick={() => setStep('phone_confirm')} 
-                  className={`w-full py-4 rounded-full font-bold transition-all text-lg ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
+                  onClick={submitPayment} 
+                  disabled={isLoading}
+                  className={`w-full py-4 rounded-full font-bold transition-all text-lg flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
                 >
-                  I understand, continue
+                  {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'I understand, pay UGX 1,000'}
                 </button>
                 <button 
                   onClick={async () => { await useAuthStore.getState().signOut(); navigate('/'); }} 
@@ -292,58 +299,7 @@ export default function Signup() {
             </motion.div>
           )}
 
-          {step === 'phone_confirm' && (
-            <motion.div 
-              key="phone_confirm"
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`w-full max-w-md border p-8 md:p-12 rounded-[32px] transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
-            >
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-syne font-bold mb-3 tracking-tight">Confirm your mobile money number</h1>
-                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                  We'll send a UGX 1,000 payment prompt to this number.
-                </p>
-              </div>
 
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3 text-red-500 text-sm mb-6">
-                  <AlertCircle size={18} />
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-6">
-                <div>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      value={paymentPhone}
-                      onChange={(e) => setPaymentPhone(e.target.value)}
-                      className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none text-xl tracking-wider ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                      placeholder="07XX XXX XXX"
-                    />
-                    {networkName && (
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                        <span className={`text-xs font-bold px-2 py-1 rounded-md ${networkName.includes('MTN') ? 'bg-yellow-400 text-black' : 'bg-red-500 text-white'}`}>
-                          {networkName}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <button
-                  disabled={isLoading || paymentPhone.length < 10}
-                  onClick={submitPayment}
-                  className={`w-full flex justify-center items-center gap-2 py-4 rounded-full font-sans font-bold text-base transition-all active:scale-95 disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200 shadow-[0_0_50px_rgba(255,255,255,0.1)]' : 'bg-black text-white hover:bg-neutral-800 shadow-lg'}`}
-                >
-                  {isLoading ? <><Loader2 className="animate-spin" size={18} /> Sending prompt...</> : `Send payment prompt — UGX 1,000`}
-                </button>
-              </div>
-            </motion.div>
-          )}
 
           {step === 'waiting' && (
             <motion.div 
@@ -351,31 +307,13 @@ export default function Signup() {
               initial={{ opacity: 0, scale: 0.95 }} 
               animate={{ opacity: 1, scale: 1 }} 
               exit={{ opacity: 0, scale: 0.95 }}
-              className={`w-full max-w-md border p-8 md:p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
+              className={`w-full max-w-md border p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
             >
-              <div className="relative flex justify-center mb-10">
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                  className={`absolute w-24 h-24 rounded-full ${theme === 'dark' ? 'bg-white/10' : 'bg-black/5'}`}
-                />
-                <div className={`w-24 h-24 rounded-full flex items-center justify-center relative z-10 ${theme === 'dark' ? 'bg-white/10' : 'bg-black/5'}`}>
-                  <Loader2 className={`w-10 h-10 animate-spin ${theme === 'dark' ? 'text-white' : 'text-black'}`} />
-                </div>
-              </div>
-              
-              <h1 className="text-3xl font-syne font-bold mb-4 tracking-tight">Check your phone</h1>
-              <p className={`text-base leading-relaxed mb-8 ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                A UGX 1,000 mobile money prompt has been sent to <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>{paymentPhone}</strong>.<br/><br/>
-                Approve it to activate your Tobli listing.
+              <Loader2 className="animate-spin mx-auto w-12 h-12 mb-6 opacity-50" />
+              <h1 className="text-3xl font-syne font-bold mb-4 tracking-tight">Redirecting...</h1>
+              <p className={`text-base leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
+                Please complete your payment on the secure Pesapal checkout page.
               </p>
-
-              <button
-                onClick={() => { setStep('phone_confirm'); setError(null); }}
-                className={`text-sm underline transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
-              >
-                Use a different number
-              </button>
             </motion.div>
           )}
 
