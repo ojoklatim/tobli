@@ -153,23 +153,41 @@ export const useAuthStore = create((set) => ({
     const user = data?.user;
     if (!user) throw new Error('Verification succeeded but no user session was returned');
 
-    const pending = pendingBusiness || {};
-    const { data: rows, error: dbError } = await insforge.database
+    // First check if a business row already exists for this user.
+    // This handles the case where someone verifies via the login page
+    // after abandoning signup — they have an auth account but no business row yet,
+    // OR they somehow already have a row (edge case, just log them in).
+    const { data: existing } = await insforge.database
       .from('businesses')
-      .insert([{
-        auth_user_id: user.id,
-        name: pending.name,
-        owner_name: pending.owner_name,
-        sector: pending.sector || null,
-        phone: pending.phone,
-        email: pending.email || email,
-        subscription_status: 'inactive',
-        is_open: false,
-        is_admin: false,
-      }])
-      .select('*');
-    if (dbError) throw new Error(dbError.message || 'Failed to create business profile');
-    const biz = rows?.[0];
+      .select('*')
+      .eq('auth_user_id', user.id);
+
+    let biz = existing?.[0] || null;
+
+    if (!biz) {
+      // No business row — create one if we have pending data from signup form.
+      // If pendingBusiness is null (login flow), we still create a placeholder
+      // row using the email so the not-null constraint is satisfied, and the
+      // user will be prompted to complete their profile in the dashboard.
+      const pending = pendingBusiness || {};
+      const { data: rows, error: dbError } = await insforge.database
+        .from('businesses')
+        .insert([{
+          auth_user_id: user.id,
+          name: pending.name || email.split('@')[0],
+          owner_name: pending.owner_name || '',
+          sector: pending.sector || null,
+          phone: pending.phone || '',
+          email: pending.email || email,
+          subscription_status: 'inactive',
+          is_open: false,
+          is_admin: false,
+        }])
+        .select('*');
+      if (dbError) throw new Error(dbError.message || 'Failed to create business profile');
+      biz = rows?.[0];
+    }
+
     saveSession(user, data.accessToken);
     set({ session: { user }, business: biz, isAdmin: false, pendingBusiness: null, loading: false });
     return biz;
