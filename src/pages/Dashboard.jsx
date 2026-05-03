@@ -976,6 +976,11 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
       
       setOrderTrackingId(data.orderTrackingId);
       setRedirectUrl(data.redirectUrl);
+      // Save merchantRef before the redirect so the return handler can pass it
+      // to pesapal-status and trigger the DB update on the way back.
+      if (data.merchantRef) {
+        sessionStorage.setItem('tobli_merchant_ref', data.merchantRef);
+      }
       setStep('waiting');
     } catch (err) {
       setError(err.message);
