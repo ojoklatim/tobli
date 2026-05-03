@@ -24,14 +24,23 @@ function ScrollToTop() {
   return null;
 }
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children, adminOnly = false }) {
   const session = useAuthStore(state => state.session);
-  const business = useAuthStore(state => state.business);
+  const isAdmin = useAuthStore(state => state.isAdmin);
   const loading = useAuthStore(state => state.loading);
+  const theme = useStore(state => state.theme);
   const location = useLocation();
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className={`min-h-screen flex items-center justify-center ${theme === 'dark' ? 'bg-[#080A0F]' : 'bg-white'}`}>
+        <div className="w-6 h-6 rounded-full border-2 border-neutral-700 border-t-white animate-spin" />
+      </div>
+    );
+  }
+
   if (!session?.user) return <Navigate to="/login" state={{ from: location }} replace />;
+  if (adminOnly && !isAdmin) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -68,7 +77,11 @@ function App() {
                 <Dashboard />
               </ProtectedRoute>
             } />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin" element={
+              <ProtectedRoute adminOnly>
+                <Admin />
+              </ProtectedRoute>
+            } />
             <Route path="/terms" element={<Terms />} />
             <Route path="/privacy" element={<Privacy />} />
           </Routes>
