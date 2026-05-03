@@ -127,7 +127,8 @@ export default function Login() {
     setSuccess(null);
     setIsLoading(true);
     try {
-      await insforge.auth.signUp({ email: pendingEmail, password: '', name: '' }).catch(() => {});
+      const { error } = await insforge.auth.resendVerificationEmail({ email: pendingEmail });
+      if (error) throw new Error(error.message);
       setSuccess('A new code has been sent to your email.');
       setOtpCode('');
       setResendCooldown(60);

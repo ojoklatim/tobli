@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { Loader2, ArrowRight, ArrowLeft, AlertCircle, CheckCircle2, Mail, Eye, EyeOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuthStore } from '../store/authStore';
+import { insforge } from '../lib/insforge';
 import { useStore } from '../store/useStore';
 import ThemeToggle from '../components/ThemeToggle';
 
@@ -162,11 +163,8 @@ export default function Signup() {
     setSuccess(null);
     setIsLoading(true);
     try {
-      const pending = useAuthStore.getState().pendingBusiness;
-      await useAuthStore.getState().signUp(
-        pending?.name || '', pending?.owner_name || '', null,
-        pending?.phone || '', pendingEmail, ''
-      );
+      const { error } = await insforge.auth.resendVerificationEmail({ email: pendingEmail });
+      if (error) throw new Error(error.message);
       setSuccess('A new code has been sent to your email.');
       setOtpCode('');
       setResendCooldown(60);

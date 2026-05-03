@@ -102,7 +102,7 @@ export const useAuthStore = create((set) => ({
     const { data, error } = await insforge.auth.signUp({ email, password, name });
 
     // If InsForge says the user already exists but is unverified,
-    // it typically re-sends the OTP — treat this the same as a fresh signup.
+    // use resendVerificationEmail to send a fresh OTP and let them verify.
     if (error) {
       const msg = error.message || '';
       const isUnverified =
@@ -111,7 +111,7 @@ export const useAuthStore = create((set) => ({
         msg.toLowerCase().includes('email already') ||
         msg.toLowerCase().includes('verify');
       if (isUnverified) {
-        // OTP re-sent — let them proceed to the verify screen
+        await insforge.auth.resendVerificationEmail({ email }).catch(() => {});
         return { requiresEmailConfirmation: true, email };
       }
       throw new Error(msg || 'Signup failed');
@@ -200,8 +200,8 @@ export const useAuthStore = create((set) => ({
         msg.includes('not confirmed') ||
         msg.includes('email');
       if (isUnverified) {
-        // Re-send OTP so they have a fresh code waiting
-        await insforge.auth.signUp({ email, password, name: '' }).catch(() => {});
+        // Re-send OTP using the proper InsForge method
+        await insforge.auth.resendVerificationEmail({ email }).catch(() => {});
         const err = new Error('EMAIL_NOT_VERIFIED');
         err.email = email;
         throw err;
