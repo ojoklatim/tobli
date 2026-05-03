@@ -84,6 +84,43 @@ export default function Dashboard() {
     }
   }, [session, business, isAdmin, authLoading, navigate]);
 
+  // Handle Pesapal callback redirect — Pesapal appends OrderTrackingId to the
+  // callback URL. When the user lands back on /dashboard after paying, we poll
+  // for the completed status and reload the session so the UI reflects the
+  // updated subscription immediately (acts as a safety net if the IPN is delayed).
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const trackingId = params.get('OrderTrackingId');
+    if (!trackingId) return;
+
+    // Remove the query param from the URL without a page reload
+    const cleanUrl = window.location.pathname;
+    window.history.replaceState({}, '', cleanUrl);
+
+    let attempts = 0;
+    const maxAttempts = 24; // 2 minutes at 5s intervals
+    const poll = setInterval(async () => {
+      attempts++;
+      try {
+        const res = await fetch(`/api/pesapal-status?orderTrackingId=${trackingId}`);
+        const data = await res.json();
+        if (data.statusCode === 1) {
+          clearInterval(poll);
+          // Reload session + history so the UI updates
+          await useAuthStore.getState().loadSession();
+          if (window._tobli_refresh) await window._tobli_refresh();
+          setActiveTab('subscription');
+        } else if (data.statusCode === 2 || data.statusCode === 3 || attempts >= maxAttempts) {
+          clearInterval(poll);
+        }
+      } catch {
+        if (attempts >= maxAttempts) clearInterval(poll);
+      }
+    }, 5000);
+
+    return () => clearInterval(poll);
+  }, []);
+
   // Local mutable business state for toggling open/closed
   const [biz, setBiz] = useState(null);
   useEffect(() => {
@@ -947,16 +984,16 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
         try {
           const res = await fetch(`/api/pesapal-status?orderTrackingId=${orderTrackingId}`);
           const data = await res.json();
-          if (data.status_code === 1) { // COMPLETED
+          if (data.statusCode === 1) { // COMPLETED
             clearInterval(interval);
             clearTimeout(timeout);
             if (onRefresh) await onRefresh();
             setStep('success');
             setTimeout(() => setStep('view'), 3000);
-          } else if (data.status_code === 2 || data.status_code === 3) {
+          } else if (data.statusCode === 2 || data.statusCode === 3) {
             clearInterval(interval);
             clearTimeout(timeout);
-            setError(`Payment failed. Pesapal status: ${data.status} (Code: ${data.status_code})`);
+            setError(`Payment failed. Please try again. (${data.status || "Unknown status"})`);
             setStep('view');
           } else if (data.error) {
             clearInterval(interval);
