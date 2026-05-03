@@ -1089,7 +1089,7 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
             </div>
           )}
 
-          {step === 'view' && (
+          {step === 'view' && isExpired && (
             <button
               onClick={submitPayment}
               disabled={isSubmitting}
