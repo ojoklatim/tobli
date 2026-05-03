@@ -1,3 +1,22 @@
+# HTML — never cache, always revalidate
+# This ensures users always get the latest index.html on deploy
+/*.html
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+
+/
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+
+# Hashed JS/CSS assets — cache forever (Vite changes the filename on every build)
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Static files
+/vite.svg
+  Cache-Control: public, max-age=86400
+
+# Security headers (existing)
 /*
   Permissions-Policy: geolocation=*
   X-Content-Type-Options: nosniff
