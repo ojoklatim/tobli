@@ -1,6 +1,29 @@
 import { create } from 'zustand';
 import { insforge } from '../lib/insforge';
 
+const SESSION_KEY = 'tobli_session';
+
+function saveSession(user, accessToken) {
+  try {
+    localStorage.setItem(SESSION_KEY, JSON.stringify({ user, accessToken }));
+  } catch {}
+}
+
+function clearSession() {
+  try {
+    localStorage.removeItem(SESSION_KEY);
+  } catch {}
+}
+
+function restoreSession() {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
 export const useAuthStore = create((set) => ({
   session: null,
   business: null,
@@ -11,11 +34,26 @@ export const useAuthStore = create((set) => ({
   loadSession: async () => {
     set({ loading: true });
     try {
+      // Restore persisted session into the SDK before calling getCurrentUser,
+      // so the SDK can make authenticated requests and/or use the refresh flow.
+      const persisted = restoreSession();
+      if (persisted?.accessToken) {
+        insforge.auth.tokenManager?.setAccessToken(persisted.accessToken);
+        if (persisted.user) {
+          insforge.auth.tokenManager?.setUser(persisted.user);
+        }
+      }
+
       const { data } = await insforge.auth.getCurrentUser();
       const user = data?.user;
-      
+
       if (user) {
-        // Check if user is in the admins table
+        // Persist the (possibly refreshed) session back to localStorage
+        const freshToken =
+          insforge.auth.tokenManager?.getAccessToken?.() ||
+          persisted?.accessToken;
+        saveSession(user, freshToken);
+
         const { data: adminRows } = await insforge.database
           .from('admins')
           .select('*')
@@ -29,9 +67,11 @@ export const useAuthStore = create((set) => ({
         const biz = rows?.[0] || null;
         set({ session: { user }, business: biz, isAdmin: isAdminUser });
       } else {
+        clearSession();
         set({ session: null, business: null, isAdmin: false });
       }
     } catch {
+      clearSession();
       set({ session: null, business: null, isAdmin: false });
     } finally {
       set({ loading: false });
@@ -42,10 +82,7 @@ export const useAuthStore = create((set) => ({
     const { data, error } = await insforge.auth.signUp({ email, password, name });
     if (error) throw new Error(error.message || 'Signup failed');
 
-    // If email confirmation is required, user/accessToken won't be present yet.
-    // Return a flag so the UI can show the OTP input screen.
     if (!data?.user || !data?.accessToken) {
-      // Store pending business data so we can create the profile after verification
       set({
         pendingBusiness: { name, owner_name, sector, phone, email },
         loading: false,
@@ -53,7 +90,6 @@ export const useAuthStore = create((set) => ({
       return { requiresEmailConfirmation: true, email };
     }
 
-    // Email confirmation not required — create business profile immediately
     const { data: rows, error: dbError } = await insforge.database
       .from('businesses')
       .insert([{
@@ -70,6 +106,7 @@ export const useAuthStore = create((set) => ({
       .select('*');
     if (dbError) throw new Error(dbError.message || 'Failed to create business profile');
     const biz = rows?.[0];
+    saveSession(data.user, data.accessToken);
     set({ session: { user: data.user }, business: biz, isAdmin: false, loading: false });
     return data;
   },
@@ -80,11 +117,9 @@ export const useAuthStore = create((set) => ({
     const { data, error } = await insforge.auth.verifyEmail({ email, otp: code });
     if (error) throw new Error(error.message || 'Invalid or expired code');
 
-    // After verification the user should be authenticated
     const user = data?.user;
     if (!user) throw new Error('Verification succeeded but no user session was returned');
 
-    // Create the business profile now that the user is confirmed
     const pending = pendingBusiness || {};
     const { data: rows, error: dbError } = await insforge.database
       .from('businesses')
@@ -102,14 +137,13 @@ export const useAuthStore = create((set) => ({
       .select('*');
     if (dbError) throw new Error(dbError.message || 'Failed to create business profile');
     const biz = rows?.[0];
+    saveSession(user, data.accessToken);
     set({ session: { user }, business: biz, isAdmin: false, pendingBusiness: null, loading: false });
     return biz;
   },
 
   signIn: async (identifier, password) => {
-    // Try email login directly
     let email = identifier;
-    // If identifier looks like a phone number, look up the email first
     if (!identifier.includes('@')) {
       const { data: rows } = await insforge.database
         .from('businesses')
@@ -121,7 +155,6 @@ export const useAuthStore = create((set) => ({
     const { data, error } = await insforge.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message || 'Invalid credentials');
 
-    // Check if user is in the admins table
     const { data: adminRows } = await insforge.database
       .from('admins')
       .select('*')
@@ -133,12 +166,14 @@ export const useAuthStore = create((set) => ({
       .select('*')
       .eq('auth_user_id', data.user.id);
     const biz = rows?.[0] || null;
+    saveSession(data.user, data.accessToken);
     set({ session: { user: data.user }, business: biz, isAdmin: isAdminUser, loading: false });
     return data;
   },
 
   signOut: async () => {
     await insforge.auth.signOut();
+    clearSession();
     set({ session: null, business: null, isAdmin: false });
   },
 
@@ -172,20 +207,16 @@ export const useAuthStore = create((set) => ({
   },
 
   resetPasswordWithCode: async (email, code, newPassword) => {
-    // 1. Exchange the code for a session/token
     const { data, error: exchangeError } = await insforge.auth.exchangeResetPasswordToken({
       email,
       code
     });
-    
     if (exchangeError) throw new Error(exchangeError.message || 'Invalid or expired code');
 
-    // 2. Reset the password
     const { error: resetError } = await insforge.auth.resetPassword({
       newPassword,
-      otp: data.token // The token we got from exchanging the code
+      otp: data.token
     });
-    
     if (resetError) throw new Error(resetError.message || 'Failed to reset password');
   },
 
