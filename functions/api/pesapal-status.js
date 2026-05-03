@@ -3,7 +3,7 @@ export async function onRequestGet(context) {
   try {
     const url = new URL(request.url);
     const orderTrackingId = url.searchParams.get('orderTrackingId');
-    const merchantRef = url.searchParams.get('merchantRef'); // optional — triggers DB update when present
+    const merchantRef = url.searchParams.get('merchantRef');
 
     if (!orderTrackingId) throw new Error("Missing orderTrackingId");
 
@@ -30,24 +30,21 @@ export async function onRequestGet(context) {
     const statusData = await statusRes.json();
 
     // 3. If COMPLETED and merchantRef provided, update DB immediately
-    // This is the primary path when the user returns from Pesapal checkout.
-    // The IPN webhook is a secondary backup.
     if (statusData.status_code === 1 && merchantRef) {
       const parts = merchantRef.split('-');
-      // UUIDs have 5 segments (8-4-4-4-12), merchantRef is {uuid}-{timestamp}
-      // so we drop the last segment to get the business_id
       const business_id = parts.slice(0, -1).join('-');
 
-      // Derive payment method from phone number
+      // Derive method: phone prefix first, Pesapal's own field as fallback
       let method = 'Unknown';
       const phone = statusData.payment_account || '';
       const digits = phone.replace(/\D/g, '');
-      let normalized = phone;
+      let normalized = digits;
       if (digits.startsWith('256') && digits.length === 12) normalized = digits;
       else if (digits.startsWith('0') && digits.length === 10) normalized = '256' + digits.slice(1);
       const prefix = normalized.slice(3, 6);
       if (['076','077','078','039'].includes(prefix)) method = 'MTN';
-      if (['075','070'].includes(prefix)) method = 'Airtel';
+      else if (['075','070'].includes(prefix)) method = 'Airtel';
+      else if (statusData.payment_method) method = statusData.payment_method;
 
       const insforgeUrl = (env.VITE_INSFORGE_URL || '').replace(/\/+$/, '');
       const anonKey = env.VITE_INSFORGE_ANON_KEY;
@@ -69,7 +66,7 @@ export async function onRequestGet(context) {
             })
           });
         } catch (_) {
-          // Don't fail the status response if DB update errors — IPN will retry
+          // Don't fail the status response — IPN is secondary backup
         }
       }
     }

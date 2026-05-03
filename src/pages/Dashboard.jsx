@@ -1152,7 +1152,11 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
                         <div className="text-[10px] opacity-50 mt-1 font-mono">{tx.pesapal_reference || '—'}</div>
                       </td>
                       <td className="px-6 py-4">
-                        <span className={`text-[10px] px-2 py-1 rounded-md font-bold ${tx.method === 'MTN' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-400' : 'bg-red-500/20 text-red-600 dark:text-red-400'}`}>
+                        <span className={`text-[10px] px-2 py-1 rounded-md font-bold ${
+                          tx.method === 'MTN' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-400' :
+                          tx.method === 'Airtel' ? 'bg-red-500/20 text-red-600 dark:text-red-400' :
+                          'bg-neutral-400/20 text-neutral-500'
+                        }`}>
                           {tx.method || 'Unknown'}
                         </span>
                       </td>
