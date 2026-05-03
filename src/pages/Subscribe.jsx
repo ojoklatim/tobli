@@ -71,6 +71,10 @@ export default function Subscribe() {
       
       setOrderTrackingId(data.orderTrackingId);
       setRedirectUrl(data.redirectUrl);
+      // Save merchantRef so Dashboard can use it to trigger the DB update on return
+      if (data.merchantRef) {
+        sessionStorage.setItem('tobli_merchant_ref', data.merchantRef);
+      }
       setStep('waiting');
     } catch (err) {
       setError(err.message);

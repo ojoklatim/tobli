@@ -84,29 +84,39 @@ export default function Dashboard() {
     }
   }, [session, business, isAdmin, authLoading, navigate]);
 
-  // Handle Pesapal callback redirect — Pesapal appends OrderTrackingId to the
-  // callback URL. When the user lands back on /dashboard after paying, we poll
-  // for the completed status and reload the session so the UI reflects the
-  // updated subscription immediately (acts as a safety net if the IPN is delayed).
+  // Handle Pesapal callback redirect — Pesapal appends OrderTrackingId (and we
+  // store merchantRef in sessionStorage) so when the user lands back on /dashboard
+  // we can check status AND trigger the DB update in one call, without waiting
+  // for the IPN webhook which may be delayed or fail silently.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const trackingId = params.get('OrderTrackingId');
     if (!trackingId) return;
 
-    // Remove the query param from the URL without a page reload
-    const cleanUrl = window.location.pathname;
-    window.history.replaceState({}, '', cleanUrl);
+    // Retrieve the merchantRef we saved before the redirect
+    const merchantRef = sessionStorage.getItem('tobli_merchant_ref') || '';
+    sessionStorage.removeItem('tobli_merchant_ref');
+
+    // Remove the query params from the URL without a page reload
+    window.history.replaceState({}, '', window.location.pathname);
 
     let attempts = 0;
     const maxAttempts = 24; // 2 minutes at 5s intervals
-    const poll = setInterval(async () => {
+
+    const checkAndActivate = async () => {
       attempts++;
       try {
-        const res = await fetch(`/api/pesapal-status?orderTrackingId=${trackingId}`);
+        // Pass merchantRef so the server updates the DB when payment is confirmed
+        const qs = merchantRef
+          ? `orderTrackingId=${trackingId}&merchantRef=${encodeURIComponent(merchantRef)}`
+          : `orderTrackingId=${trackingId}`;
+        const res = await fetch(`/api/pesapal-status?${qs}`);
         const data = await res.json();
+
         if (data.statusCode === 1) {
           clearInterval(poll);
-          // Reload session + history so the UI updates
+          // Give the DB a moment to commit, then reload everything
+          await new Promise(r => setTimeout(r, 1500));
           await useAuthStore.getState().loadSession();
           if (window._tobli_refresh) await window._tobli_refresh();
           setActiveTab('subscription');
@@ -116,7 +126,11 @@ export default function Dashboard() {
       } catch {
         if (attempts >= maxAttempts) clearInterval(poll);
       }
-    }, 5000);
+    };
+
+    // Check immediately on arrival, then every 5 seconds
+    checkAndActivate();
+    const poll = setInterval(checkAndActivate, 5000);
 
     return () => clearInterval(poll);
   }, []);
