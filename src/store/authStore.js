@@ -186,7 +186,28 @@ export const useAuthStore = create((set) => ({
       email = rows[0].email;
     }
     const { data, error } = await insforge.auth.signInWithPassword({ email, password });
-    if (error) throw new Error(error.message || 'Invalid credentials');
+
+    // Detect unverified email — InsForge returns an error with a message
+    // containing "verify" or "confirmed". When this happens we surface a
+    // special error type so Login.jsx can redirect to the OTP screen instead
+    // of showing a dead-end message.
+    if (error) {
+      const msg = (error.message || '').toLowerCase();
+      const isUnverified =
+        msg.includes('verify') ||
+        msg.includes('verified') ||
+        msg.includes('confirm') ||
+        msg.includes('not confirmed') ||
+        msg.includes('email');
+      if (isUnverified) {
+        // Re-send OTP so they have a fresh code waiting
+        await insforge.auth.signUp({ email, password, name: '' }).catch(() => {});
+        const err = new Error('EMAIL_NOT_VERIFIED');
+        err.email = email;
+        throw err;
+      }
+      throw new Error(error.message || 'Invalid credentials');
+    }
 
     const { data: adminRows } = await insforge.database
       .from('admins')
