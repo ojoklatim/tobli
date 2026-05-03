@@ -79,17 +79,50 @@ export const useAuthStore = create((set) => ({
   },
 
   signUp: async (name, owner_name, sector, phone, email, password) => {
-    const { data, error } = await insforge.auth.signUp({ email, password, name });
-    if (error) throw new Error(error.message || 'Signup failed');
+    // Check if this email already has an unverified auth account but no business row.
+    // If so, resend the OTP so they can complete verification rather than being stuck.
+    const { data: existingRows } = await insforge.database
+      .from('businesses')
+      .select('id')
+      .eq('email', email);
 
+    const hasBusinessRow = existingRows && existingRows.length > 0;
+    if (hasBusinessRow) {
+      throw new Error('An account with this email already exists. Please log in instead.');
+    }
+
+    // Always store pending business details BEFORE calling signUp,
+    // so if the user was previously stuck (unverified), a fresh signUp
+    // call re-sends the OTP and they can complete from where they left off.
+    set({
+      pendingBusiness: { name, owner_name, sector, phone, email },
+      loading: false,
+    });
+
+    const { data, error } = await insforge.auth.signUp({ email, password, name });
+
+    // If InsForge says the user already exists but is unverified,
+    // it typically re-sends the OTP — treat this the same as a fresh signup.
+    if (error) {
+      const msg = error.message || '';
+      const isUnverified =
+        msg.toLowerCase().includes('already registered') ||
+        msg.toLowerCase().includes('already exists') ||
+        msg.toLowerCase().includes('email already') ||
+        msg.toLowerCase().includes('verify');
+      if (isUnverified) {
+        // OTP re-sent — let them proceed to the verify screen
+        return { requiresEmailConfirmation: true, email };
+      }
+      throw new Error(msg || 'Signup failed');
+    }
+
+    // Email confirmation required (normal flow)
     if (!data?.user || !data?.accessToken) {
-      set({
-        pendingBusiness: { name, owner_name, sector, phone, email },
-        loading: false,
-      });
       return { requiresEmailConfirmation: true, email };
     }
 
+    // Rare: InsForge returned a session immediately (no email confirmation needed)
     const { data: rows, error: dbError } = await insforge.database
       .from('businesses')
       .insert([{

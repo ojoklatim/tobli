@@ -155,6 +155,41 @@ export default function Signup() {
     }
   };
 
+  // ── Resend OTP ─────────────────────────────────────────────────────────────
+  const [resendCooldown, setResendCooldown] = useState(0);
+  const onResend = async () => {
+    setError(null);
+    setSuccess(null);
+    setIsLoading(true);
+    try {
+      const pending = useAuthStore.getState().pendingBusiness;
+      await useAuthStore.getState().signUp(
+        pending?.name || '', pending?.owner_name || '', null,
+        pending?.phone || '', pendingEmail, ''
+      );
+      setSuccess('A new code has been sent to your email.');
+      setOtpCode('');
+      setResendCooldown(60);
+      const timer = setInterval(() => {
+        setResendCooldown(c => { if (c <= 1) { clearInterval(timer); return 0; } return c - 1; });
+      }, 1000);
+    } catch {
+      setSuccess('A new code has been sent if your email is registered.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // ── Go back to form (abandon verification) ────────────────────────────────
+  const onCancelVerify = () => {
+    useAuthStore.setState({ pendingBusiness: null });
+    setPendingEmail('');
+    setOtpCode('');
+    setError(null);
+    setSuccess(null);
+    setStep('form');
+  };
+
   // ── Payment Flow Handlers ──────────────────────────────────────────────────
   const submitPayment = async () => {
     setIsLoading(true);
@@ -377,16 +412,28 @@ export default function Signup() {
                     </button>
                   </div>
 
-                  <p className={`text-center text-xs transition-colors ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>
-                    Didn't receive it? Check your spam folder or{' '}
+                  {success && (
+                    <div className={`flex items-center gap-2 text-green-500 text-sm font-medium justify-center`}>
+                      <CheckCircle2 size={16} /> {success}
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between pt-1">
                     <button
-                      className={`underline transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}
-                      onClick={() => { setStep('form'); setError(null); setOtpCode(''); }}
+                      type="button"
+                      onClick={onCancelVerify}
+                      className={`text-sm flex items-center gap-1 transition-colors ${theme === 'dark' ? 'text-neutral-500 hover:text-white' : 'text-neutral-400 hover:text-black'}`}
                     >
-                      go back
+                      <ArrowLeft size={14} /> Back
                     </button>
-                    {' '}and try again.
-                  </p>
+                    <button
+                      type="button"
+                      onClick={onResend}
+                      disabled={isLoading || resendCooldown > 0}
+                      className={`text-sm font-medium transition-colors disabled:opacity-40 ${theme === 'dark' ? 'text-neutral-400 hover:text-white' : 'text-neutral-500 hover:text-black'}`}
+                    >
+                      {resendCooldown > 0 ? `Resend in ${resendCooldown}s` : 'Resend code'}
+                    </button>
+                  </div>
                 </div>
 
               ) : (
