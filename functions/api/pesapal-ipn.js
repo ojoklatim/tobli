@@ -25,8 +25,11 @@ export async function onRequestPost(context) {
     });
     const statusData = await statusRes.json();
 
+    // Normalise status_code — Pesapal sometimes returns string "1" instead of number 1
+    const statusCode = parseInt(statusData.status_code, 10);
+
     // 3. If COMPLETED (status_code === 1)
-    if (statusData.status_code === 1) {
+    if (statusCode === 1) {
       const parts = OrderMerchantReference.split('-');
       const business_id = parts.slice(0, -1).join('-');
 
@@ -42,11 +45,11 @@ export async function onRequestPost(context) {
       else if (['075','070'].includes(prefix)) method = 'Airtel';
       else if (statusData.payment_method) method = statusData.payment_method;
 
-      const insforgeUrl = (env.VITE_INSFORGE_URL || '').replace(/\/+$/, '');
-      const anonKey = env.VITE_INSFORGE_ANON_KEY;
+      const insforgeUrl = (env.VITE_INSFORGE_URL || env.INSFORGE_URL || '').replace(/\/+$/, '');
+      const anonKey = env.VITE_INSFORGE_ANON_KEY || env.INSFORGE_ANON_KEY;
 
       if (!insforgeUrl || !anonKey) {
-        throw new Error("Missing VITE_INSFORGE_URL or VITE_INSFORGE_ANON_KEY env vars");
+        throw new Error("Missing INSFORGE env vars in Cloudflare Pages");
       }
 
       const res = await fetch(`${insforgeUrl}/rest/v1/rpc/process_subscription_payment`, {
