@@ -1099,7 +1099,7 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
               onClick={() => setStep('fee_info')}
               className={`w-full font-extrabold py-4 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
-              Renew — UGX 1,000
+              Renew — UGX 1,000 / month
             </button>
           )}
 
