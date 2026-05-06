@@ -20,7 +20,7 @@ export async function onRequestPost(context) {
     const orderBody = {
       id: merchantRef,
       currency: "UGX",
-      amount: 1000,
+      amount: 890,
       description: `Tobli Subscription: ${business_id}`,
       callback_url: env.TOBLI_CALLBACK_URL || `${new URL(request.url).origin}/dashboard`,
       notification_id: env.PESAPAL_NOTIFICATION_ID,

@@ -309,18 +309,35 @@ export default function Signup() {
             >
               <h1 className="text-5xl font-syne font-bold tracking-tight">Almost there.</h1>
               <p className={`text-lg leading-relaxed ${theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}`}>
-                The UGX 1,000 monthly fee helps run and improve the platform, and keeps only serious businesses on it.
+                A small monthly fee keeps the platform running and ensures only serious businesses are listed.
               </p>
-              <p className={`text-sm ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                You will receive a mobile money prompt on your phone to approve the payment.
-              </p>
-              <div className="flex flex-col gap-4 pt-6">
+
+              <div className={`p-5 rounded-2xl border text-sm space-y-3 text-left ${theme === 'dark' ? 'bg-neutral-800/60 border-white/5' : 'bg-gray-100 border-black/5'}`}>
+                <div className="flex justify-between items-center">
+                  <span className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}>Subscription fee</span>
+                  <span className="font-mono font-bold">UGX 890</span>
+                </div>
+                <div className={`border-t border-dashed ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}></div>
+                <div className={`space-y-2 text-xs leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                  <div className="flex items-start gap-2">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Mobile Money</strong> — UGX 110 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Card</strong> — Processing fees vary by bank</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Pesapal E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 890</strong></span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex flex-col gap-4 pt-2">
                 <button 
                   onClick={submitPayment} 
                   disabled={isLoading}
                   className={`w-full py-4 rounded-full font-bold transition-all text-lg flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
                 >
-                  {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'I understand, pay UGX 1,000'}
+                  {isLoading ? <Loader2 className="animate-spin" size={20} /> : 'Proceed to payment →'}
                 </button>
                 <button 
                   onClick={async () => { await useAuthStore.getState().signOut(); navigate('/'); }} 

@@ -920,7 +920,7 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
   const theme = useStore(state => state.theme);
 
   // Renewal flow state
-  const [step, setStep] = useState('view'); // 'view' | 'phone_input' | 'waiting' | 'success'
+  const [step, setStep] = useState('view'); // 'view' | 'fee_info' | 'waiting' | 'success'
   const [paymentPhone, setPaymentPhone] = useState(biz?.phone || '');
   const [orderTrackingId, setOrderTrackingId] = useState(null);
   const [redirectUrl, setRedirectUrl] = useState(null);
@@ -1096,12 +1096,49 @@ function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, 
 
           {step === 'view' && isExpired && (
             <button
-              onClick={submitPayment}
-              disabled={isSubmitting}
+              onClick={() => setStep('fee_info')}
               className={`w-full font-extrabold py-4 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
-              {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Renew — UGX 1,000'}
+              Renew — UGX 1,000
             </button>
+          )}
+
+          {step === 'fee_info' && (
+            <div className="mt-4 space-y-4">
+              <div className={`p-5 rounded-2xl border text-sm space-y-3 ${theme === 'dark' ? 'bg-neutral-800/60 border-white/5' : 'bg-gray-50 border-black/5'}`}>
+                <div className="flex justify-between items-center">
+                  <span className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}>Subscription fee</span>
+                  <span className="font-mono font-bold">UGX 890</span>
+                </div>
+                <div className={`border-t border-dashed ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}></div>
+                <div className={`space-y-2 text-xs leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                  <div className="flex items-start gap-2">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Mobile Money</strong> — UGX 110 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Card</strong> — Processing fees vary by bank</span>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Pesapal E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 890</strong></span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setStep('view')}
+                  className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${theme === 'dark' ? 'bg-neutral-800 text-white hover:bg-neutral-700' : 'bg-gray-200 text-black hover:bg-gray-300'}`}
+                >
+                  Back
+                </button>
+                <button
+                  onClick={submitPayment}
+                  disabled={isSubmitting}
+                  className={`flex-[2] py-3 rounded-xl font-bold text-sm transition-colors flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
+                >
+                  {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Proceed to payment →'}
+                </button>
+              </div>
+            </div>
           )}
 
           {error && <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold leading-relaxed">{error}</div>}

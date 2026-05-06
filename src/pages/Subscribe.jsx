@@ -174,7 +174,7 @@ export default function Subscribe() {
               <div className="text-center mb-8">
                 <h1 className="text-3xl font-syne font-bold mb-3 tracking-tight">Renew your Tobli listing</h1>
                 <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                  We'll send a UGX 1,000 payment prompt to this number.
+                  Complete your payment on the secure Pesapal checkout page.
                 </p>
               </div>
 
@@ -205,12 +205,31 @@ export default function Subscribe() {
                   </div>
                 </div>
 
+                <div className={`p-4 rounded-2xl border text-sm space-y-2.5 ${theme === 'dark' ? 'bg-neutral-800/60 border-white/5' : 'bg-gray-50 border-black/5'}`}>
+                  <div className="flex justify-between items-center">
+                    <span className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}>Subscription fee</span>
+                    <span className="font-mono font-bold">UGX 890</span>
+                  </div>
+                  <div className={`border-t border-dashed ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}></div>
+                  <div className={`space-y-1.5 text-xs leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
+                    <div className="flex items-start gap-2">
+                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Mobile Money</strong> — UGX 110 fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Card</strong> — Fees vary by bank</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 890</strong></span>
+                    </div>
+                  </div>
+                </div>
+
                 <button
                   disabled={isLoading || paymentPhone.length < 10}
                   onClick={submitPayment}
                   className={`w-full flex justify-center items-center gap-2 py-4 rounded-full font-sans font-bold text-base transition-all active:scale-95 disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200 shadow-[0_0_50px_rgba(255,255,255,0.1)]' : 'bg-black text-white hover:bg-neutral-800 shadow-lg'}`}
                 >
-                  {isLoading ? <><Loader2 className="animate-spin" size={18} /> Sending prompt...</> : `Send payment prompt — UGX 1,000`}
+                  {isLoading ? <><Loader2 className="animate-spin" size={18} /> Sending prompt...</> : 'Proceed to payment →'}
                 </button>
               </div>
             </motion.div>
