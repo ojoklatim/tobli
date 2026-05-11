@@ -4,7 +4,11 @@ export async function onRequestGet(context) {
   const consumerSecret = env.PESAPAL_CONSUMER_SECRET;
 
   try {
-    const tokenRes = await fetch('https://pay.pesapal.com/v3/api/Auth/RequestToken', {
+    const pesapalBaseUrl = (env.PESAPAL_MODE === 'sandbox' || env.PESAPAL_SANDBOX === 'true')
+      ? 'https://cybqa.pesapal.com/v3/api'
+      : 'https://pay.pesapal.com/v3/api';
+
+    const tokenRes = await fetch(`${pesapalBaseUrl}/Auth/RequestToken`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({ consumer_key: consumerKey, consumer_secret: consumerSecret })
@@ -17,7 +21,7 @@ export async function onRequestGet(context) {
     const origin = new URL(request.url).origin;
     const ipnUrl = `${origin}/api/pesapal-ipn`;
 
-    const ipnRes = await fetch('https://pay.pesapal.com/v3/api/URLSetup/RegisterIPN', {
+    const ipnRes = await fetch(`${pesapalBaseUrl}/URLSetup/RegisterIPN`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

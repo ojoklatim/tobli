@@ -1,10 +1,23 @@
 export async function onRequestPost(context) {
   const { request, env } = context;
   try {
-    const { OrderNotificationType, OrderTrackingId, OrderMerchantReference } = await request.json();
+    const body = await request.json();
+    console.log('[IPN] Received payload:', body);
 
-    // 1. Authenticate with Pesapal
-    const tokenRes = await fetch('https://pay.pesapal.com/v3/api/Auth/RequestToken', {
+    const orderTrackingId = body.OrderTrackingId || body.orderTrackingId;
+    const notificationType = body.OrderNotificationType || body.orderNotificationType;
+    
+    if (notificationType !== 'IPNCHANGE') {
+      return new Response('OK', { status: 200 });
+    }
+
+    const pesapalMode = env.PESAPAL_MODE || '';
+    const pesapalBaseUrl = (pesapalMode === 'sandbox' || env.PESAPAL_SANDBOX === 'true')
+      ? 'https://cybqa.pesapal.com/v3/api'
+      : 'https://pay.pesapal.com/v3/api';
+
+    // 1. Auth with Pesapal
+    const tokenRes = await fetch(`${pesapalBaseUrl}/Auth/RequestToken`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({ 
@@ -15,25 +28,27 @@ export async function onRequestPost(context) {
     const tokenData = await tokenRes.json();
     if (tokenData.status !== "200") throw new Error("Pesapal auth failed");
 
-    // 2. Call GetTransactionStatus
-    const statusRes = await fetch(`https://pay.pesapal.com/v3/api/Transactions/GetTransactionStatus?orderTrackingId=${OrderTrackingId}`, {
-      method: 'GET',
-      headers: {
-        'Accept': 'application/json',
-        'Authorization': `Bearer ${tokenData.token}`
+    // 2. Get Status
+    const statusRes = await fetch(
+      `${pesapalBaseUrl}/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
+      {
+        method: 'GET',
+        headers: {
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${tokenData.token}`
+        }
       }
-    });
+    );
     const statusData = await statusRes.json();
-
-    // Normalise status_code — Pesapal sometimes returns string "1" instead of number 1
     const statusCode = parseInt(statusData.status_code, 10);
+    const merchantRef = statusData.merchant_reference;
 
-    // 3. If COMPLETED (status_code === 1)
-    if (statusCode === 1) {
-      const parts = OrderMerchantReference.split('-');
+    // 3. If COMPLETED (1) → Update DB via SDK
+    if (statusCode === 1 && merchantRef && statusData.confirmation_code) {
+      const parts = merchantRef.split('-');
       const business_id = parts.slice(0, -1).join('-');
 
-      // Derive method: phone prefix first, Pesapal's own field as fallback
+      // Derive method
       let method = 'Unknown';
       const phone = statusData.payment_account || '';
       const digits = phone.replace(/\D/g, '');
@@ -48,38 +63,24 @@ export async function onRequestPost(context) {
       const insforgeUrl = (env.VITE_INSFORGE_URL || env.INSFORGE_URL || '').replace(/\/+$/, '');
       const anonKey = env.VITE_INSFORGE_ANON_KEY || env.INSFORGE_ANON_KEY;
 
-      if (!insforgeUrl || !anonKey) {
-        throw new Error("Missing INSFORGE env vars in Cloudflare Pages");
-      }
+      if (insforgeUrl && anonKey && business_id) {
+        const { createClient } = await import('@insforge/sdk');
+        const client = createClient({ baseUrl: insforgeUrl, anonKey });
 
-      const res = await fetch(`${insforgeUrl}/rest/v1/rpc/process_subscription_payment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': anonKey,
-          'Authorization': `Bearer ${anonKey}`
-        },
-        body: JSON.stringify({
+        await client.database.rpc('process_subscription_payment', {
           target_business_id: business_id,
-          payment_amount: 1000,
+          payment_amount: statusData.amount || 1000,
           payment_method: method,
           pesapal_ref: statusData.confirmation_code
-        })
-      });
-
-      if (!res.ok) {
-        const errorText = await res.text();
-        throw new Error("DB Update Failed: " + errorText);
+        });
       }
     }
 
-    // Respond success to Pesapal (required format)
     return new Response(JSON.stringify({ 
-      orderNotificationType: "IPNCHANGE", 
-      orderTrackingId: OrderTrackingId, 
-      orderMerchantReference: OrderMerchantReference, 
-      status: 200 
-    }), { headers: { 'Content-Type': 'application/json' } });
+      orderTrackingId, 
+      merchantReference: merchantRef,
+      status: "processed" 
+    }), { status: 200, headers: { 'Content-Type': 'application/json' } });
 
   } catch (err) {
     return new Response(JSON.stringify({ error: err.message, status: 500 }), { 
@@ -88,3 +89,4 @@ export async function onRequestPost(context) {
     });
   }
 }
+

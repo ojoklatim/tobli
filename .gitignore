@@ -38,4 +38,7 @@ dist-ssr
 .qwen
 .roo
 .trae
-.windsurf
+.wrangler
+.dev.vars
+.env
+.env.*

@@ -62,8 +62,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 
 -- ── 2. UPDATE protect_sensitive_business_columns TRIGGER ─────
--- Add a check for the bypass flag so process_subscription_payment
--- can update subscription_status and subscription_expires_at.
+-- This function blocks non-admin users from modifying sensitive columns.
+-- We add a check for the 'app.bypass_subscription_check' flag so our
+-- process_subscription_payment function can update the status.
 
 CREATE OR REPLACE FUNCTION protect_sensitive_business_columns()
 RETURNS TRIGGER AS $$
@@ -99,10 +100,11 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Re-attach trigger to ensure it uses the updated function
+DROP TRIGGER IF EXISTS trg_protect_sensitive_business_columns ON businesses;
+CREATE TRIGGER trg_protect_sensitive_business_columns
+BEFORE UPDATE ON businesses
+FOR EACH ROW
+EXECUTE FUNCTION protect_sensitive_business_columns();
+
 -- ── DONE ─────────────────────────────────────────────────────
--- After running this migration, test by making a payment.
--- The process_subscription_payment RPC will now:
---   1. Insert a subscription record
---   2. Set businesses.subscription_status = 'active'
---   3. Set businesses.subscription_expires_at = now + 30 days
--- Duplicate pesapal_ref calls are safely ignored (idempotent).

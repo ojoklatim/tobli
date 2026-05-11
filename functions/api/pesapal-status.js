@@ -3,12 +3,17 @@ export async function onRequestGet(context) {
   try {
     const url = new URL(request.url);
     const orderTrackingId = url.searchParams.get('orderTrackingId');
-    const merchantRef = url.searchParams.get('merchantRef');
+    const urlMerchantRef = url.searchParams.get('merchantRef') || url.searchParams.get('OrderMerchantReference');
 
     if (!orderTrackingId) throw new Error("Missing orderTrackingId");
 
+    const pesapalMode = env.PESAPAL_MODE || '';
+    const pesapalBaseUrl = (pesapalMode === 'sandbox' || env.PESAPAL_SANDBOX === 'true')
+      ? 'https://cybqa.pesapal.com/v3/api'
+      : 'https://pay.pesapal.com/v3/api';
+
     // 1. Authenticate with Pesapal
-    const tokenRes = await fetch('https://pay.pesapal.com/v3/api/Auth/RequestToken', {
+    const tokenRes = await fetch(`${pesapalBaseUrl}/Auth/RequestToken`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
       body: JSON.stringify({
@@ -21,7 +26,7 @@ export async function onRequestGet(context) {
 
     // 2. Get transaction status
     const statusRes = await fetch(
-      `https://pay.pesapal.com/v3/api/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
+      `${pesapalBaseUrl}/Transactions/GetTransactionStatus?orderTrackingId=${orderTrackingId}`,
       {
         method: 'GET',
         headers: {
@@ -31,18 +36,17 @@ export async function onRequestGet(context) {
       }
     );
     const statusData = await statusRes.json();
-
-    // Normalise status_code — Pesapal sometimes returns string "1" instead of number 1
     const statusCode = parseInt(statusData.status_code, 10);
 
+    // 3. If COMPLETED (1) and we have a reference → update DB
+    const merchantRef = urlMerchantRef || statusData.merchant_reference;
     let dbError = null;
 
-    // 3. If COMPLETED (1), merchantRef present, and confirmation_code available → update DB
     if (statusCode === 1 && merchantRef && statusData.confirmation_code) {
       const parts = merchantRef.split('-');
       const business_id = parts.slice(0, -1).join('-');
 
-      // Derive method: phone prefix first, Pesapal field as fallback
+      // Derive method
       let method = 'Unknown';
       const phone = statusData.payment_account || '';
       const digits = phone.replace(/\D/g, '');
@@ -58,40 +62,39 @@ export async function onRequestGet(context) {
       const anonKey = env.VITE_INSFORGE_ANON_KEY || env.INSFORGE_ANON_KEY;
 
       if (!insforgeUrl || !anonKey) {
-        dbError = 'Missing INSFORGE env vars in Cloudflare Pages';
+        dbError = 'Missing INSFORGE env vars';
       } else if (!business_id) {
-        dbError = 'Could not parse business_id from merchantRef';
+        dbError = 'Could not parse business_id';
       } else {
-        const rpcRes = await fetch(`${insforgeUrl}/rest/v1/rpc/process_subscription_payment`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': anonKey,
-            'Authorization': `Bearer ${anonKey}`
-          },
-          body: JSON.stringify({
+        try {
+          const { createClient } = await import('@insforge/sdk');
+          const client = createClient({ baseUrl: insforgeUrl, anonKey });
+
+          const { error: rpcError } = await client.database.rpc('process_subscription_payment', {
             target_business_id: business_id,
-            payment_amount: 1000,
+            payment_amount: statusData.amount || 1000,
             payment_method: method,
             pesapal_ref: statusData.confirmation_code
-          })
-        });
+          });
 
-        if (!rpcRes.ok) {
-          const errorText = await rpcRes.text();
-          dbError = `RPC failed (${rpcRes.status}): ${errorText}`;
+          if (rpcError) {
+            dbError = `RPC failed: ${rpcError.message}`;
+          }
+        } catch (sdkErr) {
+          dbError = `SDK Error: ${sdkErr.message}`;
         }
       }
     }
 
-    // 4. Return full status + any DB error to frontend for debugging
+    // 4. Return
     return new Response(JSON.stringify({
       status: statusData.payment_status_description,
       statusCode,
+      status_code: statusCode,
       confirmationCode: statusData.confirmation_code,
       paymentMethod: statusData.payment_method,
       paymentAccount: statusData.payment_account,
-      dbError  // null on success, string on failure — visible in browser devtools
+      dbError
     }), { headers: { 'Content-Type': 'application/json' } });
 
   } catch (err) {

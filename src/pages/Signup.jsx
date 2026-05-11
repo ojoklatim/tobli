@@ -235,15 +235,15 @@ export default function Signup() {
         try {
           const res = await fetch(`/api/pesapal-status?orderTrackingId=${orderTrackingId}`);
           const data = await res.json();
-          if (data.status_code === 1) { // COMPLETED
+          if (data.statusCode === 1) { // COMPLETED
             clearInterval(interval);
             clearTimeout(timeout);
             setStep('success');
             setTimeout(() => navigate('/dashboard', { state: { isNewSignup: true } }), 2000);
-          } else if (data.status_code === 2 || data.status_code === 3) {
+          } else if (data.statusCode === 2 || data.statusCode === 3) {
             clearInterval(interval);
             clearTimeout(timeout);
-            setError(`Payment failed. Status: ${data.status} (Code: ${data.status_code})`);
+            setError(`Payment failed. Status: ${data.status} (Code: ${data.statusCode})`);
             setStep('value_message');
           } else if (data.error) {
             clearInterval(interval);

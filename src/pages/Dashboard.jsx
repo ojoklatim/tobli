@@ -93,8 +93,9 @@ export default function Dashboard() {
     const trackingId = params.get('OrderTrackingId');
     if (!trackingId) return;
 
-    // Retrieve the merchantRef we saved before the redirect
-    const merchantRef = sessionStorage.getItem('tobli_merchant_ref') || '';
+    // Retrieve the merchantRef we saved before the redirect or from the URL
+    const merchantRef = sessionStorage.getItem('tobli_merchant_ref') || params.get('OrderMerchantReference') || '';
+
     sessionStorage.removeItem('tobli_merchant_ref');
 
     // Remove the query params from the URL without a page reload
