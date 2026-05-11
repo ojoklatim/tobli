@@ -1,3 +1,5 @@
+import { createClient } from '@insforge/sdk';
+
 export async function onRequestGet(context) {
   const { request, env } = context;
   try {
@@ -67,7 +69,6 @@ export async function onRequestGet(context) {
         dbError = 'Could not parse business_id';
       } else {
         try {
-          const { createClient } = await import('@insforge/sdk');
           const client = createClient({ baseUrl: insforgeUrl, anonKey });
 
           const { error: rpcError } = await client.database.rpc('process_subscription_payment', {

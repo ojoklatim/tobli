@@ -1,3 +1,5 @@
+import { createClient } from '@insforge/sdk';
+
 export async function onRequestPost(context) {
   const { request, env } = context;
   try {
@@ -64,7 +66,6 @@ export async function onRequestPost(context) {
       const anonKey = env.VITE_INSFORGE_ANON_KEY || env.INSFORGE_ANON_KEY;
 
       if (insforgeUrl && anonKey && business_id) {
-        const { createClient } = await import('@insforge/sdk');
         const client = createClient({ baseUrl: insforgeUrl, anonKey });
 
         await client.database.rpc('process_subscription_payment', {
