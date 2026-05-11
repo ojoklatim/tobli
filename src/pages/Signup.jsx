@@ -315,18 +315,19 @@ export default function Signup() {
               <div className={`p-5 rounded-2xl border text-sm space-y-3 text-left ${theme === 'dark' ? 'bg-neutral-800/60 border-white/5' : 'bg-gray-100 border-black/5'}`}>
                 <div className="flex justify-between items-center">
                   <span className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}>Subscription fee</span>
-                  <span className="font-mono font-bold">UGX 890</span>
+                  <span className="font-mono font-bold">UGX 880</span>
                 </div>
                 <div className={`border-t border-dashed ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}></div>
                 <div className={`space-y-2 text-xs leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                  <div className="flex items-start gap-2">
-                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Mobile Money</strong> — UGX 110 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
+                  <div className="flex flex-col gap-1">
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>MTN</strong> — UGX 110 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 990</strong></span>
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Airtel</strong> — UGX 120 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
                   </div>
                   <div className="flex items-start gap-2">
                     <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Card</strong> — Processing fees vary by bank</span>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Pesapal E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 890</strong></span>
+                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Pesapal E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 880</strong></span>
                   </div>
                 </div>
               </div>
