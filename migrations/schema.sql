@@ -96,6 +96,8 @@ CREATE INDEX IF NOT EXISTS idx_search_impressions_business_id ON search_impressi
 CREATE INDEX IF NOT EXISTS idx_search_impressions_created_at  ON search_impressions(created_at);
 
 -- ── 6. SEARCH FUNCTION ───────────────────────────────────────
+DROP FUNCTION IF EXISTS search_nearby(TEXT, DOUBLE PRECISION, DOUBLE PRECISION, DOUBLE PRECISION);
+
 CREATE OR REPLACE FUNCTION search_nearby(
     search_query TEXT,
     user_lat     DOUBLE PRECISION,

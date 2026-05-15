@@ -13,6 +13,9 @@ ALTER TABLE items
 UPDATE items SET price_type = 'fixed' WHERE price_type IS NULL;
 
 -- ── Update search_nearby RPC to return price_type and price_suffix ──
+-- Must drop first — PostgreSQL does not allow changing a function's return type in place.
+DROP FUNCTION IF EXISTS search_nearby(TEXT, DOUBLE PRECISION, DOUBLE PRECISION, DOUBLE PRECISION);
+
 CREATE OR REPLACE FUNCTION search_nearby(
     search_query TEXT,
     user_lat     DOUBLE PRECISION,
