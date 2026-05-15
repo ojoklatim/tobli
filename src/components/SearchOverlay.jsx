@@ -69,8 +69,6 @@ export default function SearchOverlay() {
         radius_km: 5,
       });
 
-      if (results?.[0]) console.log('[TOBLI DEBUG] RPC result[0]:', JSON.stringify(results[0]));
-
       if (!results || results.length === 0 || error) {
         setNoResultsMessage('Nothing found near you');
         setSearchResults([]);
