@@ -42,3 +42,6 @@ dist-ssr
 .dev.vars
 .env
 .env.*
+
+# InsForge & AI agent skills
+.windsurf
