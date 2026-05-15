@@ -145,11 +145,19 @@ export default function Login() {
   return (
     <div className={`min-h-screen font-sans flex flex-col transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
       {/* Topbar */}
-      <div className="p-6 flex justify-between items-center">
+      <div className="p-6 flex justify-between items-center z-10 relative">
         <Link to="/" className={`text-xl font-syne font-extrabold tracking-tighter transition-colors duration-300 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
           TOBLI
         </Link>
-        <ThemeToggle />
+        <div className="flex items-center gap-4">
+          <ThemeToggle />
+          <button
+            onClick={() => navigate('/')}
+            className={`p-2 rounded-full transition-colors ${theme === 'dark' ? 'bg-white/5 hover:bg-white/10' : 'bg-black/5 hover:bg-black/10'}`}
+          >
+            <ArrowLeft size={20} />
+          </button>
+        </div>
       </div>
 
       <div className="flex-1 flex items-center justify-center p-6">

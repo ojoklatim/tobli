@@ -1,22 +1,26 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useStore } from '../store/useStore';
 import ThemeToggle from '../components/ThemeToggle';
 
 export default function Terms() {
   const theme = useStore(state => state.theme);
+  const navigate = useNavigate();
 
   return (
     <div className={`min-h-screen font-sans transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-gray-50 text-black'}`}>
       <div className={`p-6 flex justify-between items-center border-b transition-colors ${theme === 'dark' ? 'border-white/5' : 'border-black/5'}`}>
-        <div className="flex items-center gap-6">
-          <Link to="/" className={`text-xl font-syne font-extrabold tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>TOBLI</Link>
+        <Link to="/" className={`text-xl font-syne font-extrabold tracking-tighter transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>TOBLI</Link>
+        <div className="flex items-center gap-4">
           <ThemeToggle />
+          <button
+            onClick={() => navigate(-1)}
+            className={`p-2 rounded-full transition-colors ${theme === 'dark' ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-black/5 text-black hover:bg-black/10'}`}
+          >
+            <ArrowLeft size={20} />
+          </button>
         </div>
-        <Link to="/signup" className={`p-2 rounded-full transition-colors ${theme === 'dark' ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-black/5 text-black hover:bg-black/10'}`}>
-          <ArrowLeft size={20} />
-        </Link>
       </div>
 
       <div className="max-w-3xl mx-auto px-6 py-12">

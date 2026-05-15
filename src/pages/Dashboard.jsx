@@ -491,7 +491,8 @@ function ListingsTab({ biz, setListingsCount }) {
   };
 
   const addItem = async () => {
-    if (!newItem.name || !newItem.price || isSubmitting) return;
+    const priceRequired = newItem.price_type !== 'negotiable';
+    if (!newItem.name || (priceRequired && !newItem.price) || isSubmitting) return;
     setIsSubmitting(true);
     setError(null);
     try {
@@ -502,8 +503,6 @@ function ListingsTab({ biz, setListingsCount }) {
           name: newItem.name,
           type: newItem.type,
           price: newItem.price_type === 'negotiable' ? null : parseFloat(newItem.price),
-          price_type: newItem.price_type,
-          price_suffix: newItem.price_suffix,
           available: true,
         }])
         .select('*');
@@ -539,7 +538,8 @@ function ListingsTab({ biz, setListingsCount }) {
   };
 
   const saveEdit = async () => {
-    if (!editingItem || !editingItem.name || !editingItem.price || isSubmitting) return;
+    const priceRequired = editingItem?.price_type !== 'negotiable';
+    if (!editingItem || !editingItem.name || (priceRequired && !editingItem.price) || isSubmitting) return;
     setIsSubmitting(true);
     setError(null);
     try {
@@ -554,8 +554,6 @@ function ListingsTab({ biz, setListingsCount }) {
           name: editingItem.name, 
           type: editingItem.type, 
           price: editingItem.price_type === 'negotiable' ? null : parseFloat(editingItem.price),
-          price_type: editingItem.price_type,
-          price_suffix: editingItem.price_suffix,
           image_url: imageUrl
         })
         .eq('id', editingItem.id);
