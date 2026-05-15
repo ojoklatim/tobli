@@ -503,6 +503,8 @@ function ListingsTab({ biz, setListingsCount }) {
           name: newItem.name,
           type: newItem.type,
           price: newItem.price_type === 'negotiable' ? null : parseFloat(newItem.price),
+          price_type: newItem.price_type,
+          price_suffix: newItem.price_type !== 'negotiable' ? (newItem.price_suffix || null) : null,
           available: true,
         }])
         .select('*');
@@ -554,6 +556,8 @@ function ListingsTab({ biz, setListingsCount }) {
           name: editingItem.name, 
           type: editingItem.type, 
           price: editingItem.price_type === 'negotiable' ? null : parseFloat(editingItem.price),
+          price_type: editingItem.price_type,
+          price_suffix: editingItem.price_type !== 'negotiable' ? (editingItem.price_suffix || null) : null,
           image_url: imageUrl
         })
         .eq('id', editingItem.id);
