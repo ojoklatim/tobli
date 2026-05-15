@@ -734,12 +734,12 @@ function ListingsTab({ biz, setListingsCount }) {
                   <td className="p-6 font-medium">{item.name}</td>
                   <td className="p-4">
                     <div className="font-mono text-xs font-bold text-right">
-                      {item.price_type === 'negotiable' ? (
+                      {(item.price_type === 'negotiable' || item.price == null) ? (
                         <span className="text-neutral-500 uppercase text-[10px] tracking-widest">Negotiable</span>
                       ) : (
                         <>
                           {item.price_type === 'starting' && <span className="text-[9px] uppercase opacity-50 block leading-none mb-1">From</span>}
-                          UGX {item.price?.toLocaleString() || '—'}
+                          UGX {item.price.toLocaleString()}
                           {item.price_suffix && <span className="opacity-50 ml-1 text-[10px]">{item.price_suffix}</span>}
                         </>
                       )}
