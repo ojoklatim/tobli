@@ -178,12 +178,12 @@ function BusinessPopupContent() {
             {product_name || 'Offer'}
           </h3>
           <div className={`font-mono text-[15px] font-bold mb-2 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-            {selectedBusiness.price_type === 'negotiable' ? (
+            {(selectedBusiness.price_type === 'negotiable' || selectedBusiness.price == null) ? (
               <span className="text-[13px] uppercase tracking-widest opacity-80">Negotiable</span>
             ) : (
               <>
                 {selectedBusiness.price_type === 'starting' && <span className="text-[10px] uppercase opacity-60">From </span>}
-                {selectedBusiness.price ? `UGX ${selectedBusiness.price.toLocaleString()}` : 'Price on request'}
+                UGX {selectedBusiness.price.toLocaleString()}
                 {selectedBusiness.price_suffix && <span className="text-[12px] opacity-60 ml-1 font-sans">{selectedBusiness.price_suffix}</span>}
               </>
             )}

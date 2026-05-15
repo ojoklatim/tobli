@@ -108,6 +108,8 @@ RETURNS TABLE (
     item_id       UUID,
     item_name     TEXT,
     price         NUMERIC,
+    price_type    TEXT,
+    price_suffix  TEXT,
     image_url     TEXT,
     lat           DOUBLE PRECISION,
     lng           DOUBLE PRECISION,
@@ -125,7 +127,7 @@ BEGIN
     
     RETURN QUERY
     SELECT
-        b.id, b.name, i.id, i.name, i.price, i.image_url,
+        b.id, b.name, i.id, i.name, i.price, i.price_type, i.price_suffix, i.image_url,
         b.lat, b.lng, b.whatsapp, b.phone, b.instagram, b.x_handle, b.website,
         (ST_Distance(b.location, user_location) / 1000.0)::DOUBLE PRECISION AS distance_km
     FROM items i
