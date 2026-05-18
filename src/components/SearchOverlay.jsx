@@ -106,12 +106,8 @@ export default function SearchOverlay() {
   };
 
   const handleSelectResult = (res, idx) => {
-    // ALWAYS start from the nearest (index 0) as requested, 
-    // even if a specific alternative was clicked in the list.
-    if (searchResults && searchResults.length > 0) {
-      setSelectedBusiness(searchResults[0]);
-      setCurrentIndex(0);
-    }
+    setSelectedBusiness(res);
+    setCurrentIndex(idx);
     setShowDirections(false);
     setIsDropdownOpen(false); 
   };

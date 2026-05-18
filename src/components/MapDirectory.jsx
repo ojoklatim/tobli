@@ -283,12 +283,18 @@ function BusinessPopupContent() {
 
       {totalResults > 1 && (
         <div className={`border-t pt-3 flex items-center justify-between gap-2 ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}>
-          <button
-            onClick={handlePrev}
-            className={`flex items-center gap-1 px-4 py-2 rounded-full text-[11px] font-black transition-all pointer-events-auto shrink-0 shadow-xl ${theme === 'dark' ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10' : 'bg-black/5 text-black hover:bg-black/10 border border-black/10'}`}
-          >
-            <ChevronLeft size={13} strokeWidth={3} /> Prev
-          </button>
+          {currentIndex > 0 ? (
+            <button
+              onClick={handlePrev}
+              className={`flex items-center gap-1 px-4 py-2 rounded-full text-[11px] font-black transition-all pointer-events-auto shrink-0 shadow-xl ${theme === 'dark' ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10' : 'bg-black/5 text-black hover:bg-black/10 border border-black/10'}`}
+            >
+              <ChevronLeft size={13} strokeWidth={3} /> Prev
+            </button>
+          ) : (
+            <div className={`text-[11px] font-bold ${theme === 'dark' ? 'text-white/50' : 'text-black/40'}`}>
+              Next Alternative
+            </div>
+          )}
           <span className={`text-[10px] font-bold opacity-50 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
             {currentIndex + 1} / {totalResults}
           </span>
