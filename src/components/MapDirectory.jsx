@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useStore } from '../store/useStore';
 import { useAuthStore } from '../store/authStore';
 import { insforge } from '../lib/insforge';
-import { Phone, Instagram, Send, Globe, Navigation, ChevronRight, X as CloseIcon, LocateFixed, HelpCircle } from 'lucide-react';
+import { Phone, Instagram, Send, Globe, Navigation, ChevronRight, ChevronLeft, RefreshCw, X as CloseIcon, LocateFixed, HelpCircle } from 'lucide-react';
 
 
 
@@ -73,6 +73,15 @@ function MapController({ center, zoom, bounds, selectedBusiness }) {
   return null;
 }
 
+// Module-level ref so BusinessPopupContent can access the map instance
+const mapInstanceRef = { current: null };
+
+function MapInstanceCapture() {
+  const map = useMap();
+  useEffect(() => { mapInstanceRef.current = map; }, [map]);
+  return null;
+}
+
 /* ─── Popup Card Content ──────────────────────────── */
 function BusinessPopupContent() {
   const selectedBusiness = useStore(state => state.selectedBusiness);
@@ -83,12 +92,12 @@ function BusinessPopupContent() {
   const setShowDirections = useStore(state => state.setShowDirections);
   const showDirections = useStore(state => state.showDirections);
   const theme = useStore(state => state.theme);
+  const userLocation = useStore(state => state.userLocation);
   
   const [isImgExpanded, setIsImgExpanded] = useState(false);
   const [fetchedImage, setFetchedImage] = useState(null);
 
-  // Only check if user location exists, don't subscribe to coordinate changes here
-  const hasUserLocation = useStore(state => !!state.userLocation);
+  const hasUserLocation = !!userLocation;
 
   useEffect(() => {
     // Reset fetched image when business changes
@@ -134,10 +143,21 @@ function BusinessPopupContent() {
     setShowDirections(false);
   };
 
+  const handlePrev = (e) => {
+    e?.stopPropagation();
+    const prev = currentIndex <= 0 ? totalResults - 1 : currentIndex - 1;
+    setCurrentIndex(prev);
+    setSelectedBusiness(searchResults[prev]);
+    setShowDirections(false);
+  };
+
   const handleClose = (e) => {
     e?.stopPropagation();
     setSelectedBusiness(null);
     setShowDirections(false);
+    if (userLocation && mapInstanceRef.current) {
+      mapInstanceRef.current.flyTo([userLocation.lat, userLocation.lng], 18, { animate: true, duration: 1.1 });
+    }
   };
 
   return (
@@ -262,17 +282,21 @@ function BusinessPopupContent() {
       )}
 
       {totalResults > 1 && (
-        <div className={`border-t pt-3 flex items-center justify-between ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}>
-          <div className="flex-1">
-            <div className={`text-[11px] font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
-              {isLast ? 'Cycle alternatives' : 'Next Alternative'}
-            </div>
-          </div>
+        <div className={`border-t pt-3 flex items-center justify-between gap-2 ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}>
+          <button
+            onClick={handlePrev}
+            className={`flex items-center gap-1 px-4 py-2 rounded-full text-[11px] font-black transition-all pointer-events-auto shrink-0 shadow-xl ${theme === 'dark' ? 'bg-white/10 text-white hover:bg-white/20 border border-white/10' : 'bg-black/5 text-black hover:bg-black/10 border border-black/10'}`}
+          >
+            <ChevronLeft size={13} strokeWidth={3} /> Prev
+          </button>
+          <span className={`text-[10px] font-bold opacity-50 ${theme === 'dark' ? 'text-white' : 'text-black'}`}>
+            {currentIndex + 1} / {totalResults}
+          </span>
           <button
             onClick={handleNext}
             className={`flex items-center gap-1 px-4 py-2 rounded-full text-[11px] font-black transition-all pointer-events-auto shrink-0 shadow-xl ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
           >
-            Next <ChevronRight size={13} strokeWidth={3} />
+            {isLast ? <><RefreshCw size={12} strokeWidth={3} /> Cycle</> : <>Next <ChevronRight size={13} strokeWidth={3} /></>}
           </button>
         </div>
       )}
@@ -576,6 +600,7 @@ export default function MapDirectory() {
     <div className={`h-screen w-full transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]' : 'bg-gray-100'}`}>
       <MapContainer center={finalMapConfig.center} zoom={finalMapConfig.zoom} className="h-full w-full" zoomControl={false} scrollWheelZoom={true} doubleClickZoom={true} touchZoom={true} dragging={true}>
         <MapController center={activeBounds ? null : finalMapConfig.center} zoom={finalMapConfig.zoom} bounds={activeBounds} selectedBusiness={!showDirections ? selectedBusiness : null} />
+        <MapInstanceCapture />
         <TileLayer url={tileLayerUrl} attribution='&copy; OSM' />
         <TileLayer url={labelsLayerUrl} zIndex={10} />
         

@@ -428,6 +428,7 @@ function ListingsTab({ biz, setListingsCount }) {
   const [editingItem, setEditingItem] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState(null);
+  const [filterStatus, setFilterStatus] = useState('all'); // 'all' | 'available' | 'unavailable'
 
   useEffect(() => {
     if (!biz?.id) return;
@@ -574,12 +575,44 @@ function ListingsTab({ biz, setListingsCount }) {
   };
 
   const theme = useStore(state => state.theme);
-  const filtered = listings.filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()));
+  const totalCount = listings.length;
+  const availableCount = listings.filter(i => i.available).length;
+  const unavailableCount = listings.filter(i => !i.available).length;
+
+  const filtered = listings
+    .filter(i => i.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .filter(i => {
+      if (filterStatus === 'available') return i.available;
+      if (filterStatus === 'unavailable') return !i.available;
+      return true;
+    });
 
   return (
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <h2 className="text-xl font-syne font-bold">Manage Listings</h2>
+        <div className="flex items-center gap-3 flex-wrap">
+          <h2 className="text-xl font-syne font-bold">Manage Listings</h2>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setFilterStatus('all')}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-black transition-all ${filterStatus === 'all' ? (theme === 'dark' ? 'bg-white text-black' : 'bg-black text-white') : (theme === 'dark' ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-black/5 text-black hover:bg-black/10')}`}
+            >
+              {totalCount} All
+            </button>
+            <button
+              onClick={() => setFilterStatus('available')}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-black transition-all ${filterStatus === 'available' ? 'bg-green-500 text-white' : (theme === 'dark' ? 'bg-green-500/10 text-green-400 hover:bg-green-500/20' : 'bg-green-500/10 text-green-600 hover:bg-green-500/20')}`}
+            >
+              {availableCount} On
+            </button>
+            <button
+              onClick={() => setFilterStatus('unavailable')}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-black transition-all ${filterStatus === 'unavailable' ? 'bg-red-500 text-white' : (theme === 'dark' ? 'bg-red-500/10 text-red-400 hover:bg-red-500/20' : 'bg-red-500/10 text-red-600 hover:bg-red-500/20')}`}
+            >
+              {unavailableCount} Off
+            </button>
+          </div>
+        </div>
         <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
           <input
             type="text"
