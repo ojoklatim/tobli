@@ -913,9 +913,9 @@ function InfoTab({ biz, setBiz }) {
       <div className={`p-8 rounded-[24px] border transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5' : 'bg-gray-50 border-black/5 shadow-sm'}`}>
         <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Precise Location (Optional)</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <InfoField label="Building Name" value={form.building_name} onChange={v => setForm({ ...form, building_name: v })} icon={<MapPin size={16} />} />
-          <InfoField label="Floor" value={form.floor} onChange={v => setForm({ ...form, floor: v })} icon={<MapPin size={16} />} />
-          <InfoField label="Room/Shop Number" value={form.room_number} onChange={v => setForm({ ...form, room_number: v })} icon={<MapPin size={16} />} />
+          <InfoField label="Building Name" value={form.building_name} onChange={v => setForm({ ...form, building_name: v })} icon={<MapPin size={16} />} placeholder="e.g. Acacia Mall" />
+          <InfoField label="Floor" value={form.floor} onChange={v => setForm({ ...form, floor: v })} icon={<MapPin size={16} />} placeholder="e.g. Ground Floor, 2nd Floor" />
+          <InfoField label="Room/Shop Number" value={form.room_number} onChange={v => setForm({ ...form, room_number: v })} icon={<MapPin size={16} />} placeholder="e.g. Shop 4, Kiosk B" />
         </div>
 
         <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6 border-t pt-6 border-dashed border-black/10 dark:border-white/10">GPS Location (Mandatory)</h3>
@@ -932,7 +932,7 @@ function InfoTab({ biz, setBiz }) {
   );
 }
 
-function InfoField({ label, value, onChange, icon }) {
+function InfoField({ label, value, onChange, icon, placeholder }) {
   const theme = useStore(state => state.theme);
   return (
     <div>
@@ -940,9 +940,10 @@ function InfoField({ label, value, onChange, icon }) {
       <div className="relative">
         <input
           type="text"
-          className={`w-full border rounded-2xl p-4 pl-12 font-sans text-sm focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5 focus:border-white text-white' : 'bg-white border-black/10 focus:border-black text-black'}`}
+          className={`w-full border rounded-2xl p-4 pl-12 font-sans text-sm focus:outline-none transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5 focus:border-white text-white placeholder-neutral-700' : 'bg-white border-black/10 focus:border-black text-black placeholder-neutral-400'}`}
           value={value || ''}
           onChange={e => onChange(e.target.value)}
+          placeholder={placeholder || ''}
         />
         <div className={`absolute left-4 inset-y-0 flex items-center ${theme === 'dark' ? 'text-neutral-600' : 'text-neutral-400'}`}>
           {icon || <Globe size={16} />}

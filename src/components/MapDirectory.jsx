@@ -215,8 +215,8 @@ function BusinessPopupContent() {
             <div className={`mt-1.5 text-[11px] leading-snug ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
               {[
                 selectedBusiness.building_name,
-                selectedBusiness.floor ? `Floor ${selectedBusiness.floor}` : null,
-                selectedBusiness.room_number ? `Room ${selectedBusiness.room_number}` : null,
+                selectedBusiness.floor,
+                selectedBusiness.room_number,
               ].filter(Boolean).map((part, i, arr) => (
                 <span key={i}>
                   {part}{i < arr.length - 1 && <span className="font-bold mx-0.5">·</span>}
