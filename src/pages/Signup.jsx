@@ -468,27 +468,49 @@ export default function Signup() {
                     )}
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                          <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Business Name</label>
-                          <input
-                            {...register('business_name', { required: 'Required' })}
-                            className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                            placeholder="Enter business name"
-                          />
-                          {errors.business_name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.business_name.message}</p>}
-                        </div>
-
-                        <div>
-                          <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Owner's Name</label>
-                          <input
-                            {...register('owner_name', { required: 'Required' })}
-                            className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                            placeholder="Full name"
-                          />
-                          {errors.owner_name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.owner_name.message}</p>}
-                        </div>
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Business Name</label>
+                        <input
+                          {...register('business_name', { required: 'Required' })}
+                          className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="Enter business name"
+                        />
+                        {errors.business_name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.business_name.message}</p>}
+                      </div>
+                      
+                      <div>
+                        <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Owner's Name</label>
+                        <input
+                          {...register('owner_name', { required: 'Required' })}
+                          className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="Full name"
+                        />
+                        {errors.owner_name && <p className="text-red-500 text-xs mt-1 ml-1">{errors.owner_name.message}</p>}
+                      </div>
                     </div>
 
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Precise Location (Optional)</label>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <input
+                          {...register('building_name')}
+                          className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="Building (e.g. Acacia Mall)"
+                        />
+                        <input
+                          {...register('floor')}
+                          className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="Floor (e.g. 2nd Floor)"
+                        />
+                        <input
+                          {...register('room_number')}
+                          className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
+                          placeholder="Room (e.g. Kiosk 4)"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-neutral-400 mb-2 ml-1">Phone Number</label>
                         <input
@@ -512,6 +534,7 @@ export default function Signup() {
                         />
                         {errors.email && <p className="text-red-500 text-xs mt-1 ml-1">{errors.email.message}</p>}
                       </div>
+                    </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

@@ -64,8 +64,7 @@ export default function Privacy() {
 
             <h3 className={`text-sm font-bold mb-2 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>2.3 Transaction Data</h3>
             <ul className="list-disc pl-5 space-y-1 mb-4">
-              <li>Subscription payment amounts, dates, payment methods, and Pesapal reference IDs.</li>
-              <li>We do <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>not</strong> store credit/debit card numbers or Mobile Money PINs — these are processed entirely by Pesapal.</li>
+              <li>We currently do not collect payment or transaction data, as the service is free. Once payments are introduced, we will update this policy.</li>
             </ul>
 
             <h3 className={`text-sm font-bold mb-2 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>2.4 Usage &amp; Technical Data</h3>
@@ -77,7 +76,7 @@ export default function Privacy() {
 
             <h3 className={`text-sm font-bold mb-2 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>2.5 Data from Third Parties</h3>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Payment confirmations and transaction references from Pesapal.</li>
+              <li>Currently, we do not receive data from third-party payment providers.</li>
             </ul>
           </section>
 
@@ -95,7 +94,6 @@ export default function Privacy() {
                 <tbody className={`divide-y transition-colors ${theme === 'dark' ? 'divide-white/5' : 'divide-black/5'}`}>
                   <tr><td className="p-3">Account creation &amp; authentication</td><td className="p-3">Consent (Section 7, DPPA)</td></tr>
                   <tr><td className="p-3">Displaying business on map</td><td className="p-3">Performance of contract</td></tr>
-                  <tr><td className="p-3">Processing payments via Pesapal</td><td className="p-3">Performance of contract</td></tr>
                   <tr><td className="p-3">GPS location for map positioning</td><td className="p-3">Explicit consent (browser prompt)</td></tr>
                   <tr><td className="p-3">Presence tracking (live user count)</td><td className="p-3">Legitimate interest</td></tr>
                   <tr><td className="p-3">Platform security &amp; fraud prevention</td><td className="p-3">Legitimate interest</td></tr>
@@ -110,7 +108,6 @@ export default function Privacy() {
             <ul className="list-disc pl-5 space-y-1">
               <li>Create and manage your business account.</li>
               <li>Display your business and Listings on the public map to Users.</li>
-              <li>Process subscription payments through Pesapal.</li>
               <li>Enable Users to contact you via the links you provide.</li>
               <li>Calculate and display distances between Users and businesses.</li>
               <li>Show live user counts on the admin dashboard.</li>
@@ -124,7 +121,6 @@ export default function Privacy() {
             <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>5. Data Sharing &amp; Disclosure</h2>
             <p className="mb-3">We do <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>not sell</strong> your personal data. We share data only with:</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Pesapal Limited</strong> — payment processing (amount, business ID, email). Pesapal is a data processor under the DPPA.</li>
               <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>InsForge</strong> — our backend infrastructure provider (database, authentication, storage). Data is processed under a data processing agreement.</li>
               <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>CartoDB / OpenStreetMap</strong> — map tile rendering (no personal data shared, only tile coordinates).</li>
               <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>OSRM Project</strong> — routing (GPS coordinates for route calculation, no personal identifiers).</li>

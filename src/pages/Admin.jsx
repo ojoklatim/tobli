@@ -197,7 +197,7 @@ export default function AdminDashboard() {
                         </td>
                         <td className="p-6 text-center">
                           <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase ${b.subscription_status === 'active' ? 'bg-emerald-500/20 text-emerald-500' : 'bg-red-500/20 text-red-500'}`}>
-                            {b.subscription_status === 'active' ? 'Paid' : 'Unpaid'}
+                            {b.subscription_status === 'active' ? 'Active' : 'Inactive'}
                           </span>
                         </td>
                         <td className="p-6 text-right">

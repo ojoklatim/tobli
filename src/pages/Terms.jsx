@@ -75,14 +75,12 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>6. Subscriptions &amp; Payments</h2>
+            <h2 className={`text-lg font-bold mb-3 transition-colors ${theme === 'dark' ? 'text-white' : 'text-black'}`}>6. Subscriptions &amp; Payments (Coming Soon)</h2>
+            <p className="mb-2">We are currently operating TOBLI as a free service while we finalize our business registration and set up our payment gateways.</p>
             <ol className="list-decimal pl-5 space-y-2">
-              <li>An active Subscription (Standard plan) is required for Listings to appear on the public map.</li>
-              <li>All payments are processed through <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Pesapal Limited</strong>. By paying you also agree to Pesapal&apos;s terms and privacy policy.</li>
-              <li>We may modify pricing with <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>30 days&apos; prior notice</strong>.</li>
-              <li>Payments are in <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Ugandan Shillings (UGX)</strong> via Mobile Money, bank cards, or other Pesapal-supported methods.</li>
-              <li>Refund requests may be submitted within <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>7 days</strong> of payment and are evaluated case-by-case.</li>
-              <li>Expired subscriptions result in Listings being hidden until renewal. The subscription status will show as <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Inactive</strong> until renewed.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Currently Free</strong>: All business listings and map visibility are completely free of charge during this phase.</li>
+              <li><strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Future Charges</strong>: We will introduce paid subscriptions in the near future. We will notify all users at least <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>30 days</strong> before any charges apply.</li>
+              <li>Once payments are introduced, they will be processed securely via supported third-party providers in <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Ugandan Shillings (UGX)</strong>.</li>
             </ol>
           </section>
 

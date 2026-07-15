@@ -163,113 +163,22 @@ export default function Subscribe() {
 
       <div className="flex-1 flex items-center justify-center p-6 relative">
         <AnimatePresence mode="wait">
-          {step === 'phone_confirm' && (
-            <motion.div 
-              key="phone_confirm"
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`w-full max-w-md border p-8 md:p-12 rounded-[32px] transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }} 
+            animate={{ opacity: 1, scale: 1 }} 
+            className={`w-full max-w-md border p-8 md:p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
+          >
+            <h1 className="text-3xl font-syne font-bold mb-3 tracking-tight">Payments Coming Soon</h1>
+            <p className={`text-base leading-relaxed mb-8 ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
+              We are currently operating TOBLI completely free of charge while we finalize our registration and payment gateways.
+            </p>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className={`w-full flex justify-center items-center gap-2 py-4 rounded-full font-sans font-bold text-base transition-all active:scale-95 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
             >
-              <div className="text-center mb-8">
-                <h1 className="text-3xl font-syne font-bold mb-3 tracking-tight">Renew your Tobli listing</h1>
-                <p className={`text-sm leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                  Complete your payment on the secure Pesapal checkout page.
-                </p>
-              </div>
-
-              {error && (
-                <div className="bg-red-500/10 border border-red-500/20 p-4 rounded-2xl flex items-center gap-3 text-red-500 text-sm mb-6">
-                  <AlertCircle size={18} />
-                  {error}
-                </div>
-              )}
-
-              <div className="space-y-6">
-                <div>
-                  <div className="relative">
-                    <input
-                      type="tel"
-                      value={paymentPhone}
-                      onChange={(e) => setPaymentPhone(e.target.value)}
-                      className={`w-full border rounded-2xl p-4 transition-colors focus:outline-none text-xl tracking-wider ${theme === 'dark' ? 'bg-neutral-950 border-neutral-800 text-white focus:border-white placeholder-neutral-700' : 'bg-gray-50 border-gray-200 text-black focus:border-black placeholder-neutral-400'}`}
-                      placeholder="07XX XXX XXX"
-                    />
-                    {networkName && (
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2">
-                        <span className={`text-xs font-bold px-2 py-1 rounded-md ${networkName.includes('MTN') ? 'bg-yellow-400 text-black' : 'bg-red-500 text-white'}`}>
-                          {networkName}
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                <div className={`p-4 rounded-2xl border text-sm space-y-2.5 ${theme === 'dark' ? 'bg-neutral-800/60 border-white/5' : 'bg-gray-50 border-black/5'}`}>
-                  <div className="flex justify-between items-center">
-                    <span className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}>Subscription fee</span>
-                    <span className="font-mono font-bold">UGX 880</span>
-                  </div>
-                  <div className={`border-t border-dashed ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}></div>
-                  <div className={`space-y-1.5 text-xs leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                    <div className="flex flex-col gap-1">
-                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>MTN</strong> — UGX 110 fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 990</strong></span>
-                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Airtel</strong> — UGX 120 fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Card</strong> — Fees vary by bank</span>
-                    </div>
-                    <div className="flex items-start gap-2">
-                      <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 880</strong></span>
-                    </div>
-                  </div>
-                </div>
-
-                <button
-                  disabled={isLoading || paymentPhone.length < 10}
-                  onClick={submitPayment}
-                  className={`w-full flex justify-center items-center gap-2 py-4 rounded-full font-sans font-bold text-base transition-all active:scale-95 disabled:opacity-50 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200 shadow-[0_0_50px_rgba(255,255,255,0.1)]' : 'bg-black text-white hover:bg-neutral-800 shadow-lg'}`}
-                >
-                  {isLoading ? <><Loader2 className="animate-spin" size={18} /> Sending prompt...</> : 'Proceed to payment →'}
-                </button>
-              </div>
-            </motion.div>
-          )}
-
-          {step === 'waiting' && (
-            <motion.div 
-              key="waiting"
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`w-full max-w-md border p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl' : 'bg-white border-gray-100 shadow-xl'}`}
-            >
-              <Loader2 className="animate-spin mx-auto w-12 h-12 mb-6 opacity-50" />
-              <h1 className="text-3xl font-syne font-bold mb-4 tracking-tight">Redirecting...</h1>
-              <p className={`text-base leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                Please complete your payment on the secure Pesapal checkout page.
-              </p>
-            </motion.div>
-          )}
-
-          {step === 'success' && (
-            <motion.div 
-              key="success"
-              initial={{ opacity: 0, scale: 0.95 }} 
-              animate={{ opacity: 1, scale: 1 }} 
-              className={`w-full max-w-md border p-8 md:p-12 rounded-[32px] text-center transition-all duration-300 absolute ${theme === 'dark' ? 'bg-neutral-900/40 backdrop-blur-xl border-neutral-800 shadow-2xl border-emerald-500/30' : 'bg-white border-emerald-200 shadow-xl'}`}
-            >
-              <div className="flex justify-center mb-6">
-                <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center">
-                  <CheckCircle2 className="w-10 h-10 text-emerald-500" />
-                </div>
-              </div>
-              <h1 className="text-3xl font-syne font-bold mb-3 tracking-tight">You're live on Tobli!</h1>
-              <p className={`text-base leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
-                Your business is now active for 30 days.
-              </p>
-            </motion.div>
-          )}
+              Go to Dashboard →
+            </button>
+          </motion.div>
         </AnimatePresence>
       </div>
     </div>

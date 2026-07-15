@@ -180,7 +180,7 @@ export default function Dashboard() {
     </div>
   );
 
-  const isSubActive = biz.subscription_status === 'active';
+  const isSubActive = true; // Payments are disabled, so all are considered active
 
   const toggleOpen = async () => {
     const newState = !biz.is_open;
@@ -251,16 +251,7 @@ export default function Dashboard() {
         )}
       </header>
 
-      {/* Subscription Notice */}
-      {!isSubActive && (
-        <div className="bg-red-500/10 border-b border-red-500/20 text-red-500 py-3 text-center text-sm font-bold px-6">
-           <AlertCircle size={16} className="inline mr-2" />
-           Action Required: Your listings will not appear on the map.
-           <button onClick={() => setActiveTab('subscription')} className="underline font-black ml-2 hover:text-red-600 transition-colors">
-             {latestSub ? 'Renew Access' : 'Get Access'}
-           </button>
-        </div>
-      )}
+      {/* Subscription Notice Removed */}
 
       {/* Dashboard Body */}
       <main className="flex-1 max-w-7xl mx-auto w-full px-6 py-8 flex flex-col md:flex-row gap-8">
@@ -395,7 +386,7 @@ function OverviewTab({ biz, checklist, completionPercent, listingsCount }) {
       <h2 className="text-xl font-syne font-bold">Performance Overview</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="cursor-pointer" onClick={() => setActiveTab('subscription')}>
-          <StatCard label="Subscription" value={biz.subscription_status === 'active' ? 'Active' : 'Inactive'} dotColor={biz.subscription_status === 'active' ? 'bg-green-500' : 'bg-red-500'} />
+          <StatCard label="Subscription" value="Free Plan" dotColor="bg-green-500" />
         </div>
         <StatCard label="Status" value={biz.is_open ? 'Open' : 'Closed'} dotColor={biz.is_open ? 'bg-green-500' : 'bg-red-500'} />
         <StatCard label="Total Listings" value={listingsCount} />
@@ -835,6 +826,9 @@ function InfoTab({ biz, setBiz }) {
         website: form.website,
         lat: form.lat,
         lng: form.lng,
+        building_name: form.building_name,
+        floor: form.floor,
+        room_number: form.room_number,
       })
       .eq('id', biz.id);
     if (error) { setMsg('Save failed'); return; }
@@ -917,7 +911,14 @@ function InfoTab({ biz, setBiz }) {
 
       {/* Location */}
       <div className={`p-8 rounded-[24px] border transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900 border-white/5' : 'bg-gray-50 border-black/5 shadow-sm'}`}>
-        <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Set Business Location</h3>
+        <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6">Precise Location (Optional)</h3>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <InfoField label="Building Name" value={form.building_name} onChange={v => setForm({ ...form, building_name: v })} icon={<MapPin size={16} />} />
+          <InfoField label="Floor" value={form.floor} onChange={v => setForm({ ...form, floor: v })} icon={<MapPin size={16} />} />
+          <InfoField label="Room/Shop Number" value={form.room_number} onChange={v => setForm({ ...form, room_number: v })} icon={<MapPin size={16} />} />
+        </div>
+
+        <h3 className="text-sm font-bold uppercase tracking-widest text-neutral-500 mb-6 border-t pt-6 border-dashed border-black/10 dark:border-white/10">GPS Location (Mandatory)</h3>
         <div className="flex items-center gap-4">
           <div className={`flex-1 p-4 rounded-xl font-mono text-sm transition-colors duration-300 ${theme === 'dark' ? 'bg-black text-neutral-400' : 'bg-white border border-black/5 text-neutral-600'}`}>
             {form.lat ? `${form.lat.toFixed(4)}, ${form.lng?.toFixed(4)}` : 'Not set'}
@@ -952,297 +953,20 @@ function InfoField({ label, value, onChange, icon }) {
 }
 
 /* ─── SUBSCRIPTION TAB ──────────────────────────────────────── */
-function SubscriptionTab({ biz, history, latestSub, loadingHistory, setHistory, setLatestSub, setLoadingHistory, onRefresh }) {
+function SubscriptionTab({ biz }) {
   const theme = useStore(state => state.theme);
-
-  // Renewal flow state
-  const [step, setStep] = useState('view'); // 'view' | 'fee_info' | 'waiting' | 'success'
-  const [paymentPhone, setPaymentPhone] = useState(biz?.phone || '');
-  const [orderTrackingId, setOrderTrackingId] = useState(null);
-  const [redirectUrl, setRedirectUrl] = useState(null);
-  const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (!biz?.id) return;
-    const fetchHistory = async () => {
-      const { data } = await insforge.database
-        .from('subscriptions')
-        .select('*')
-        .eq('business_id', biz.id)
-        .order('paid_at', { ascending: false });
-      
-      setHistory(data || []);
-      setLatestSub(data?.[0] || null);
-      setLoadingHistory(false);
-    };
-    fetchHistory();
-  }, [biz?.id, step]); // refresh when step changes (e.g. success -> view)
-
-  const isExpired = biz.subscription_status === 'inactive' || (latestSub?.expires_at && new Date(latestSub.expires_at) < new Date());
-  
-  let daysRemaining = 0;
-  if (latestSub?.expires_at) {
-    const expiresAt = new Date(latestSub.expires_at);
-    const now = new Date();
-    const diff = expiresAt - now;
-    daysRemaining = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-  }
-
-
-
-  const submitPayment = async () => {
-    setIsSubmitting(true);
-    setError(null);
-    try {
-      const normalized = normalizePhone(paymentPhone);
-      const res = await fetch('/api/pesapal-subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          business_id: biz.id,
-          phone_number: normalized,
-          first_name: biz.owner_name?.split(' ')[0] || 'Business',
-          last_name: biz.owner_name?.split(' ').slice(1).join(' ') || 'Owner',
-          email: biz.email
-        })
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Payment request failed');
-      
-      setOrderTrackingId(data.orderTrackingId);
-      setRedirectUrl(data.redirectUrl);
-      // Save merchantRef before the redirect so the return handler can pass it
-      // to pesapal-status and trigger the DB update on the way back.
-      if (data.merchantRef) {
-        sessionStorage.setItem('tobli_merchant_ref', data.merchantRef);
-      }
-      setStep('waiting');
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  useEffect(() => {
-    if (step === 'waiting' && redirectUrl) {
-      window.location.href = redirectUrl;
-    }
-  }, [step, redirectUrl]);
-
-  useEffect(() => {
-    let interval;
-    let timeout;
-    if (step === 'waiting' && orderTrackingId) {
-      const checkStatus = async () => {
-        try {
-          const res = await fetch(`/api/pesapal-status?orderTrackingId=${orderTrackingId}`);
-          const data = await res.json();
-          if (data.statusCode === 1) { // COMPLETED
-            clearInterval(interval);
-            clearTimeout(timeout);
-            if (onRefresh) await onRefresh();
-            setStep('success');
-            setTimeout(() => setStep('view'), 3000);
-          } else if (data.statusCode === 2 || data.statusCode === 3) {
-            clearInterval(interval);
-            clearTimeout(timeout);
-            setError(`Payment failed. Please try again. (${data.status || "Unknown status"})`);
-            setStep('view');
-          } else if (data.error) {
-            clearInterval(interval);
-            clearTimeout(timeout);
-            setError(`Backend error: ${data.error}`);
-            setStep('view');
-          }
-        } catch (err) {
-          // silent error, keep polling
-        }
-      };
-      
-      interval = setInterval(checkStatus, 5000);
-      
-      timeout = setTimeout(() => {
-        clearInterval(interval);
-        setError('Payment timeout. Please try again.');
-        setStep('view');
-      }, 300000); // 5 minutes timeout
-    }
-    return () => { clearInterval(interval); clearTimeout(timeout); };
-  }, [step, orderTrackingId]);
-
-  let networkName = null;
-  if (paymentPhone.length >= 10) {
-    try {
-      networkName = detectNetwork(normalizePhone(paymentPhone));
-    } catch(e) {
-      networkName = null;
-    }
-  }
 
   return (
     <div className="space-y-8">
       <h2 className="text-xl font-syne font-bold">Subscription</h2>
 
-      {isExpired && step === 'view' && (
-        <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl flex items-center gap-3 text-sm font-bold">
-          <AlertCircle size={18} />
-          {latestSub
-            ? 'Renew your subscription to appear on the map and search results.'
-            : 'Activate your subscription to appear on the map and search results.'}
-        </div>
-      )}
-
-      {!isExpired && daysRemaining > 0 && daysRemaining <= 5 && step === 'view' && (
-        <div className="bg-yellow-500/10 border border-yellow-500/20 text-yellow-600 dark:text-yellow-500 p-4 rounded-xl flex items-center gap-3 text-sm font-bold">
-          <AlertTriangle size={18} />
-          Expiring soon — renew to stay visible ({daysRemaining} days remaining)
-        </div>
-      )}
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className={`border p-6 rounded-[24px] transition-all group ${theme === 'dark' ? 'bg-neutral-900 border-white/5 hover:border-white/20' : 'bg-white border-black/5 shadow-sm hover:border-black/20'}`}>
-          <div className="flex justify-between items-start mb-6">
-            <div>
-              <div className={`text-xs uppercase tracking-widest font-bold mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Current Plan</div>
-              <h3 className={`text-2xl font-bold ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{isExpired ? 'Standard' : 'Premium'}</h3>
-            </div>
-            <div className={`px-4 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${isExpired ? 'bg-red-500/20 text-red-500' : 'bg-green-500/20 text-green-500'}`}>
-              {isExpired ? 'Inactive' : 'Active'}
-            </div>
-          </div>
-
-          <div className={`grid grid-cols-2 gap-4 border-t pt-6 mb-6 transition-colors duration-300 ${theme === 'dark' ? 'border-white/5' : 'border-black/5'}`}>
-            <div>
-              <div className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Date Paid</div>
-              <div className={`font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{latestSub?.paid_at ? new Date(latestSub.paid_at).toLocaleDateString() : '—'}</div>
-            </div>
-            <div>
-              <div className={`text-[10px] uppercase font-bold tracking-widest mb-1 ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-600'}`}>Expiry Date</div>
-              <div className={`font-mono text-sm ${theme === 'dark' ? 'text-white' : 'text-black'}`}>{latestSub?.expires_at ? new Date(latestSub.expires_at).toLocaleDateString() : '—'}</div>
-            </div>
-          </div>
-
-          {!isExpired && daysRemaining > 0 && (
-            <div className={`text-sm font-bold text-center mb-6 ${daysRemaining <= 5 ? 'text-yellow-500' : (theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600')}`}>
-              {daysRemaining} {daysRemaining === 1 ? 'day' : 'days'} remaining
-            </div>
-          )}
-
-          {step === 'view' && isExpired && (
-            <button
-              onClick={() => setStep('fee_info')}
-              className={`w-full font-extrabold py-4 rounded-xl transition-colors text-sm flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
-            >
-              Renew — UGX 1,000 / month
-            </button>
-          )}
-
-          {step === 'fee_info' && (
-            <div className="mt-4 space-y-4">
-              <div className={`p-5 rounded-2xl border text-sm space-y-3 ${theme === 'dark' ? 'bg-neutral-800/60 border-white/5' : 'bg-gray-50 border-black/5'}`}>
-                <div className="flex justify-between items-center">
-                  <span className={theme === 'dark' ? 'text-neutral-300' : 'text-neutral-700'}>Subscription fee</span>
-                  <span className="font-mono font-bold">UGX 880</span>
-                </div>
-                <div className={`border-t border-dashed ${theme === 'dark' ? 'border-white/10' : 'border-black/10'}`}></div>
-                <div className={`space-y-2 text-xs leading-relaxed ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
-                  <div className="flex flex-col gap-1">
-                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>MTN</strong> — UGX 110 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 990</strong></span>
-                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Airtel</strong> — UGX 120 transaction fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 1,000</strong></span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Card</strong> — Processing fees vary by bank</span>
-                  </div>
-                  <div className="flex items-start gap-2">
-                    <span><strong className={theme === 'dark' ? 'text-neutral-200' : 'text-neutral-700'}>Pesapal E-Wallet</strong> — No extra fee → <strong className={theme === 'dark' ? 'text-white' : 'text-black'}>Total: UGX 880</strong></span>
-                  </div>
-                </div>
-              </div>
-              <div className="flex gap-3">
-                <button
-                  onClick={() => setStep('view')}
-                  className={`flex-1 py-3 rounded-xl font-bold text-sm transition-colors ${theme === 'dark' ? 'bg-neutral-800 text-white hover:bg-neutral-700' : 'bg-gray-200 text-black hover:bg-gray-300'}`}
-                >
-                  Back
-                </button>
-                <button
-                  onClick={submitPayment}
-                  disabled={isSubmitting}
-                  className={`flex-[2] py-3 rounded-xl font-bold text-sm transition-colors flex justify-center items-center gap-2 ${theme === 'dark' ? 'bg-white text-black hover:bg-neutral-200' : 'bg-black text-white hover:bg-neutral-800'}`}
-                >
-                  {isSubmitting ? <Loader2 className="animate-spin" size={16} /> : 'Proceed to payment →'}
-                </button>
-              </div>
-            </div>
-          )}
-
-          {error && <div className="mt-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20 text-red-500 text-xs font-bold leading-relaxed">{error}</div>}
-
-          {step === 'waiting' && (
-            <div className="text-center py-8 space-y-4">
-              <Loader2 className="animate-spin mx-auto w-8 h-8 opacity-50" />
-              <p className="text-sm font-bold">Redirecting to Pesapal...</p>
-              <p className="text-xs opacity-50">Please complete the payment on the secure page.</p>
-            </div>
-          )}
-
-          {step === 'success' && (
-            <div className="text-center py-4 space-y-4 text-emerald-500">
-              <CheckCircle2 className="mx-auto w-12 h-12" />
-              <p className="text-lg font-bold">Renewal Successful!</p>
-              <p className="text-sm opacity-80">Your subscription is now active.</p>
-            </div>
-          )}
-
-
-        </div>
-
-        {/* Payment History */}
-        <div className={`border rounded-[24px] overflow-hidden flex flex-col transition-colors duration-300 ${theme === 'dark' ? 'bg-neutral-900/40 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
-          <div className={`p-6 border-b font-bold font-syne ${theme === 'dark' ? 'border-white/5 text-white' : 'border-black/5 text-black'}`}>
-            Payment History
-          </div>
-          <div className="flex-1 overflow-y-auto max-h-[400px]">
-            {loadingHistory ? (
-              <div className="p-8 text-center"><Loader2 className="animate-spin mx-auto opacity-50" /></div>
-            ) : history.length === 0 ? (
-              <div className="p-8 text-center text-sm opacity-50">No payment history yet.</div>
-            ) : (
-              <table className="w-full text-left text-sm">
-                <thead>
-                  <tr className={`text-[10px] uppercase tracking-widest font-black ${theme === 'dark' ? 'text-neutral-500' : 'text-neutral-500'}`}>
-                    <th className="px-6 py-4">Date</th>
-                    <th className="px-6 py-4">Method</th>
-                    <th className="px-6 py-4 text-right">Amount</th>
-                  </tr>
-                </thead>
-                <tbody className={`divide-y ${theme === 'dark' ? 'divide-white/5' : 'divide-black/5'}`}>
-                  {history.map(tx => (
-                    <tr key={tx.id} className="group">
-                      <td className="px-6 py-4">
-                        <div className="font-medium">{new Date(tx.paid_at).toLocaleDateString()}</div>
-                        <div className="text-[10px] opacity-50 mt-1 font-mono">{tx.pesapal_reference || '—'}</div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <span className={`text-[10px] px-2 py-1 rounded-md font-bold ${
-                          tx.method === 'MTN' ? 'bg-yellow-400/20 text-yellow-600 dark:text-yellow-400' :
-                          tx.method === 'Airtel' ? 'bg-red-500/20 text-red-600 dark:text-red-400' :
-                          'bg-neutral-400/20 text-neutral-500'
-                        }`}>
-                          {tx.method || 'Unknown'}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 text-right font-mono font-medium">
-                        UGX {tx.amount.toLocaleString()}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+      <div className={`border p-12 text-center rounded-[24px] transition-all group ${theme === 'dark' ? 'bg-neutral-900 border-white/5' : 'bg-white border-black/5 shadow-sm'}`}>
+        <h3 className={`text-3xl font-bold mb-4 font-syne ${theme === 'dark' ? 'text-white' : 'text-black'}`}>Payments Coming Soon</h3>
+        <p className={`text-lg leading-relaxed mb-6 ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-600'}`}>
+          We are currently operating TOBLI completely free of charge while we finalize our registration and payment gateways.
+        </p>
+        <div className={`inline-block px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-green-500/20 text-green-500`}>
+          Your account is active & free
         </div>
       </div>
     </div>

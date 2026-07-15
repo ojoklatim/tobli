@@ -127,12 +127,15 @@ export const useAuthStore = create((set) => ({
       .from('businesses')
       .insert([{
         auth_user_id: data.user.id,
-        name,
-        owner_name,
-        sector,
-        phone,
-        email,
-        subscription_status: 'inactive',
+        name: data.business_name || data.name,
+        owner_name: data.owner_name,
+        sector: data.sector,
+        building_name: data.building_name || null,
+        floor: data.floor || null,
+        room_number: data.room_number || null,
+        phone: data.phone,
+        email: data.email,
+        subscription_status: 'active',
         is_open: false,
         is_admin: false,
       }])
@@ -174,12 +177,15 @@ export const useAuthStore = create((set) => ({
         .from('businesses')
         .insert([{
           auth_user_id: user.id,
-          name: pending.name || email.split('@')[0],
+          name: pending.business_name || pending.name || email.split('@')[0],
           owner_name: pending.owner_name || '',
           sector: pending.sector || null,
+          building_name: pending.building_name || null,
+          floor: pending.floor || null,
+          room_number: pending.room_number || null,
           phone: pending.phone || '',
           email: pending.email || email,
-          subscription_status: 'inactive',
+          subscription_status: 'active',
           is_open: false,
           is_admin: false,
         }])
@@ -258,7 +264,7 @@ export const useAuthStore = create((set) => ({
       .insert([{
         auth_user_id: session.user.id,
         ...businessData,
-        subscription_status: 'inactive',
+        subscription_status: 'active',
         is_open: false,
         is_admin: false,
       }])

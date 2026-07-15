@@ -211,6 +211,19 @@ function BusinessPopupContent() {
           <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-bold max-w-full truncate ${theme === 'dark' ? 'bg-white/10 text-neutral-300' : 'bg-black/5 text-neutral-600'}`}>
             {biz.business_name}
           </span>
+          {(selectedBusiness.building_name || selectedBusiness.floor || selectedBusiness.room_number) && (
+            <div className={`mt-1.5 text-[11px] leading-snug ${theme === 'dark' ? 'text-neutral-400' : 'text-neutral-500'}`}>
+              {[
+                selectedBusiness.building_name,
+                selectedBusiness.floor ? `Floor ${selectedBusiness.floor}` : null,
+                selectedBusiness.room_number ? `Room ${selectedBusiness.room_number}` : null,
+              ].filter(Boolean).map((part, i, arr) => (
+                <span key={i}>
+                  {part}{i < arr.length - 1 && <span className="font-bold mx-0.5">·</span>}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
 
         {product_image && (
