@@ -12,6 +12,7 @@ import Admin from './pages/Admin';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
 import PresenceManager from './components/PresenceManager';
+import TwitchStreamBanner from './components/TwitchStreamBanner';
 import { useEffect } from 'react';
 import { useAuthStore } from './store/authStore';
 import { useStore } from './store/useStore';
@@ -65,6 +66,7 @@ function App() {
         <div className={`min-h-screen transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F] text-white' : 'bg-white text-black'}`}>
           <ScrollToTop />
           <PresenceManager />
+          <TwitchStreamBanner />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
