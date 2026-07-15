@@ -37,6 +37,7 @@ export default function TwitchStreamBanner() {
       <iframe
         src={src}
         title="t_obl_i live stream"
+        allow="autoplay; fullscreen"
         allowFullScreen
         style={{
           position: 'absolute',
