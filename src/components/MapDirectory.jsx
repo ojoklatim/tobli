@@ -607,13 +607,14 @@ export default function MapDirectory() {
   const finalMapConfig = effectiveMapConfig || { center: [0.3476, 32.5825], zoom: 13 };
   const liveUserCount = Object.keys(liveUsers).length;
 
-  const tileLayerUrl = theme === 'dark' 
-    ? "https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png";
+  const cartoKey = import.meta.env.VITE_CARTO_API_KEY;
+  const tileLayerUrl = theme === 'dark'
+    ? `https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`
+    : `https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png?key=${cartoKey}`;
 
   const labelsLayerUrl = theme === 'dark'
-    ? "https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png"
-    : "https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png";
+    ? `https://{s}.basemaps.cartocdn.com/dark_only_labels/{z}/{x}/{y}{r}.png?key=${cartoKey}`
+    : `https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png?key=${cartoKey}`;
 
   return (
     <div className={`h-screen w-full transition-colors duration-300 ${theme === 'dark' ? 'bg-[#080A0F]' : 'bg-gray-100'}`}>
