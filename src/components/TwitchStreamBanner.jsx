@@ -25,8 +25,8 @@ export default function TwitchStreamBanner() {
         bottom: '16px',
         left: '16px',
         zIndex: 9999,
-        width: '171px',
-        height: '38px',
+        width: '1px',
+        height: '1px',
         background: '#111',
         border: '1px solid #000',
         overflow: 'hidden',
@@ -43,8 +43,8 @@ export default function TwitchStreamBanner() {
           position: 'absolute',
           top: '-29px',   /* vertically centres the crop on the video */
           left: 0,
-          width: '171px',
-          height: '96px', /* full 16:9 height for this width, cropped to 38px */
+          width: '1px',
+          height: '96px', /* full 16:9 height for this width, cropped to 1px */
           border: 'none',
           pointerEvents: 'none',
         }}
