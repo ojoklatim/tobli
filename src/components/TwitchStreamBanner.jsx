@@ -17,8 +17,7 @@ import { useEffect, useState } from 'react';
 
 const EMBED_W = 400;   // Twitch minimum width
 const EMBED_H = 300;   // Twitch minimum height
-const PEEK_H  = 80;    // px visible above bottom edge — sits within the
-                       // 0–128px zone below the recenter button (bottom-32)
+const PEEK_H  = 25;    // px visible above bottom edge
 
 export default function TwitchStreamBanner() {
   const [parent, setParent] = useState('localhost');
