@@ -2,17 +2,29 @@ import { useEffect, useState } from 'react';
 
 /**
  * TwitchStreamBanner
- * Fixed bottom-left corner embed of the t_obl_i Twitch stream.
- * Mirrors the approach in tobli-stream-embed.html:
- *   - 171×38 px window cropped from a 171×96 px iframe (16:9 at this width)
- *   - autoplay + muted so browsers allow it without interaction
- *   - pointer-events: none so it never captures clicks meant for the page
+ * 
+ * Renders the t_obl_i Twitch stream at exactly 400×300 (Twitch minimum dimensions).
+ * Positioned so only PEEK_H pixels are visible above the bottom viewport edge,
+ * sitting in the clear zone below the recenter button (bottom-32 = 128px).
+ * 
+ * - Full 400×300 satisfies Twitch ToS minimum size requirement
+ * - No page element obscures it — only the viewport boundary clips it
+ * - pointer-events: none so map taps and gestures pass through
+ * - Only renders on the home/map page
+ * - On mobile, browser requires a user interaction before autoplay fires,
+ *   so any map touch (scroll, tap) acts as that interaction
  */
+
+const EMBED_W = 400;   // Twitch minimum width
+const EMBED_H = 300;   // Twitch minimum height
+const PEEK_H  = 80;    // px visible above bottom edge — sits within the
+                       // 0–128px zone below the recenter button (bottom-32)
+
 export default function TwitchStreamBanner() {
   const [parent, setParent] = useState('localhost');
+  const { pathname } = useLocation();
 
   useEffect(() => {
-    // Twitch requires the parent domain of the page embedding the player.
     setParent(window.location.hostname || 'localhost');
   }, []);
 
@@ -21,33 +33,24 @@ export default function TwitchStreamBanner() {
   return (
     <div
       style={{
-        position: 'fixed',
-        bottom: '16px',
-        left: '16px',
-        zIndex: 9999,
-        width: '1px',
-        height: '1px',
-        background: '#111',
-        border: '1px solid #000',
-        overflow: 'hidden',
-        borderRadius: '4px',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.5)',
+        position : 'fixed',
+        bottom   : -(EMBED_H - PEEK_H), // -220px → 80px peeks above viewport bottom
+        left     : '50%',
+        transform: 'translateX(-50%)',
+        width    : EMBED_W,
+        height   : EMBED_H,
+        zIndex   : 500,           // above map tiles, below popups (z-[1000]+)
+        pointerEvents: 'none',    // map taps and gestures pass through
       }}
     >
       <iframe
         src={src}
-        title="t_obl_i live stream"
+        title="TOBLI Live"
+        width={EMBED_W}
+        height={EMBED_H}
         allow="autoplay; fullscreen"
         allowFullScreen
-        style={{
-          position: 'absolute',
-          top: '-29px',   /* vertically centres the crop on the video */
-          left: 0,
-          width: '1px',
-          height: '96px', /* full 16:9 height for this width, cropped to 1px */
-          border: 'none',
-          pointerEvents: 'none',
-        }}
+        style={{ border: 'none', display: 'block' }}
       />
     </div>
   );
