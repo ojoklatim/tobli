@@ -22,7 +22,6 @@ const PEEK_H  = 80;    // px visible above bottom edge — sits within the
 
 export default function TwitchStreamBanner() {
   const [parent, setParent] = useState('localhost');
-  const { pathname } = useLocation();
 
   useEffect(() => {
     setParent(window.location.hostname || 'localhost');
